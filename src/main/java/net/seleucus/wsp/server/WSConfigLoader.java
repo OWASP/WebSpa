@@ -12,6 +12,7 @@ public class WSConfigLoader {
 	
 	private static final String LOGGING_REGEX_FOR_EACH_REQUEST = "logging-regex-for-each-request";
 	private static final String ACCESS_LOG_FILE_LOCATION = "access-log-file-location";
+	
 	private final Properties configProperties = new Properties();
 	
 	public WSConfigLoader(final String configPath) throws IOException, InvalidPropertyFileException {
