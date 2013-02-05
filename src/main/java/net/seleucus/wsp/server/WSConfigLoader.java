@@ -19,11 +19,9 @@ public class WSConfigLoader {
 		
 		URL rootLocation = ClassLoader.getSystemResource(configPath);
 		if(rootLocation == null) {
-			throw new FileNotFoundException("Config File not Found: " + configPath);
+			throw new FileNotFoundException("Web-Spa Config File Not Found: " + configPath);
 		}
-		String workingDirectory = rootLocation.getFile();
-		System.out.println(workingDirectory);
-		File configFile = new File(workingDirectory);
+		File configFile = new File(rootLocation.getFile());
 		
 		if(!configFile.canRead()) {
 			throw new IOException("Web-Spa Configuration File Cannot Be Read");
