@@ -2,7 +2,7 @@ package net.seleucus.wsp.util;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
@@ -18,11 +18,12 @@ public class WSHasher {
 
 		hashedContents = new ByteArrayOutputStream(75);
 		
-		byte[] hashedPassPhrase = WSHasher.getHashedPassPhraseInTime(passPhrase, currentTimeInMinutes);
-		byte[] hashedActionNumber = WSHasher.getHashedActionNumberInTime(passPhrase, actionNumber, currentTimeInMinutes);
+		final byte[] hashedPassPhrase = WSHasher.getHashedPassPhraseInTime(passPhrase, currentTimeInMinutes);
+		final byte[] hashedActionNumber = WSHasher.getHashedActionNumberInTime(passPhrase, actionNumber, currentTimeInMinutes);
 		
-		byte[] eightRandomBytes = new byte[8];
-		new Random().nextBytes(eightRandomBytes);
+		final byte[] eightRandomBytes = new byte[8];
+		final SecureRandom scRandom = new SecureRandom();
+		scRandom.nextBytes(eightRandomBytes);
 		
 		hashedContents.write(hashedPassPhrase, 0, 64);
 		hashedContents.write(hashedActionNumber, 0, 3);
@@ -31,10 +32,10 @@ public class WSHasher {
 	}
 
 	public static byte[] getHashedPassPhraseInTime(CharSequence passPhrase,
-			long currentTimeInMinutes) {
+			long currentTimeMinutes) {
 
 		byte timeByte = Byte.MIN_VALUE;
-		byte[] longBytes = ByteBuffer.allocate(8).putLong(currentTimeInMinutes)
+		byte[] longBytes = ByteBuffer.allocate(8).putLong(currentTimeMinutes)
 				.array();
 		for (byte currentByte : longBytes) {
 			timeByte += currentByte;
@@ -54,14 +55,15 @@ public class WSHasher {
 			int actionNumber, long currentTimeInMinutes) {
 
 		byte timeByte = Byte.MIN_VALUE;
-		byte[] longBytes = ByteBuffer.allocate(8).putLong(currentTimeInMinutes)
-				.array();
-		for (byte currentByte : longBytes) {
+		final ByteBuffer longBuffer = ByteBuffer.allocate(8);
+		longBuffer.putLong(currentTimeInMinutes);
+		byte[] longBytes = longBuffer.array();
+		for (final byte currentByte : longBytes) {
 			timeByte += currentByte;
 		}
 
 		byte actionByte = Byte.MIN_VALUE;
-		byte[] intBytes = ByteBuffer.allocate(4).putInt(actionNumber).array();
+		final byte[] intBytes = ByteBuffer.allocate(4).putInt(actionNumber).array();
 		for (byte currentByte : intBytes) {
 			actionByte += currentByte;
 		}
@@ -71,14 +73,14 @@ public class WSHasher {
 		byte[] bytePassPhraseArray = passPhrase.toString().getBytes(
 				Charsets.UTF_8);
 
-		byte[] xoredBytePassPhraseArray = WSHasher.xor(bytePassPhraseArray,
+		final byte[] xoredBytePassPhraseArray = WSHasher.xor(bytePassPhraseArray,
 				xORTimeAndAction);
 
 		return ArrayUtils.subarray(DigestUtils.sha512(xoredBytePassPhraseArray), 0, 3);
 		
 	}
 	
-	private static byte[] xor(byte[] inputByteArray, byte timeByte) {
+	private static byte[] xor(final byte[] inputByteArray, final byte timeByte) {
 
 		byte[] outputByteArray = new byte[inputByteArray.length];
 
@@ -101,7 +103,7 @@ public class WSHasher {
 		} else {
 			
 			String encodedString = Base64.encodeBase64URLSafeString(hashedContents.toByteArray()).substring(0, 89);
-			String currentString = encodedKnock.substring(0, 89);
+			final String currentString = encodedKnock.substring(0, 89);
 			
 			return encodedString.equalsIgnoreCase(currentString);
 		}
