@@ -3,6 +3,7 @@ package net.seleucus.wsp.util;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
@@ -34,49 +35,35 @@ public class WSHasher {
 	public static byte[] getHashedPassPhraseInTime(CharSequence passPhrase,
 			long currentTimeMinutes) {
 
-		byte timeByte = Byte.MIN_VALUE;
-		byte[] longBytes = ByteBuffer.allocate(8).putLong(currentTimeMinutes)
-				.array();
-		for (byte currentByte : longBytes) {
-			timeByte += currentByte;
-		}
+		byte[] bytePassPhraseArray = passPhrase.toString().getBytes(Charsets.UTF_8);
+		byte[] timeBytes = ByteBuffer.allocate(8).putLong(currentTimeMinutes).array();
 
-		byte[] bytePassPhraseArray = passPhrase.toString().getBytes(
-				Charsets.UTF_8);
-
-		byte[] xoredBytePassPhraseArray = WSHasher.xor(bytePassPhraseArray,
-				timeByte);
-
-		return DigestUtils.sha512(xoredBytePassPhraseArray);
+		byte[] allBytes = new byte[bytePassPhraseArray.length + timeBytes.length - 4];
+		System.arraycopy(bytePassPhraseArray, 0, allBytes, 0, bytePassPhraseArray.length);
+		System.arraycopy(timeBytes, 4, allBytes, bytePassPhraseArray.length, timeBytes.length - 4);
+		
+		Arrays.sort(allBytes);
+		
+		return DigestUtils.sha512(allBytes);
 
 	}
 
-	public static byte[] getHashedActionNumberInTime(CharSequence passPhrase,
-			int actionNumber, long currentTimeInMinutes) {
+	public static byte[] getHashedActionNumberInTime(CharSequence passPhrase, int actionNumber, long currentTimeMinutes) {
 
-		byte timeByte = Byte.MIN_VALUE;
-		final ByteBuffer longBuffer = ByteBuffer.allocate(8);
-		longBuffer.putLong(currentTimeInMinutes);
-		byte[] longBytes = longBuffer.array();
-		for (final byte currentByte : longBytes) {
-			timeByte += currentByte;
-		}
+		byte[] bytePassPhraseArray = passPhrase.toString().getBytes(Charsets.UTF_8);
+		byte[] actionBytes = ByteBuffer.allocate(4).putInt(actionNumber).array();
+		byte[] timeBytes = ByteBuffer.allocate(8).putLong(currentTimeMinutes).array();
 
-		byte actionByte = Byte.MIN_VALUE;
-		final byte[] intBytes = ByteBuffer.allocate(4).putInt(actionNumber).array();
-		for (byte currentByte : intBytes) {
-			actionByte += currentByte;
-		}
+		byte[] allBytes = new byte[bytePassPhraseArray.length + timeBytes.length - 4 + 1];
 		
-		byte xORTimeAndAction = (byte) (timeByte ^ actionByte);
+		System.arraycopy(bytePassPhraseArray, 0, allBytes, 0,
+				bytePassPhraseArray.length);
+		System.arraycopy(timeBytes, 4, allBytes,
+				bytePassPhraseArray.length, timeBytes.length - 4);
+		System.arraycopy(actionBytes, actionBytes.length - 1, allBytes, allBytes.length - 1, 1);
 		
-		byte[] bytePassPhraseArray = passPhrase.toString().getBytes(
-				Charsets.UTF_8);
 
-		final byte[] xoredBytePassPhraseArray = WSHasher.xor(bytePassPhraseArray,
-				xORTimeAndAction);
-
-		return ArrayUtils.subarray(DigestUtils.sha512(xoredBytePassPhraseArray), 0, 3);
+		return ArrayUtils.subarray(DigestUtils.sha512(allBytes), 0, 3);
 		
 	}
 	
