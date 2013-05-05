@@ -34,5 +34,5 @@ public class WebSpaUtilsTest {
 		byte [] outputByteArray = {0, 56, -103};
 		assertArrayEquals(outputByteArray, WebSpaUtils.xor(inputByteArray, timeByte));
 	}
-
+	
 }

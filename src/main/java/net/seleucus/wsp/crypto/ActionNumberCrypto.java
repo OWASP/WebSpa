@@ -10,7 +10,7 @@ import org.springframework.security.crypto.util.EncodingUtils;
 
 public class ActionNumberCrypto extends WebSpaUtils {
 
-	public static byte[] getHashedActionNumberInTime(CharSequence passPhrase, int actionNumber, long currentTimeMinutes) {
+	public static byte[] getHashedActionNumberInTimeWithSalt(final CharSequence passPhrase, final int actionNumber, final long currentTimeMinutes, final byte[] salt) {
 
 		byte[] passBytes = passPhrase.toString().getBytes(Charsets.UTF_8);
 		byte[] actionBytes = ByteBuffer.allocate(4).putInt(actionNumber).array();
@@ -23,15 +23,41 @@ public class ActionNumberCrypto extends WebSpaUtils {
 		
 		Arrays.sort(sortedBytes);
 
-		SecureRandom scRandom = new SecureRandom();
-		byte[] randomByte = new byte[4];
-		scRandom.nextBytes(randomByte);
-		
-		byte[] allBytes = EncodingUtils.concatenate(sortedBytes, randomByte);
+		byte[] allBytes = EncodingUtils.concatenate(sortedBytes, salt);
 		byte[] hashedBytes = ArrayUtils.subarray(digest(allBytes), 0, 20); 
 		
-		return EncodingUtils.concatenate(randomByte, hashedBytes);
+		return EncodingUtils.concatenate(salt, hashedBytes);
 		
+	}
+	
+	public static byte[] getHashedActionNumberNowWithSalt(final CharSequence passPhrase, final int actionNumber, final byte[] salt) {
+		
+		long currentTimeMinutes = System.currentTimeMillis() / (60 * 1000);
+
+		return getHashedActionNumberInTimeWithSalt(passPhrase, actionNumber, currentTimeMinutes, salt);
+
+	}
+	
+	public static byte[] getHashedActionNumberInTime(CharSequence passPhrase, int actionNumber, long currentTimeMinutes) {
+
+		SecureRandom scRandom = new SecureRandom();
+		byte[] randomBytes = new byte[4];
+		scRandom.nextBytes(randomBytes);
+
+		return getHashedActionNumberInTimeWithSalt(passPhrase, actionNumber, currentTimeMinutes, randomBytes);
+		
+	}
+	
+	public static byte[] getHashedActionNumberNow(final CharSequence passPhrase, final int actionNumber) {
+		
+		long currentTimeMinutes = System.currentTimeMillis() / (60 * 1000);
+
+		SecureRandom scRandom = new SecureRandom();
+		byte[] randomBytes = new byte[4];
+		scRandom.nextBytes(randomBytes);
+
+		return getHashedActionNumberInTimeWithSalt(passPhrase, actionNumber, currentTimeMinutes, randomBytes);
+
 	}
 	
 	private ActionNumberCrypto() {

@@ -35,44 +35,17 @@ public final class PassPhraseCrypto extends WebSpaUtils {
 		
 		long currentTimeMinutes = System.currentTimeMillis() / (60 * 1000);
 		
-		byte[] passBytes = passPhrase.toString().getBytes(Charsets.UTF_8);
-		byte[] timeBytes = ByteBuffer.allocate(8).putLong(currentTimeMinutes).array();
-		
-		byte[] sortedBytes = new byte[passBytes.length + timeBytes.length - 4];
-		System.arraycopy(passBytes, 0, sortedBytes, 0, passBytes.length);
-		System.arraycopy(timeBytes, 4, sortedBytes, passBytes.length, timeBytes.length - 4);
-
-		Arrays.sort(sortedBytes);
-		
-		byte[] randomBytes = new byte[1];
-		randomBytes[0] = salt;
-
-		byte[] allBytes = EncodingUtils.concatenate(sortedBytes, randomBytes);
-		byte[] hashedBytes = ArrayUtils.subarray(digest(allBytes), 0, 50); 
-		
-		return EncodingUtils.concatenate(randomBytes, hashedBytes);
+		return getHashedPassPhraseInTimeWithSalt(passPhrase, currentTimeMinutes, salt);
 
 	}
 
 	protected static byte[] getHashedPassPhraseInTime(final CharSequence passPhrase, final long currentTimeMinutes) {
-
-		byte[] passBytes = passPhrase.toString().getBytes(Charsets.UTF_8);
-		byte[] timeBytes = ByteBuffer.allocate(8).putLong(currentTimeMinutes).array();
-		
-		byte[] sortedBytes = new byte[passBytes.length + timeBytes.length - 4];
-		System.arraycopy(passBytes, 0, sortedBytes, 0, passBytes.length);
-		System.arraycopy(timeBytes, 4, sortedBytes, passBytes.length, timeBytes.length - 4);
-
-		Arrays.sort(sortedBytes);
 		
 		SecureRandom scRandom = new SecureRandom();
 		byte[] randomBytes = new byte[1];
 		scRandom.nextBytes(randomBytes);
 		
-		byte[] allBytes = EncodingUtils.concatenate(sortedBytes, randomBytes);
-		byte[] hashedBytes = ArrayUtils.subarray(digest(allBytes), 0, 50); 
-		
-		return EncodingUtils.concatenate(randomBytes, hashedBytes);
+		return getHashedPassPhraseInTimeWithSalt(passPhrase, currentTimeMinutes, randomBytes[0]);
 
 	}
 	
@@ -80,23 +53,11 @@ public final class PassPhraseCrypto extends WebSpaUtils {
 
 		long currentTimeMinutes = System.currentTimeMillis() / (60 * 1000);
 		
-		byte[] passBytes = passPhrase.toString().getBytes(Charsets.UTF_8);
-		byte[] timeBytes = ByteBuffer.allocate(8).putLong(currentTimeMinutes).array();
-		
-		byte[] sortedBytes = new byte[passBytes.length + timeBytes.length - 4];
-		System.arraycopy(passBytes, 0, sortedBytes, 0, passBytes.length);
-		System.arraycopy(timeBytes, 4, sortedBytes, passBytes.length, timeBytes.length - 4);
-
-		Arrays.sort(sortedBytes);
-		
 		SecureRandom scRandom = new SecureRandom();
-		byte[] randomByte = new byte[1];
-		scRandom.nextBytes(randomByte);
+		byte[] randomBytes = new byte[1];
+		scRandom.nextBytes(randomBytes);
 		
-		byte[] allBytes = EncodingUtils.concatenate(sortedBytes, randomByte);
-		byte[] hashedBytes = ArrayUtils.subarray(digest(allBytes), 0, 50); 
-		
-		return EncodingUtils.concatenate(randomByte, hashedBytes);
+		return getHashedPassPhraseInTimeWithSalt(passPhrase, currentTimeMinutes, randomBytes[0]);
 
 	}
 	
