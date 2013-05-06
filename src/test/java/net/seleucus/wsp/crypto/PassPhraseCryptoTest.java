@@ -3,10 +3,12 @@ package net.seleucus.wsp.crypto;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 
 public class PassPhraseCryptoTest {
@@ -29,14 +31,14 @@ public class PassPhraseCryptoTest {
 	};
 	
 	@Test
-	public final void shouldReturnAByteArrayWith75Elements() {
+	public final void shouldReturnAByteArrayWith51Elements() {
 		
 		int length1 = PassPhraseCrypto.getHashedPassPhraseNow(PASS_PHRASE).length;
 		int length2 = PassPhraseCrypto.getHashedPassPhraseInTime(PASS_PHRASE, MINUTES).length;
 		int length3 = PassPhraseCrypto.getHashedPassPhraseNowWithSalt(PASS_PHRASE, SALT).length;
 		int length4 = PassPhraseCrypto.getHashedPassPhraseInTimeWithSalt(PASS_PHRASE, MINUTES, SALT).length;
 		
-		assertTrue((length1 == length2) && (length2 == length3) && (length3 == length4));
+		assertTrue( (length1 == length2) && (length2 == length3) && (length3 == length4) && (length4 == 51)  );
 		
 	}
 	
@@ -57,17 +59,46 @@ public class PassPhraseCryptoTest {
 
 	@Test
 	public final void testGetHashedPassPhraseInTime() {
-		fail("Not yet implemented"); // TODO
+		
+		String passPhrase = RandomStringUtils.randomAlphabetic(20);
+		
+		byte[] byteArray = PassPhraseCrypto.getHashedPassPhraseInTime(passPhrase, MINUTES);
+		byte salt = byteArray[0];
+		byte[] expectedArray = PassPhraseCrypto.getHashedPassPhraseInTimeWithSalt(passPhrase, MINUTES, salt);
+		
+		assertArrayEquals(expectedArray, byteArray);
 	}
 
 	@Test
 	public final void testGetHashedPassPhraseNowWithSalt() {
-		fail("Not yet implemented"); // TODO
+		
+		String passPhrase = RandomStringUtils.randomAlphabetic(13);
+		
+		byte[] byteArray = PassPhraseCrypto.getHashedPassPhraseNowWithSalt(passPhrase, SALT);
+		long currentTimeMinutes = System.currentTimeMillis() / (60 * 1000);
+		byte[] expectedArray = PassPhraseCrypto.getHashedPassPhraseInTimeWithSalt(passPhrase, currentTimeMinutes, SALT);
+		
+		assertArrayEquals(expectedArray, byteArray);
 	}
 
 	@Test
 	public final void testGetHashedPassPhraseNow() {
-		fail("Not yet implemented"); // TODO
+
+		String passPhrase = RandomStringUtils.randomAlphabetic(17);
+
+		byte[] byteArray = PassPhraseCrypto.getHashedPassPhraseNow(passPhrase);
+		long currentTimeMinutes = System.currentTimeMillis() / (60 * 1000);
+		byte salt = byteArray[0];
+		byte[] expectedArray = PassPhraseCrypto.getHashedPassPhraseInTimeWithSalt(passPhrase, currentTimeMinutes, salt);
+		
+		assertArrayEquals(expectedArray, byteArray);
+	}
+	
+	@Test(expected=InvocationTargetException.class)
+	public final void shouldThrowAnUnsupportedOperationExceptionIfInstantiated() throws Exception {
+		Constructor<PassPhraseCrypto> c = PassPhraseCrypto.class.getDeclaredConstructor();
+		c.setAccessible(true);
+		c.newInstance();
 	}
 
 }

@@ -6,6 +6,7 @@ public final class WSVersion {
 
 	private WSVersion() {
 		// Standard to avoid instantiation 'accidents'
+		throw new UnsupportedOperationException();
 	}
 	
 	public static int getMajor() {

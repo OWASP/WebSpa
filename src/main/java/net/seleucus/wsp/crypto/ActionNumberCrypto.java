@@ -61,7 +61,8 @@ public class ActionNumberCrypto extends WebSpaUtils {
 	}
 	
 	private ActionNumberCrypto() {
-		// Standard to avoid instantiation 'accidents'		
+		// Standard to avoid instantiation 'accidents'
+		throw new UnsupportedOperationException();
 	}
 	
 }
