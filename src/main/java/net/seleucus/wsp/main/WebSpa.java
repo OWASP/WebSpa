@@ -40,7 +40,7 @@ public class WebSpa {
 	private static void showHelp() {
 
 		System.out.println("");
-		System.out.println("Web-Spa - Single Request Authorisation - version " + WSVersion.getValue() + " (subere@uncon.org)"); 
+		System.out.println("Web-Spa - Single HTTP Request Authorisation - version " + WSVersion.getValue() + " (subere@uncon.org)"); 
 		System.out.println("");
 		System.out.println("Usage: java -jar web-spa.jar [-option]");
 		System.out.println("");
