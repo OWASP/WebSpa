@@ -1,4 +1,4 @@
-package net.seleucus.wsp.server;
+package net.seleucus.wsp.config;
 
 import java.io.File;
 import java.io.FileInputStream;

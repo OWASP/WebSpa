@@ -1,4 +1,4 @@
-package net.seleucus.wsp.server;
+package net.seleucus.wsp.config;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;

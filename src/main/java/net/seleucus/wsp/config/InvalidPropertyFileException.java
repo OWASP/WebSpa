@@ -1,4 +1,4 @@
-package net.seleucus.wsp.server;
+package net.seleucus.wsp.config;
 
 public class InvalidPropertyFileException extends Exception {
 
