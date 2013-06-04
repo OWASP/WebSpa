@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -65,7 +66,8 @@ public class ActionNumberCryptoTest {
 	@Test
 	public final void testGetHashedActionNumberInTimeWithSalt() {
 		byte[] byteArray = ActionNumberCrypto.getHashedActionNumberInTimeWithSalt(PASS_PHRASE, ACTION_NUMBER, MINUTES, SALT);
-		assertArrayEquals(EXPECTED_BYTES, byteArray);
+		// assertArrayEquals(EXPECTED_BYTES, byteArray);
+		fail("" + Arrays.toString(byteArray));
 	}
 
 	@Test

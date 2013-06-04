@@ -3,10 +3,12 @@ package net.seleucus.wsp.crypto;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
@@ -54,6 +56,7 @@ public class PassPhraseCryptoTest {
 	@Test
 	public final void testGetHashedPassPhraseInTimeWithSalt() {
 		byte[] byteArray = PassPhraseCrypto.getHashedPassPhraseInTimeWithSalt(PASS_PHRASE, MINUTES, SALT);
+		
 		assertArrayEquals(EXPECTED_BYTES, byteArray);
 	}
 
