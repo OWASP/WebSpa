@@ -16,19 +16,19 @@ import org.junit.Test;
 public class PassPhraseCryptoTest {
 
 	// A static password value specified as a char sequence
-	private static final CharSequence PASS_PHRASE = "!QAZ@WSX�EDC123-�";
+	private static final CharSequence PASS_PHRASE = "IfY0u0nlyKn3w!";
 	// System.currentTimeMillis() / (60 * 1000) on the 26th of April 2013
 	private static final long MINUTES = 22782223;
 	// A salt value of a single byte
 	private static final byte SALT = -33;
 	// The expected byte array when using all the above
 	private static final byte[] EXPECTED_BYTES = {
-		-33, -112,   78,   53, -6, -106,  -50,  -97,   52,  -59, 
-		-43,   10, -121, -102,  6,   28, -112,  -45,  127,  -11, 
-		 58,  -54,   -7,   83, 37,   22,   91, -113,   33,  -20,  
-		 74, -104,   52,   66, 35,  102,  -14,   55, -127,  -31,
-	   -106, -121, -122,   72, 83,  -96,  -12,  -78,  -11,  122, 
-	    -65
+		-33,  -52,   76,   31, 108, -65, -37,   6, -55,  23, 
+		103, -113,  123,  -23,  56,  76,  63, -17, -78, 114,
+		-50, -103, -114, -113, 111,  29,  76, -95,  -6, -50,
+		 48,   12,   91,    7,  16,  74,  85, -62,   1,  64, 
+		  5,   80,  -82,   51,  40,  62, -23,   5,  57,  46, 
+		 57
 	};
 	
 	@Test
@@ -57,7 +57,6 @@ public class PassPhraseCryptoTest {
 		byte[] byteArray = PassPhraseCrypto.getHashedPassPhraseInTimeWithSalt(PASS_PHRASE, MINUTES, SALT);
 		
 		assertArrayEquals(EXPECTED_BYTES, byteArray);
-		// fail("" + Arrays.toString(byteArray));
 
 	}
 

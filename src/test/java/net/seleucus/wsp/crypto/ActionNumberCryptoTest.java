@@ -16,7 +16,7 @@ import org.junit.Test;
 public class ActionNumberCryptoTest {
 
 	// A static password value specified as a char sequence
-	private static final CharSequence PASS_PHRASE = "!QAZ@WSX�-�EDC869";
+	private static final CharSequence PASS_PHRASE = "IfY0u0nlyKn3w!";
 	// System.currentTimeMillis() / (60 * 1000) on the 26th of April 2014
 	private static final long MINUTES = 23308172;
 	// The action number representing an O/S command
@@ -25,9 +25,9 @@ public class ActionNumberCryptoTest {
 	private static final byte[] SALT = {100, Byte.MIN_VALUE, Byte.MAX_VALUE, -33};
 	// The expected byte array when using all the above
 	private static final byte[] EXPECTED_BYTES = {
-		100, -128, 127, -33, 104, -50, 73,  69, 
-		 36,  -62, -19, -88, -90, -74, -2, -74, 
-		-71,    7, -39,  78,  43, -78, 63, -123
+		100, -128, 127,  -33, -84, 107, 23, -124,
+		 75,   38, 123, -104,   6, 109, 22,  -83, 
+		-17,  125,  47,  -11,   7,   4, 17,  -65
 	};
 
 	
