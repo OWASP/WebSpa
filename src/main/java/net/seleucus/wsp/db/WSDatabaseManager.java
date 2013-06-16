@@ -1,5 +1,12 @@
 package net.seleucus.wsp.db;
 
-public class WSDatabaseManager {
+import java.sql.SQLException;
+
+
+public class WSDatabaseManager extends WSDatabaseAdaptor {
+
+	public WSDatabaseManager(String dbPath) throws ClassNotFoundException, SQLException {
+		super(dbPath);
+	}
 
 }
