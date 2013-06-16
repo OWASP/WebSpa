@@ -23,6 +23,7 @@ public class WSConfigLoaderTest {
 
 	@Test
 	public final void shouldBeAbleToInstantiateAWSConfigLoaderIfTheFileExists() throws Exception {
+		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
 		new WSConfigLoader(CONFIG_PATH);
 	}
 
@@ -45,6 +46,9 @@ public class WSConfigLoaderTest {
 	public void shouldThrowInvalidPropertyFileExceptionWhenNoAccessLogFilePropertyExists() throws Exception {
 		thrown.expect(InvalidPropertyFileException.class);
 		thrown.expectMessage("Access Log File Location Property Does Not Exist");
+		
+		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
+		
 		new WSConfigLoader("config/no-access-log-file-location-missing.conf");
 	}
 	
@@ -52,17 +56,24 @@ public class WSConfigLoaderTest {
 	public void shoudlThrowInvalidPropertyFileExceptionWhenNoLoggingRegexPropertyExists() throws Exception {
 		thrown.expect(InvalidPropertyFileException.class);
 		thrown.expectMessage("Logging Regex For Each Request Does Not Exist");
+		
+		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
+
 		new WSConfigLoader("config/no-logging-regex-for-each-request.conf");
 	}
 	
 	@Test 
 	public final void testGetAccessLogFileLocation() throws Exception {
+		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
+
 		WSConfigLoader ws = new WSConfigLoader(CONFIG_PATH);
 		assertEquals("/var/log/apache2/access.log", ws.getAccessLogFileLocation());
 	}
 
 	@Test
 	public final void testGetLoggingRegexForEachRequest() throws Exception {
+		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
+
 		WSConfigLoader ws = new WSConfigLoader(CONFIG_PATH);
 		assertEquals("\\[(\\d{2}/\\w{3}/\\d{4}:\\d{2}:\\d{2}:\\d{2} .....)\\] \"GET /(\\S*) HTTP\\/1\\.", ws.getLoggingRegexForEachRequest());	}
 
