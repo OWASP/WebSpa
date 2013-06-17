@@ -17,10 +17,10 @@ public class WSDatabaseAdaptorTest {
         DateFormat dateFormat = new SimpleDateFormat("-yyyy-MM-dd-HH-mm-ss");
         Date date = new Date();
 
-        final String dbName = "src/test/resources/data/01" + dateFormat.format(date);
-        final WSDatabaseAdaptorYiannis myDB = new WSDatabaseAdaptorYiannis(dbName);
+        final String dbPath = "src/test/resources/data/01" + dateFormat.format(date);
+        final WSDatabaseAdaptor myDB = new WSDatabaseAdaptor(dbPath);
 
-        File dbDataFile = new File(dbName + ".properties");
+        File dbDataFile = new File(dbPath + ".properties");
         final boolean fileExists = dbDataFile.exists();
 
         myDB.deleteAllDatabaseFiles();

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,12 +25,14 @@ public class WSConfigLoaderTest {
 	@Test
 	public final void shouldBeAbleToInstantiateAWSConfigLoaderIfTheFileExists() throws Exception {
 		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
-		new WSConfigLoader(CONFIG_PATH);
+		WSConfigLoader myConfigLoader = new WSConfigLoader();
+		myConfigLoader.getConfiguration(CONFIG_PATH);
 	}
 
 	@Test (expected=FileNotFoundException.class)
 	public void shouldThrowAnExceptionIfTheFileDoesNotExist() throws Exception {
-		new WSConfigLoader("config/doesnotexist.conf");
+		WSConfigLoader myConfigLoader = new WSConfigLoader();
+		myConfigLoader.getConfiguration("config/doesnotexist.conf");
 	}
 
 	@Test(expected=IOException.class)
@@ -39,7 +42,9 @@ public class WSConfigLoaderTest {
 		URL rootLocation = ClassLoader.getSystemResource(pathToUnreadable);
 		File unreadable = new File(rootLocation.getFile());
 		unreadable.setReadable(false);
-		new WSConfigLoader(pathToUnreadable);
+		
+		WSConfigLoader myConfigLoader = new WSConfigLoader();
+		myConfigLoader.getConfiguration(pathToUnreadable);
 	}
 	
 	@Test
@@ -49,7 +54,8 @@ public class WSConfigLoaderTest {
 		
 		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
 		
-		new WSConfigLoader("config/no-access-log-file-location-missing.conf");
+		WSConfigLoader myConfigLoader = new WSConfigLoader();
+		myConfigLoader.getConfiguration("config/no-access-log-file-location-missing.conf");
 	}
 	
 	@Test
@@ -59,22 +65,27 @@ public class WSConfigLoaderTest {
 		
 		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
 
-		new WSConfigLoader("config/no-logging-regex-for-each-request.conf");
+		WSConfigLoader myConfigLoader = new WSConfigLoader();
+		myConfigLoader.getConfiguration("config/no-logging-regex-for-each-request.conf");
 	}
 	
 	@Test 
 	public final void testGetAccessLogFileLocation() throws Exception {
 		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
 
-		WSConfigLoader ws = new WSConfigLoader(CONFIG_PATH);
-		assertEquals("/var/log/apache2/access.log", ws.getAccessLogFileLocation());
+		WSConfigLoader myConfigLoader = new WSConfigLoader();
+		Properties myProperties = myConfigLoader.getConfiguration(CONFIG_PATH);
+		assertEquals("/var/log/apache2/access.log", myProperties.getProperty("access-log-file-location", ""));
 	}
 
 	@Test
 	public final void testGetLoggingRegexForEachRequest() throws Exception {
 		assumeThat(System.getProperty("os.name").toLowerCase(), not(containsString("win")));
 
-		WSConfigLoader ws = new WSConfigLoader(CONFIG_PATH);
-		assertEquals("\\[(\\d{2}/\\w{3}/\\d{4}:\\d{2}:\\d{2}:\\d{2} .....)\\] \"GET /(\\S*) HTTP\\/1\\.", ws.getLoggingRegexForEachRequest());	}
+		WSConfigLoader myConfigLoader = new WSConfigLoader();
+		Properties myProperties = myConfigLoader.getConfiguration(CONFIG_PATH);
+		assertEquals("\\[(\\d{2}/\\w{3}/\\d{4}:\\d{2}:\\d{2}:\\d{2} .....)\\] \"GET /(\\S*) HTTP\\/1\\.", 
+					 myProperties.getProperty("logging-regex-for-each-request", ""));	
+	}
 
 }

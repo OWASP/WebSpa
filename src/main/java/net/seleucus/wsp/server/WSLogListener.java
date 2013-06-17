@@ -1,20 +1,19 @@
 package net.seleucus.wsp.server;
 
+import java.io.IOException;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.seleucus.wsp.config.InvalidPropertyFileException;
 import net.seleucus.wsp.config.WSConfigLoader;
-import net.seleucus.wsp.db.WSDatabaseAdaptorYiannis;
 import net.seleucus.wsp.db.WSDatabaseManager;
 import net.seleucus.wsp.util.WSConstants;
+
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.security.crypto.codec.Base64;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class WSLogListener implements TailerListener {
 
@@ -61,8 +60,10 @@ public class WSLogListener implements TailerListener {
         // Check if the request is 100 base64 encoded chars in length
         byte[] decodedLineByteArray = Base64.decode(requestLine.getBytes());
         String decodedLine = new String(decodedLineByteArray);
-
+        
+        /*
         try {
+        	
             WSDatabaseAdaptorYiannis database = wsDatabaseManager.getInstanceOfAdaptor();
 
             // Check if the request has been seen before in the wsDatabaseManager
@@ -93,7 +94,7 @@ public class WSLogListener implements TailerListener {
             //TODO
 
         }
-
+		*/
 
     }
 
