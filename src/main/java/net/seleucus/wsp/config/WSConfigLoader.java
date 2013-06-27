@@ -16,6 +16,7 @@ public class WSConfigLoader {
 
     public WSConfigLoader() {
         //TODO do we need you really?
+        // What about an static class?
 
     }
 
@@ -32,7 +33,12 @@ public class WSConfigLoader {
             configPath = "config/web-spa-server-properties.conf";
         }
 
-        if (configProperties == null) {
+
+        // get rid of the if below - it only makes sense if you want to keep the properites
+        // constant during runtime. but then ensure that you don't initialize the properites as
+        // Properties configProperties = new Properties() --> this may never be null.
+        // configProperties.size() == null
+        if (configProperties.size() == 0) {
             URL rootLocation = ClassLoader.getSystemResource(configPath);
             if (rootLocation == null) {
                 throw new FileNotFoundException("Web-Spa Config File Not Found: " + configPath);
