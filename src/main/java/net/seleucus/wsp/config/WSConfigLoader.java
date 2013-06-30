@@ -12,56 +12,42 @@ import java.util.Properties;
 
 public class WSConfigLoader {
 
-    private Properties configProperties = new Properties();
+	private static Properties configProperties = new Properties();
+	
+	private static String DEFAULT_PATH = "config/web-spa-server-properties.conf";
 
-    public WSConfigLoader() {
-        //TODO do we need you really?
-        // What about an static class?
+	private WSConfigLoader() {
+		// Standard to avoid instantiation 'accidents'
+	}
 
-    }
+	public static Properties getConfiguration(String configPath)
+			throws IOException, InvalidPropertyFileException {
+		
+		if (StringUtils.isBlank(configPath)) {
+			configPath = DEFAULT_PATH;
+		}
 
-    /**
-     * getConfiguration from configPath or default if non provided.
-     *
-     * @param configPath
-     * @return Properties configuration
-     * @throws IOException
-     * @throws InvalidPropertyFileException
-     */
-    public Properties getConfiguration(String configPath) throws IOException, InvalidPropertyFileException {
-        if (StringUtils.isBlank(configPath)) {
-            configPath = "config/web-spa-server-properties.conf";
-        }
+		if (configProperties.size() == 0) {
+			URL rootLocation = ClassLoader.getSystemResource(configPath);
+			File configFile = new File(rootLocation.getFile());
+			
+			FileInputStream in = new FileInputStream(configFile);
+			configProperties.load(in);
+			in.close();
 
+			if (!configProperties
+					.containsKey(WSConstants.ACCESS_LOG_FILE_LOCATION)) {
+				throw new InvalidPropertyFileException(
+						"Access Log File Location Property Does Not Exist");
+			}
 
-        // get rid of the if below - it only makes sense if you want to keep the properites
-        // constant during runtime. but then ensure that you don't initialize the properites as
-        // Properties configProperties = new Properties() --> this may never be null.
-        // configProperties.size() == null
-        if (configProperties.size() == 0) {
-            URL rootLocation = ClassLoader.getSystemResource(configPath);
-            if (rootLocation == null) {
-                throw new FileNotFoundException("Web-Spa Config File Not Found: " + configPath);
-            }
-            File configFile = new File(rootLocation.getFile());
-
-            if (!configFile.canRead()) {
-                throw new IOException("Web-Spa Configuration File Cannot Be Read");
-            }
-
-            FileInputStream in = new FileInputStream(configFile);
-            configProperties.load(in);
-            in.close();
-
-            if (!configProperties.containsKey(WSConstants.ACCESS_LOG_FILE_LOCATION)) {
-                throw new InvalidPropertyFileException("Access Log File Location Property Does Not Exist");
-            }
-
-            if (!configProperties.containsKey(WSConstants.LOGGING_REGEX_FOR_EACH_REQUEST)) {
-                throw new InvalidPropertyFileException("Logging Regex For Each Request Does Not Exist");
-            }
-        }
-        return configProperties;
-    }
+			if (!configProperties
+					.containsKey(WSConstants.LOGGING_REGEX_FOR_EACH_REQUEST)) {
+				throw new InvalidPropertyFileException(
+						"Logging Regex For Each Request Does Not Exist");
+			}
+		}
+		return configProperties;
+	}
 
 }
