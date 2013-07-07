@@ -1,0 +1,33 @@
+When running web-spa in server mode, by issuing the command:
+
+	'java -jar web-spa-x.x.jar -server'
+
+A number of files get created in the current directory. One
+of these files is the configuration file, named:
+
+	'web-spa-config.properties'
+	
+This file contains two (2) very important properties:
+
+1. access-log-file-location
+2. logging-regex-for-each-request
+
+1. The access-log-file-location property is the location within
+the filesystem where the access log file of the web server is.
+
+This has a default value:
+	'/var/log/apache2/access.log'
+	
+Which can be modified before starting web-spa in server mode.
+
+2. The logging-regex-for-each-request property is the regular
+expression indicating where within each line of the access log
+file the timestamp and part of the URL are located.
+
+This has a default value:
+	'\\[(\\d{2}/\\w{3}/\\d{4}:\\d{2}:\\d{2}:\\d{2} .....)\\] \"GET /(\\S*) HTTP\\/1\\.'
+
+Which can also be modified before starting web-spa in server 
+mode.
+
+The current values set are:

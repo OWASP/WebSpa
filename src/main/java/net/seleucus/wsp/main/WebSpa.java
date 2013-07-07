@@ -4,8 +4,13 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.Console;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import net.seleucus.wsp.client.WSClient;
+import net.seleucus.wsp.config.WSConfiguration;
+import net.seleucus.wsp.db.WSDatabase;
+import net.seleucus.wsp.server.WSServer;
 
 public class WebSpa {
 
@@ -13,9 +18,12 @@ public class WebSpa {
 
 	/**
 	 * @param args
+	 * @throws IOException 
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws Exception {
+				
 		if(args.length < 1) {
 			
 			showHelp();
@@ -67,7 +75,7 @@ public class WebSpa {
 		
 	}
 	
-	private static void runServer(final Console console) {
+	private static void runServer(final Console console) throws Exception {
 
 		System.out.println("");
 		System.out.println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
@@ -80,14 +88,24 @@ public class WebSpa {
 		
 		System.out.println("This is a holding prompt, type \"exit\" to quit");        
 		
+		WSServer myServer = new WSServer();
+		
 		do {
 
 			String command = console.readLine("\nweb-spa-server>");
+			
 			if( "exit".equalsIgnoreCase(command) ||
 				"quit".equalsIgnoreCase(command) ||
 				"laterz".equalsIgnoreCase(command) ||
 				"bye".equalsIgnoreCase(command) ) {
+				
+				myServer.shutdown();
+				
 				break;
+				
+			} else {
+				
+				myServer.processCommand(command);
 			}
 
 		} while (true);
