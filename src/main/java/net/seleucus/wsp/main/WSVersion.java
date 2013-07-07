@@ -1,12 +1,11 @@
 package net.seleucus.wsp.main;
 
-public final class WSVersion {
+public class WSVersion extends WSGestalt {
 
 	private static final byte[] VERSION = {0,5};
 
-	private WSVersion() {
-		// Standard to avoid instantiation 'accidents'
-		throw new UnsupportedOperationException();
+	public WSVersion(WebSpa myWebSpa) {
+		super(myWebSpa);
 	}
 	
 	public static int getMajor() {
@@ -21,8 +20,18 @@ public final class WSVersion {
 		return VERSION[0] + "." + VERSION[1];
 	}
 	
-	public static boolean isValid(final String versionString) {
+	public static boolean isCurrentVersion(final String versionString) {
 		return WSVersion.getValue().equalsIgnoreCase(versionString);
+	}
+
+	@Override
+	public void exitConsole() {
+		// Nothing to add here...
+	}
+
+	@Override
+	public void runConsole() {
+		getMyConsole().writer().println(WSVersion.getValue());
 	}
 	
 }

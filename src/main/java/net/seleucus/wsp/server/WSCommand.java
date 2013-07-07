@@ -46,6 +46,20 @@ public class WSCommand {
 			
 			WSCommand.showHelp("help");
 		}
+		else
+		if(command.equalsIgnoreCase("show begin") || 
+		   command.equalsIgnoreCase("begin") ||  
+		   command.equalsIgnoreCase("b") ) {
+			
+			// myServer.start();
+		}
+		else
+		if(command.equalsIgnoreCase("show stop") || 
+				   command.equalsIgnoreCase("stop") ||  
+				   command.equalsIgnoreCase("s") ) {
+					
+			// myServer.stop();
+		}
 		else {
 			System.out.println("Unknown command - type \"help\" for more options");
 		}

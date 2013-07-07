@@ -7,7 +7,10 @@ import java.util.regex.Pattern;
 
 import net.seleucus.wsp.config.InvalidPropertyFileException;
 import net.seleucus.wsp.config.WSConfigLoader;
+import net.seleucus.wsp.config.WSConfiguration;
+import net.seleucus.wsp.db.WSDatabase;
 import net.seleucus.wsp.db.WSDatabaseManager;
+import net.seleucus.wsp.main.WebSpa;
 import net.seleucus.wsp.util.WSConstants;
 
 import org.apache.commons.io.input.Tailer;
@@ -17,18 +20,15 @@ import org.springframework.security.crypto.codec.Base64;
 
 public class WSLogListener implements TailerListener {
 
+	private WSDatabase myDatabase;
+	private WSConfiguration myConfiguration;
 
-    private final WSDatabaseManager wsDatabaseManager;
-    private final Properties config;
+ 	public WSLogListener(WSDatabase myDatabase, WSConfiguration myConfiguration) {
+ 		this.myDatabase = myDatabase;
+ 		this.myConfiguration = myConfiguration;
+ 	}
 
-    public WSLogListener(final WSConfigLoader wsConfigLoader, final WSDatabaseManager wsDatabaseManager) throws IOException, InvalidPropertyFileException {
-
-        config = wsConfigLoader.getConfiguration("");
-        this.wsDatabaseManager = wsDatabaseManager;
-
-    }
-
-    @Override
+	@Override
     public void fileNotFound() {
         // TODO Auto-generated method stub
 
@@ -42,7 +42,7 @@ public class WSLogListener implements TailerListener {
 
     @Override
     public void handle(final String requestLine) {
-
+    	/*
         // Check if the line length is more than 65535 chars
         if (requestLine.length() < WSConstants.MAX_REQUEST_LENGTH) {
             // throw new InvalidWebSpaRequestException("invalid length");
@@ -61,7 +61,7 @@ public class WSLogListener implements TailerListener {
         byte[] decodedLineByteArray = Base64.decode(requestLine.getBytes());
         String decodedLine = new String(decodedLineByteArray);
         
-        /*
+        
         try {
         	
             WSDatabaseAdaptorYiannis database = wsDatabaseManager.getInstanceOfAdaptor();

@@ -14,13 +14,6 @@ public class WSVersionTest {
 	private static int VERSION_MIN = 0;
 	private static int VERSION_MAX = 10;
 
-	@Test(expected=InvocationTargetException.class)
-	public final void shouldThrowAnUnsupportedOperationExceptionIfInstantiated() throws Exception {
-		Constructor<WSVersion> c = WSVersion.class.getDeclaredConstructor();
-		c.setAccessible(true);
-		c.newInstance();
-	}
-
 	@Test
 	public final void testGetMajor() {
 		int majorVersion = WSVersion.getMajor();
@@ -54,12 +47,12 @@ public class WSVersionTest {
 	
 	@Test
 	public final void testIsValidTrue() {
-		assertTrue(WSVersion.isValid("0.5"));
+		assertTrue(WSVersion.isCurrentVersion("0.5"));
 	}
 	
 	@Test
 	public final void testIsValidFalse() {
-		assertFalse(WSVersion.isValid("0.4"));
+		assertFalse(WSVersion.isCurrentVersion("0.4"));
 	}
 	
 }
