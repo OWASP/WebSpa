@@ -17,7 +17,8 @@ public class WSServer extends WSGestalt {
 	private WSDatabase myDatabase;
 	private WSLogListener myLogListener;
 	private WSConfiguration myConfiguration;
-
+	private WSServerCommand myServerCommand;
+	
 	public WSServer(WebSpa myWebSpa) throws Exception {
 
 		super(myWebSpa);
@@ -28,24 +29,41 @@ public class WSServer extends WSGestalt {
 		myConfiguration = new WSConfiguration();
 		
 		myLogListener = new WSLogListener(myDatabase, myConfiguration);
+		myServerCommand = new WSServerCommand(this);
 
 	}
 	
 	public void serverStart() {
 		
 		File accessLog = new File(myConfiguration.getAccesLogFileLocation());
-		
-		if(myLogTailer == null) {
-			myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
+		if(accessLog.exists()) {
+			getMyConsole().writer().println("Access log file found at: " + accessLog.getPath());
+			
+			if(myLogTailer == null) {
+				myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
+			} else {
+				// logTailer.run();
+			}
+			
 		} else {
-			// logTailer.run();
+			
+			getMyConsole().writer().println("Access log file NOT found at: " + accessLog.getPath());
+			getMyConsole().writer().println("Web-Spa Server Not Started");
 		}
+		
 	}
 	
 	public void serverStop() {
 		
-		if (myLogTailer != null) {
+		if (myLogTailer == null) {
+			
+			getMyConsole().writer().println("Web-Spa Server Had Not Started");
+			
+		} else {
+			
+			getMyConsole().writer().println("Web-Spa Server Stopped");
 			myLogTailer.stop();
+			
 		}
 
 	}
@@ -56,7 +74,7 @@ public class WSServer extends WSGestalt {
 	}
 
 	@Override
-	public void runConsole() {
+	public void runConsole() throws SQLException {
 		
 		getMyConsole().writer().println("");
 		getMyConsole().writer().println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
@@ -73,13 +91,13 @@ public class WSServer extends WSGestalt {
 				"laterz".equalsIgnoreCase(command) ||
 				"bye".equalsIgnoreCase(command) ) {
 				
-				// myServer.shutdown();
+				this.shutdown();
 				
 				break;
 				
 			} else {
 				
-				// myServer.processCommand(command);
+				this.processCommand(command);
 			}
 
 		} while (true);
@@ -99,7 +117,7 @@ public class WSServer extends WSGestalt {
 	}
 
 	public void processCommand(final String command) {
-		// myCommand.executeCommand(command);
+		myServerCommand.executeCommand(command);
 	}
 
 }

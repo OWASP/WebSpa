@@ -1,6 +1,7 @@
 package net.seleucus.wsp.main;
 
 import java.io.Console;
+import java.sql.SQLException;
 
 public abstract class WSGestalt {
 
@@ -20,6 +21,6 @@ public abstract class WSGestalt {
 	
 	public abstract void exitConsole();
 
-	public abstract void runConsole();
+	public abstract void runConsole() throws SQLException;
 	
 }

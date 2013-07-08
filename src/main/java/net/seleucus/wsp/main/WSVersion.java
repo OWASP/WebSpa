@@ -23,7 +23,7 @@ public class WSVersion extends WSGestalt {
 	public static boolean isCurrentVersion(final String versionString) {
 		return WSVersion.getValue().equalsIgnoreCase(versionString);
 	}
-
+	
 	@Override
 	public void exitConsole() {
 		// Nothing to add here...

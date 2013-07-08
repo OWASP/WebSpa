@@ -1,7 +1,5 @@
-The following commands are available:
-
-	show banner - displays the banner
-	show config - displays:
-					a) Information about the configuration
-					b) The value for the (2) properties
-	show help	- displays this page
+banner
+config
+help
+start
+stop
