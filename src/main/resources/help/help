@@ -1,5 +1,7 @@
+adduser
 banner
 config
 help
 start
 stop
+users

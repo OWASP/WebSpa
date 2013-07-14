@@ -13,7 +13,7 @@ public abstract class WSGestalt {
 		
 	}
 	
-	public Console getMyConsole() {
+	public Console getWSConsole() {
 		
 		return myConsole;
 		

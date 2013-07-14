@@ -31,7 +31,7 @@ public class WSVersion extends WSGestalt {
 
 	@Override
 	public void runConsole() {
-		getMyConsole().writer().println(WSVersion.getValue());
+		getWSConsole().writer().println(WSVersion.getValue());
 	}
 	
 }

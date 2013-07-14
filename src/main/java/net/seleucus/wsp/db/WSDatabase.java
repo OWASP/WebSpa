@@ -3,8 +3,10 @@ package net.seleucus.wsp.db;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.CharBuffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -83,7 +85,7 @@ public class WSDatabase {
 	}
 
 	// use for SQL commands CREATE, DROP, INSERT and UPDATE
-	public synchronized void update(String expression) throws SQLException {
+	private synchronized void update(String expression) throws SQLException {
 
 		Statement st = null;
 
@@ -111,6 +113,104 @@ public class WSDatabase {
 			}
 		}
 
+	}
+
+	public synchronized void addUser(String fullName, CharSequence passSeq, String eMail,
+			String phone) {
+		
+		String sqlPassPhrase = "INSERT INTO PASSPHRASES (PASSPHRASE, CREATED) VALUES (?, CURRENT_TIMESTAMP);";
+		
+		String sqlUsers = "INSERT INTO PUBLIC.USERS (PPID, FULLNAME, EMAIL, PHONE, CREATED, MODIFIED) VALUES " +
+				"(SELECT PPID FROM PUBLIC.PASSPHRASES WHERE PASSPHRASE = ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);";
+		
+        try {
+			
+        	PreparedStatement psPassPhrase = wsConnection.prepareStatement(sqlPassPhrase);
+        	psPassPhrase.setString(1, passSeq.toString());
+        	psPassPhrase.executeUpdate();
+        	
+        	psPassPhrase.close();
+        	
+        	PreparedStatement psUsers = wsConnection.prepareStatement(sqlUsers);
+        	psUsers.setString(1, passSeq.toString());
+        	psUsers.setString(2, fullName);
+        	psUsers.setString(3, eMail);
+        	psUsers.setString(4, phone);
+        	psUsers.executeUpdate();
+        	
+        	psUsers.close();
+        	
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+			 
+		}
+
+	}
+
+	public synchronized String showUsers() {
+		
+		StringBuffer resultsBuffer = new StringBuffer();
+		resultsBuffer.append("ID\tActive\tFull Name\tModified\n");
+		
+		String sqlPassUsers = "SELECT PPID, ACTIVE, FULLNAME, MODIFIED FROM PASSPHRASES JOIN USERS ON PASSPHRASES.PPID = USERS.PPID;";
+		try {
+			Statement stmt = wsConnection.createStatement();
+			ResultSet rs = stmt.executeQuery(sqlPassUsers);
+
+			while (rs.next()) {
+				resultsBuffer.append(rs.getString(1));
+				resultsBuffer.append('\t');
+				resultsBuffer.append(rs.getString(2));
+				resultsBuffer.append('\t');
+				resultsBuffer.append(rs.getString(3));
+				resultsBuffer.append('\t');
+				resultsBuffer.append(rs.getString(4));
+				resultsBuffer.append('\n');
+			}
+
+			rs.close();
+			stmt.close();
+
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+
+		}
+		
+		return resultsBuffer.toString();
+	}
+	
+	public synchronized boolean isPasswordInUse(CharSequence passSeq) {
+		
+		boolean passExists = false;
+		
+		String sqlPassPhrases = "SELECT PASSPHRASE FROM PASSPHRASES;";
+		try {
+			Statement stmt = wsConnection.createStatement();
+			ResultSet rs = stmt.executeQuery(sqlPassPhrases);
+
+			while (rs.next()) {
+				char[] dbPassPhraseArray = rs.getString(1).toCharArray();
+				CharSequence dbPassSeq = CharBuffer.wrap(dbPassPhraseArray);
+				
+				if(dbPassSeq.equals(passSeq)) {
+					passExists = true;
+					break;
+				}
+			}
+
+			rs.close();
+			stmt.close();
+
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+			
+		}
+		
+		return passExists;
+		
 	}
 
 }

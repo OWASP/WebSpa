@@ -14,22 +14,22 @@ public class WSHelper extends WSGestalt {
 	@Override
 	public void runConsole() {
 		
-		getMyConsole().writer().println("");
-		getMyConsole().writer().println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
-		getMyConsole().writer().println("");
+		getWSConsole().writer().println("");
+		getWSConsole().writer().println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
+		getWSConsole().writer().println("");
 		
-		getMyConsole().writer().println("Usage: java -jar web-spa.jar [-option]");
-		getMyConsole().writer().println("");
-		getMyConsole().writer().println("\t-client         : Run the client, generate valid requests");
-		getMyConsole().writer().println("\t-help           : Print this usage message");
-		getMyConsole().writer().println("\t-server         : Run the server");
-		getMyConsole().writer().println("\t-version        : " + WSVersion.getValue());
-		getMyConsole().writer().println("");
-		getMyConsole().writer().println("Examples:");
-		getMyConsole().writer().println("");
-		getMyConsole().writer().println("java -jar web-spa.jar -client");
-		getMyConsole().writer().println("java -jar web-spa.jar -server");
-		getMyConsole().writer().println("");
+		getWSConsole().writer().println("Usage: java -jar web-spa.jar [-option]");
+		getWSConsole().writer().println("");
+		getWSConsole().writer().println("\t-client         : Run the client, generate valid requests");
+		getWSConsole().writer().println("\t-help           : Print this usage message");
+		getWSConsole().writer().println("\t-server         : Run the server");
+		getWSConsole().writer().println("\t-version        : " + WSVersion.getValue());
+		getWSConsole().writer().println("");
+		getWSConsole().writer().println("Examples:");
+		getWSConsole().writer().println("");
+		getWSConsole().writer().println("java -jar web-spa.jar -client");
+		getWSConsole().writer().println("java -jar web-spa.jar -server");
+		getWSConsole().writer().println("");
 	}
 
 }

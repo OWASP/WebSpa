@@ -37,7 +37,7 @@ public class WSServer extends WSGestalt {
 		
 		File accessLog = new File(myConfiguration.getAccesLogFileLocation());
 		if(accessLog.exists()) {
-			getMyConsole().writer().println("Access log file found at: " + accessLog.getPath());
+			getWSConsole().writer().println("Access log file found at: " + accessLog.getPath());
 			
 			if(myLogTailer == null) {
 				myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
@@ -47,8 +47,8 @@ public class WSServer extends WSGestalt {
 			
 		} else {
 			
-			getMyConsole().writer().println("Access log file NOT found at: " + accessLog.getPath());
-			getMyConsole().writer().println("Web-Spa Server Not Started");
+			getWSConsole().writer().println("Access log file NOT found at: " + accessLog.getPath());
+			getWSConsole().writer().println("Web-Spa Server Not Started");
 		}
 		
 	}
@@ -57,11 +57,11 @@ public class WSServer extends WSGestalt {
 		
 		if (myLogTailer == null) {
 			
-			getMyConsole().writer().println("Web-Spa Server Had Not Started");
+			getWSConsole().writer().println("Web-Spa Server Had Not Started");
 			
 		} else {
 			
-			getMyConsole().writer().println("Web-Spa Server Stopped");
+			getWSConsole().writer().println("Web-Spa Server Stopped");
 			myLogTailer.stop();
 			
 		}
@@ -70,21 +70,21 @@ public class WSServer extends WSGestalt {
 
 	@Override
 	public void exitConsole() {
-		getMyConsole().writer().println("\nGoodbye!\n");
+		getWSConsole().writer().println("\nGoodbye!\n");
 	}
 
 	@Override
 	public void runConsole() throws SQLException {
 		
-		getMyConsole().writer().println("");
-		getMyConsole().writer().println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
-		getMyConsole().writer().println("");
+		getWSConsole().writer().println("");
+		getWSConsole().writer().println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
+		getWSConsole().writer().println("");
 		
-		getMyConsole().writer().println("This is a holding prompt, type \"exit\" to quit");        
+		getWSConsole().writer().println("This is a holding prompt, type \"exit\" to quit");        
 				
 		do {
 
-			String command = getMyConsole().readLine("\nweb-spa-server>");
+			String command = getWSConsole().readLine("\nweb-spa-server>");
 			
 			if( "exit".equalsIgnoreCase(command) ||
 				"quit".equalsIgnoreCase(command) ||
