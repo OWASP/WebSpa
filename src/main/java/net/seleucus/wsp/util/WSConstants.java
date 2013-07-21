@@ -1,15 +1,15 @@
 package net.seleucus.wsp.util;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class WSConstants {
 
     public static final String LOGGING_REGEX_FOR_EACH_REQUEST = "logging-regex-for-each-request";
     public static final String ACCESS_LOG_FILE_LOCATION = "access-log-file-location";
-    public static final String PATH_TO_DB_FILE = "path-to-db-file";
-    public static final String PATH_TO_WEB_SPA_SCHEMA = "path-to-web-spa-schema";
-    public static final String DB_USER_NAME = "db-user-name";
-    public static final String DB_USER_PASSWORD = "db-user-password";
-    public static final String DB_PATH = "db-path";
-    public static final String DB_SHUTDOWN = "db-shutdown";
-    public static final int MAX_REQUEST_LENGTH = 65535;
+    
+    private static final String[] ARRAY_COMMANDS = new String[] { "action", "config", "help", "service", "user" };
+    public static final Set<String> SERVER_COMMANDS = new HashSet<String>(Arrays.asList(ARRAY_COMMANDS));
 
 }

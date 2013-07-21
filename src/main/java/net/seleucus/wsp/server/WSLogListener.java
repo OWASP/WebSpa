@@ -1,22 +1,11 @@
 package net.seleucus.wsp.server;
 
-import java.io.IOException;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.seleucus.wsp.config.InvalidPropertyFileException;
-import net.seleucus.wsp.config.WSConfigLoader;
 import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
-import net.seleucus.wsp.db.WSDatabaseManager;
-import net.seleucus.wsp.main.WebSpa;
-import net.seleucus.wsp.util.WSConstants;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.security.crypto.codec.Base64;
 
 public class WSLogListener implements TailerListener {
 

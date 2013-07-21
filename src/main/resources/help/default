@@ -1,0 +1,32 @@
+
+Usage: [COMMAND] [OPTION]
+
+COMMANDS/OPTIONS:
+
+  action
+    create    - not yet implemented...
+    modify    - not yet implemented...
+    delete    - not yet implemented...
+    show      - not yet implemented...
+  config
+    show      - show the configuration parameters loaded from file
+  help
+    [command] - show help for that command
+    shortcuts - show various command shortcuts
+  service
+    start     - start web-spa
+    status    - check if web-spa is running
+    stop      - stop web-spa
+  user
+    activate  - not yet implemented...
+    add       - add new users to the database
+    delete    - not yet implemented...
+    modify    - not yet implemented...
+    show      - show the current web-spa users
+    
+EXAMPLES:
+
+  web-spa-server> user add
+  web-spa-server> config show
+  web-spa-server> action modify
+  

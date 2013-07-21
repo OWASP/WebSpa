@@ -15,6 +15,9 @@ public class WSServer extends WSGestalt {
 
 	private Tailer myLogTailer;
 	private WSDatabase myDatabase;
+	
+	private boolean serviceStarted;
+	
 	private WSLogListener myLogListener;
 	private WSConfiguration myConfiguration;
 	private WSServerCommand myServerCommand;
@@ -25,6 +28,8 @@ public class WSServer extends WSGestalt {
 		
 		myLogTailer = null;
 
+		serviceStarted = false;
+		
 		myDatabase = new WSDatabase();
 		myConfiguration = new WSConfiguration();
 		
@@ -37,12 +42,18 @@ public class WSServer extends WSGestalt {
 		
 		File accessLog = new File(myConfiguration.getAccesLogFileLocation());
 		if(accessLog.exists()) {
+			
 			getWSConsole().writer().println("Access log file found at: " + accessLog.getPath());
 			
+			serviceStarted = true; 
+			
 			if(myLogTailer == null) {
+				
 				myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
+				
 			} else {
-				// logTailer.run();
+				
+				// myLogTailer.run();
 			}
 			
 		} else {
@@ -51,6 +62,19 @@ public class WSServer extends WSGestalt {
 			getWSConsole().writer().println("Web-Spa Server Not Started");
 		}
 		
+	}
+	
+	public String serverStatus() {
+		
+		if(serviceStarted) {
+			
+			return "\nWeb-Spa is Running";
+			
+		} else {
+			
+			return "\nWeb-Spa is Stopped";
+			
+		}
 	}
 	
 	public void serverStop() {
@@ -64,6 +88,7 @@ public class WSServer extends WSGestalt {
 			getWSConsole().writer().println("Web-Spa Server Stopped");
 			myLogTailer.stop();
 			
+			serviceStarted = false;
 		}
 
 	}
@@ -117,7 +142,9 @@ public class WSServer extends WSGestalt {
 	}
 
 	public void processCommand(final String command) {
-		myServerCommand.executeCommand(command);
+		
+		myServerCommand.executeCommand(command.trim());
+		
 	}
 
 }

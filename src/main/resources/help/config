@@ -1,3 +1,4 @@
+
 When running web-spa in server mode, by issuing the command:
 
 	'java -jar web-spa-x.x.jar -server'
@@ -29,5 +30,3 @@ This has a default value:
 
 Which can also be modified before starting web-spa in server 
 mode.
-
-The current values set are:

@@ -1,0 +1,11 @@
+
+The service command is responsible for starting and stopping web-spa.
+
+It has three (3) options:
+
+web-spa-server> service start
+  Use this option to start web-spa.
+web-spa-server> service status
+  Use this option to check the status of web-spa.
+web-spa-server> service stop
+  Use this option to stop web-spa.
