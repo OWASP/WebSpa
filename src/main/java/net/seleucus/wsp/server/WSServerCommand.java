@@ -97,11 +97,12 @@ public class WSServerCommand {
 				
 				if(params[1].equalsIgnoreCase("activate")) {
 					
+					userActivate();
 				}
 				else
 				if(params[1].equalsIgnoreCase("add")) {
 					
-					useradd();
+					userAdd();
 					
 				}
 				else
@@ -115,7 +116,7 @@ public class WSServerCommand {
 				else
 				if(params[1].equalsIgnoreCase("show")) {
 					
-					usershow();
+					userShow();
 					
 				} else {
 					
@@ -135,7 +136,7 @@ public class WSServerCommand {
 		}
 	}
 
-	private void usershow() {
+	private void userShow() {
 		myServer.getWSConsole().writer().println("\nWeb-Spa Users:");
 		myServer.getWSConsole().writer().println("__________________________________________________");
 		String users = myServer.getWSDatabase().showUsers();
@@ -143,7 +144,7 @@ public class WSServerCommand {
 		myServer.getWSConsole().writer().println(users);
 	}
 
-	private void useradd() {
+	private void userAdd() {
 		String fullName = myServer.getWSConsole().readLine("Enter the New User's Full Name: ");
 		boolean passDoesNotExist = true;
 		CharSequence passSeq;
@@ -165,6 +166,60 @@ public class WSServerCommand {
 		String phone = myServer.getWSConsole().readLine("\tPlease enter the New User's Phone Number: ");
 				
 		myServer.getWSDatabase().addUser(fullName, passSeq, eMail, phone);
+	}
+	
+	private void userActivate() {
+		
+		userShow();
+		int ppID = -1;
+		boolean userIDFound = false;
+		
+		String idString = myServer.getWSConsole().readLine("Select a User ID: ");
+		try {
+			
+			ppID = Integer.parseInt(idString);
+			
+		} catch(NumberFormatException ex) {
+			
+			myServer.getWSConsole().writer().println("Invalid Number");
+			
+		}
+		
+		userIDFound = myServer.getWSDatabase().isPPIDInUse(ppID);
+		
+		if(userIDFound == false) {
+			
+			myServer.getWSConsole().writer().println("User ID Not Found");
+
+		} else {
+			
+			// Get the status of the user either active or de-active
+			boolean status = myServer.getWSDatabase().getActivationStatus(ppID);
+			
+			// Present that status to the console
+			if(status == true) {
+				
+				myServer.getWSConsole().writer().println("User with ID: " + ppID + " is active"); 
+				
+			} else {
+				
+				myServer.getWSConsole().writer().println("User with ID: " + ppID + " is in-active");
+				
+			}
+			
+			// Toggle user
+			final String choice = myServer.getWSConsole().readLine("Toggle user activation? ");
+			
+			if("yes".equalsIgnoreCase(choice) ||
+				"y".equalsIgnoreCase(choice) ||
+				choice.isEmpty() ) {
+				
+				myServer.getWSDatabase().toggleUserActivation(ppID);
+				
+			}
+			
+		}
+		
 	}
 
 	private static void showHelp(final String topic) {

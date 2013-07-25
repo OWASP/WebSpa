@@ -172,4 +172,95 @@ public class WSDatabase {
 		
 	}
 
+	public boolean isPPIDInUse(int ppID) {
+
+		boolean idExists = false;
+		
+		if(ppID > 0) {
+
+			String sqlidLookup = "SELECT PPID FROM PASSPHRASES;";
+			
+			try {
+				Statement stmt = wsConnection.createStatement();
+				ResultSet rs = stmt.executeQuery(sqlidLookup);
+				
+				while (rs.next()) {
+					int dbPpID = rs.getInt(1);
+					
+					if(dbPpID == ppID) {
+						idExists = true;
+						break;
+					}
+				}
+				
+				rs.close();
+				stmt.close();
+				
+			} catch (SQLException ex) {
+				
+				throw new RuntimeException(ex);
+
+			}
+
+		} // ppID > 0 
+		
+		return idExists;
+	}
+
+	public boolean getActivationStatus(int ppID) {
+		
+		boolean activationStatus = false;
+		
+		if(ppID > 0) {
+			
+			String sqlActivationLookup = "SELECT ACTIVE FROM PASSPHRASES WHERE PPID = ? ;";
+			try {
+				PreparedStatement psPassPhrase = wsConnection.prepareStatement(sqlActivationLookup);
+				psPassPhrase.setInt(1, ppID);
+				ResultSet rs = psPassPhrase.executeQuery();
+				
+				if (rs.next()) {
+					activationStatus = rs.getBoolean(1);
+				}
+				
+				rs.close();
+				psPassPhrase.close();
+				
+			} catch (SQLException ex) {
+
+				throw new RuntimeException(ex);
+
+			}
+		}
+		
+		return activationStatus;
+	}
+
+	public boolean toggleUserActivation(int ppID) {
+
+		boolean success = false;
+		
+		if(ppID > 0) {
+		
+			boolean currentActiveStatus = this.getActivationStatus(ppID);
+			
+			String sqlUpdate = "UPDATE PASSPHRASES SET ACTIVE = ? WHERE PPID = ? ;";
+			try {
+				PreparedStatement ps = wsConnection.prepareStatement(sqlUpdate);
+				ps.setBoolean(1, currentActiveStatus);
+				ps.setInt(2, ppID);
+				
+				ps.executeUpdate();
+				
+			} catch (SQLException ex) {
+				
+				throw new RuntimeException(ex);
+				
+			}
+		}
+		
+		return success;
+		
+	}
+
 }
