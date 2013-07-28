@@ -43,7 +43,7 @@ public class WSClient extends WSGestalt {
 		System.out.println("\nYour Web-Spa Knock is:\n\n" + knock + "\n");
 		
 		// Clipboard nonsense 
-		final String choice = getWSConsole().readLine("Copy the above URL to the clipboard? ");
+		final String choice = getWSConsole().readLine("Copy the above URL to the clipboard [Y/n]? ");
 				
 		if("yes".equalsIgnoreCase(choice) ||
 			"y".equalsIgnoreCase(choice) ||

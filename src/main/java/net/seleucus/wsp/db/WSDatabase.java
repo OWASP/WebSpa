@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WSDatabase {
 
@@ -110,23 +111,31 @@ public class WSDatabase {
 	public synchronized String showUsers() {
 		
 		StringBuffer resultsBuffer = new StringBuffer();
-		resultsBuffer.append("ID\tActive\tFull Name\tModified\n");
-		
+		resultsBuffer.append('\n');
+		resultsBuffer.append("Web-Spa Users:");
+		resultsBuffer.append('\n');
+		resultsBuffer.append("___________________________________________________________");
+		resultsBuffer.append('\n');
+		resultsBuffer.append(StringUtils.rightPad("ID", 4));
+		resultsBuffer.append(StringUtils.rightPad("Active", 7));
+		resultsBuffer.append(StringUtils.rightPad("Full Name", 25));
+		resultsBuffer.append(StringUtils.rightPad("Last Modified", 25));
+		resultsBuffer.append('\n');
+		resultsBuffer.append("-----------------------------------------------------------");
+		resultsBuffer.append('\n');
 		String sqlPassUsers = "SELECT PPID, ACTIVE, FULLNAME, MODIFIED FROM PASSPHRASES JOIN USERS ON PASSPHRASES.PPID = USERS.PPID;";
 		try {
 			Statement stmt = wsConnection.createStatement();
 			ResultSet rs = stmt.executeQuery(sqlPassUsers);
 
 			while (rs.next()) {
-				resultsBuffer.append(rs.getString(1));
-				resultsBuffer.append('\t');
-				resultsBuffer.append(rs.getString(2));
-				resultsBuffer.append('\t');
-				resultsBuffer.append(rs.getString(3));
-				resultsBuffer.append('\t');
-				resultsBuffer.append(rs.getString(4));
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 7));
+				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 24), 25));
+				resultsBuffer.append(rs.getString(4).substring(0, 23));
 				resultsBuffer.append('\n');
 			}
+			resultsBuffer.append("___________________________________________________________");
 
 			rs.close();
 			stmt.close();
@@ -140,7 +149,7 @@ public class WSDatabase {
 		return resultsBuffer.toString();
 	}
 	
-	public synchronized boolean isPasswordInUse(CharSequence passSeq) {
+	public synchronized boolean isPassPhraseInUse(CharSequence passSeq) {
 		
 		boolean passExists = false;
 		
@@ -235,6 +244,54 @@ public class WSDatabase {
 		
 		return activationStatus;
 	}
+	
+	public synchronized String getActivationStatusString(final int ppID) {
+		
+		StringBuilder outputStatusBuffer = new StringBuilder(Byte.MAX_VALUE);
+		outputStatusBuffer.append("User with ID: ");
+		outputStatusBuffer.append(ppID);
+		outputStatusBuffer.append(' ');
+		
+		String sqlActivationLookup = "SELECT ACTIVE FROM PASSPHRASES WHERE PPID = ? ;";
+
+		PreparedStatement psPassPhrase;
+		try {
+			psPassPhrase = wsConnection.prepareStatement(sqlActivationLookup);
+			psPassPhrase.setInt(1, ppID);
+			ResultSet rs = psPassPhrase.executeQuery();
+			
+			if (rs.next()) {
+				
+				boolean activationStatus = rs.getBoolean(1);
+				
+				if(activationStatus == true) {
+					
+					outputStatusBuffer.append("is active");
+					
+				} else {
+					
+					outputStatusBuffer.append("is in-active");
+					
+				}
+				
+			} else {
+				
+				outputStatusBuffer.append("does not exist");
+				
+			}
+			
+			rs.close();
+			psPassPhrase.close();
+			
+		} catch (SQLException e) {
+			
+			throw new RuntimeException(e);
+			
+		}
+
+		return outputStatusBuffer.toString();
+		
+	}
 
 	public boolean toggleUserActivation(int ppID) {
 
@@ -243,11 +300,12 @@ public class WSDatabase {
 		if(ppID > 0) {
 		
 			boolean currentActiveStatus = this.getActivationStatus(ppID);
+			boolean oppositeActiveStatus = !currentActiveStatus;
 			
 			String sqlUpdate = "UPDATE PASSPHRASES SET ACTIVE = ? WHERE PPID = ? ;";
 			try {
 				PreparedStatement ps = wsConnection.prepareStatement(sqlUpdate);
-				ps.setBoolean(1, currentActiveStatus);
+				ps.setBoolean(1, oppositeActiveStatus);
 				ps.setInt(2, ppID);
 				
 				ps.executeUpdate();
@@ -262,5 +320,6 @@ public class WSDatabase {
 		return success;
 		
 	}
+
 
 }
