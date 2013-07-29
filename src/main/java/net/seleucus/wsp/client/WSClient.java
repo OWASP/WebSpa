@@ -16,34 +16,27 @@ public class WSClient extends WSGestalt {
 	
 	@Override
 	public void exitConsole() {
-		getWSConsole().writer().println("\nGoodbye!\n");
+		println("\nGoodbye!\n");
 	}
 	
 	@Override
 	public void runConsole() {
 		
-		getWSConsole().writer().println("");
-		getWSConsole().writer().println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
-		getWSConsole().writer().println("");
+		println("");
+		println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
+		println("");
 
-		String host = getWSConsole().readLine("Please enter the target host [e.g. http://localhost/]: ");
-		CharSequence password = java.nio.CharBuffer.wrap(getWSConsole().readPassword("Please enter your pass-phrase for that host: "));
-		int action = -1;
-		do {
-
-			String actionString = getWSConsole().readLine("Please enter the action you want to execute on the host [1-16]: ");
-			action = Integer.parseInt(actionString);
-			
-		} while ( (action < 1) || (action > 16) );
-		
+		String host = readLineRequired("Please enter the target host [e.g. http://localhost/]: ");
+		CharSequence password = readPasswordRequired("Please enter your pass-phrase for that host: ");
+		int action = readLineRequiredInt("Please enter the action you want to execute on the host", 0, 9);
 		
 		WSRequestBuilder myClient = new WSRequestBuilder(host, password, action);
 		String knock = myClient.getKnock();
 		
-		System.out.println("\nYour Web-Spa Knock is:\n\n" + knock + "\n");
+		println("\nYour Web-Spa Knock is:\n\n" + knock + "\n");
 		
 		// Clipboard nonsense 
-		final String choice = getWSConsole().readLine("Copy the above URL to the clipboard [Y/n]? ");
+		final String choice = readLineOptional("Copy the above URL to the clipboard [Y/n]? ");
 				
 		if("yes".equalsIgnoreCase(choice) ||
 			"y".equalsIgnoreCase(choice) ||

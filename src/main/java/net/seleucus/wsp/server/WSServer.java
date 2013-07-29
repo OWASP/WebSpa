@@ -43,7 +43,7 @@ public class WSServer extends WSGestalt {
 		File accessLog = new File(myConfiguration.getAccesLogFileLocation());
 		if(accessLog.exists()) {
 			
-			getWSConsole().writer().println("Access log file found at: " + accessLog.getPath());
+			println("Access log file found at: " + accessLog.getPath());
 			
 			serviceStarted = true; 
 			
@@ -58,8 +58,8 @@ public class WSServer extends WSGestalt {
 			
 		} else {
 			
-			getWSConsole().writer().println("Access log file NOT found at: " + accessLog.getPath());
-			getWSConsole().writer().println("Web-Spa Server Not Started");
+			println("Access log file NOT found at: " + accessLog.getPath());
+			println("Web-Spa Server Not Started");
 		}
 		
 	}
@@ -81,11 +81,11 @@ public class WSServer extends WSGestalt {
 		
 		if (myLogTailer == null) {
 			
-			getWSConsole().writer().println("Web-Spa Server Had Not Started");
+			println("Web-Spa Server Had Not Started");
 			
 		} else {
 			
-			getWSConsole().writer().println("Web-Spa Server Stopped");
+			println("Web-Spa Server Stopped");
 			myLogTailer.stop();
 			
 			serviceStarted = false;
@@ -95,21 +95,21 @@ public class WSServer extends WSGestalt {
 
 	@Override
 	public void exitConsole() {
-		getWSConsole().writer().println("\nGoodbye!\n");
+		println("\nGoodbye!\n");
 	}
 
 	@Override
 	public void runConsole() throws SQLException {
 		
-		getWSConsole().writer().println("");
-		getWSConsole().writer().println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
-		getWSConsole().writer().println("");
+		println("");
+		println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
+		println("");
 		
-		getWSConsole().writer().println("This is a holding prompt, type \"exit\" to quit");        
-				
+		println("This is a holding prompt, type \"exit\" to quit");        
+		// TODO Add a boolean which gets set to true to exit from this loop		
 		do {
 
-			String command = getWSConsole().readLine("\nweb-spa-server>");
+			String command = readLineMainPrompt();
 			
 			if( "exit".equalsIgnoreCase(command) ||
 				"quit".equalsIgnoreCase(command) ||
@@ -128,7 +128,7 @@ public class WSServer extends WSGestalt {
 		} while (true);
 		
 	}
-	
+
 	public WSConfiguration getWSConfiguration() {
 		return myConfiguration;
 	}
