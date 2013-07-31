@@ -112,7 +112,7 @@ public class WSDatabase {
 		
 		StringBuffer resultsBuffer = new StringBuffer();
 		resultsBuffer.append('\n');
-		resultsBuffer.append("Web-Spa Users:");
+		resultsBuffer.append("Users:");
 		resultsBuffer.append('\n');
 		resultsBuffer.append("___________________________________________________________");
 		resultsBuffer.append('\n');
@@ -123,7 +123,7 @@ public class WSDatabase {
 		resultsBuffer.append('\n');
 		resultsBuffer.append("-----------------------------------------------------------");
 		resultsBuffer.append('\n');
-		String sqlPassUsers = "SELECT PPID, ACTIVE, FULLNAME, MODIFIED FROM PASSPHRASES JOIN USERS ON PASSPHRASES.PPID = USERS.PPID;";
+		final String sqlPassUsers = "SELECT PPID, ACTIVE, FULLNAME, MODIFIED FROM PASSPHRASES JOIN USERS ON PASSPHRASES.PPID = USERS.PPID;";
 		try {
 			Statement stmt = wsConnection.createStatement();
 			ResultSet rs = stmt.executeQuery(sqlPassUsers);
@@ -181,7 +181,7 @@ public class WSDatabase {
 		
 	}
 
-	public boolean isPPIDInUse(int ppID) {
+	public synchronized boolean isPPIDInUse(int ppID) {
 
 		boolean idExists = false;
 		
@@ -216,7 +216,7 @@ public class WSDatabase {
 		return idExists;
 	}
 
-	public boolean getActivationStatus(int ppID) {
+	public synchronized boolean getActivationStatus(int ppID) {
 		
 		boolean activationStatus = false;
 		
@@ -293,7 +293,7 @@ public class WSDatabase {
 		
 	}
 
-	public boolean toggleUserActivation(int ppID) {
+	public synchronized boolean toggleUserActivation(int ppID) {
 
 		boolean success = false;
 		
@@ -319,6 +319,145 @@ public class WSDatabase {
 		
 		return success;
 		
+	}
+
+	public synchronized String showActions(final int ppID) {
+		
+		StringBuffer resultsBuffer = new StringBuffer();
+		resultsBuffer.append('\n');
+		resultsBuffer.append("Actions for user with ID: ");
+		resultsBuffer.append(ppID);
+		resultsBuffer.append('\n');
+		resultsBuffer.append("___________________________________________________________");
+		resultsBuffer.append('\n');
+		resultsBuffer.append(StringUtils.rightPad("ID", 4));
+		resultsBuffer.append(StringUtils.rightPad("#", 2));
+		resultsBuffer.append(StringUtils.rightPad("O/S Command", 30));
+		resultsBuffer.append(StringUtils.rightPad("Last Executed", 25));
+		resultsBuffer.append('\n');
+		resultsBuffer.append("-----------------------------------------------------------");
+		resultsBuffer.append('\n');
+		final String sqlSelect = "SELECT AAID, ACTION_NUMBER, COMMAND, LAST_EXECUTED FROM ACTIONS_AVAILABLE WHERE PPID = ? ;";
+		try {
+			PreparedStatement ps = wsConnection.prepareStatement(sqlSelect);
+			ps.setInt(1, ppID);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 7));
+				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 24), 25));
+				final String lastExecuted = rs.getString(4);
+				if(lastExecuted != null) {
+					resultsBuffer.append(lastExecuted.substring(0, 23));
+				} else {
+					resultsBuffer.append("has never been executed");
+				}
+				resultsBuffer.append('\n');
+			}
+			resultsBuffer.append("___________________________________________________________");
+
+			rs.close();
+			ps.close();
+
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+
+		}
+		
+
+		return resultsBuffer.toString();
+	}
+
+	public synchronized String showActionDetails(final int aaID) {
+		
+		StringBuffer resultsBuffer = new StringBuffer();
+		
+		resultsBuffer.append('\n');
+		resultsBuffer.append("Action with ID: ");
+		resultsBuffer.append(aaID);
+		resultsBuffer.append('\n');
+		
+		final String sqlSelect = "SELECT PPID, COMMAND, ACTION_NUMBER, LAST_EXECUTED, LAST_RUN_SUCCESS, IP_ADDR FROM ACTIONS_AVAILABLE WHERE AAID = ? ;";
+		
+		try {
+			PreparedStatement ps = wsConnection.prepareStatement(sqlSelect);
+			ps.setInt(1, aaID);
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				
+				resultsBuffer.append("Belongs to User: ");
+				resultsBuffer.append(rs.getString(1));
+				resultsBuffer.append('\n');
+				
+				resultsBuffer.append("Represents the O/S Command: ");
+				resultsBuffer.append(rs.getString(2));
+				resultsBuffer.append('\n');
+				
+				resultsBuffer.append("Has the Unique Action Number: ");
+				resultsBuffer.append(rs.getString(3));
+				resultsBuffer.append('\n');
+				
+				resultsBuffer.append('\n');
+
+				final String lastExecuted = rs.getString(4);
+				if(lastExecuted == null) {
+					
+					resultsBuffer.append("Has Never Been Executed");
+					
+				} else {
+					
+					resultsBuffer.append("Was last Executed On: ");
+					resultsBuffer.append(lastExecuted.substring(0, 23));
+					
+				}
+				resultsBuffer.append('\n');
+				
+				final String lastSuccess = rs.getString(5);
+				resultsBuffer.append("The last Execution was Successful: ");
+				if(lastSuccess == null) {
+
+					resultsBuffer.append("n/a");
+
+				} else {
+					
+					resultsBuffer.append(lastSuccess);
+					
+				}
+				resultsBuffer.append('\n');
+				
+				final String remoteLocation = rs.getString(6);
+				resultsBuffer.append("It was Received from the Remote Location: ");
+				if(remoteLocation == null) {
+					
+					resultsBuffer.append("n/a");
+					
+				} else {
+					
+					resultsBuffer.append(remoteLocation);
+				}
+				resultsBuffer.append('\n');
+
+			} else {
+
+				resultsBuffer.append("Cannot Be Found!");
+
+			}
+			
+			resultsBuffer.append('\n');
+			
+			rs.close();
+			ps.close();
+
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+
+		}
+
+		return resultsBuffer.toString();
 	}
 
 

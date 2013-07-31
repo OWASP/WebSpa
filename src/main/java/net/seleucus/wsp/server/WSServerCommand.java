@@ -170,8 +170,8 @@ public class WSServerCommand {
 	private void actionShow() {
 		
 		userShow();
-		int ppID = myServer.readLineOptionalInt("Select a User ID: ");
-		boolean userIDFound = myServer.getWSDatabase().isPPIDInUse(ppID);
+		final int ppID = myServer.readLineOptionalInt("Select a User ID: ");
+		final boolean userIDFound = myServer.getWSDatabase().isPPIDInUse(ppID);
 		
 		if(userIDFound == false) {
 			
@@ -179,8 +179,15 @@ public class WSServerCommand {
 
 		} else {
 			
+			final String actions = myServer.getWSDatabase().showActions(ppID);
+			myServer.println(actions);
+			
+			final int aaID = myServer.readLineOptionalInt("Select an Action ID: ");
+			final String actionDetails = myServer.getWSDatabase().showActionDetails(aaID);
+			myServer.println(actionDetails);
 			
 		}
+		
 	}
 
 	private void userShow() {
