@@ -4,9 +4,7 @@ Usage: [COMMAND] [OPTION]
 COMMANDS/OPTIONS:
 
   action
-    create    - not yet implemented...
-    delete    - not yet implemented...
-    modify    - not yet implemented...
+    add       - assign O/S commands to users
     show      - show the actions available for a web-spa user
   config
     show      - show the configuration parameters loaded from file
@@ -20,13 +18,11 @@ COMMANDS/OPTIONS:
   user
     activate  - activate / de-activate user accounts
     add       - add new users to the database
-    delete    - not yet implemented...
-    modify    - not yet implemented...
     show      - show the current web-spa users
     
 EXAMPLES:
 
   web-spa-server> user add
   web-spa-server> config show
-  web-spa-server> action modify
+  web-spa-server> action create
   

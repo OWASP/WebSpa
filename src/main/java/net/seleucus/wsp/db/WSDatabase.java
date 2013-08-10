@@ -46,33 +46,67 @@ public class WSDatabase {
 
 	}
 
-	public synchronized void shutdown() throws SQLException {
+	public synchronized void shutdown() {
 
-		Statement st = wsConnection.createStatement();
-		// db writes out to files and performs clean shuts down
-		// otherwise there will be an unclean shutdown
-		// when program ends
-		st.execute("SHUTDOWN");
-		wsConnection.close();
+		Statement st;
+		
+		try {
+
+			st = wsConnection.createStatement();
+			// Normal shutdown operations...
+			st.execute("SHUTDOWN");
+			wsConnection.close();
+			
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+
+		}
+
 	}
 
-	protected synchronized void initialise() {
-
-	}
-
-	protected synchronized void deleteAllDatabaseFiles() throws SQLException {
+	protected synchronized void deleteAllDatabaseFiles() {
 
 		this.shutdown();
 
-		String[] extensions = { ".properties", ".script", ".log", ".data",
-				".backup" };
+		final String[] extensions = { ".properties", ".script", ".log", 
+									  ".data", ".backup" };
+		
 		for (String extension : extensions) {
+			
 			File dbFile = new File(DB_PATH + extension);
+			
 			if (dbFile.exists()) {
+			
 				dbFile.delete();
+				
 			}
-		}
+			
+		}	// for loop
 
+	}
+
+	public synchronized void addAction(int ppID, String osCommand, int action) {
+		
+		final String sqlInsert = "INSERT INTO PUBLIC.ACTIONS_AVAILABLE (PPID, ACTION_NUMBER, COMMAND) VALUES (?, ?, ?); ";
+		
+		try {
+			
+			PreparedStatement preStatement = wsConnection.prepareStatement(sqlInsert);
+			preStatement.setInt(1, ppID);
+			preStatement.setInt(2, action);
+			preStatement.setString(3, osCommand);
+			
+			preStatement.executeUpdate();
+			
+			preStatement.close();
+			
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+			
+		}
+		
 	}
 
 	public synchronized void addUser(String fullName, CharSequence passSeq, String eMail,
@@ -108,88 +142,53 @@ public class WSDatabase {
 
 	}
 
-	public synchronized String showUsers() {
+	public synchronized boolean isActionNumberInUse(int ppID, int action) {
 		
-		StringBuffer resultsBuffer = new StringBuffer();
-		resultsBuffer.append('\n');
-		resultsBuffer.append("Users:");
-		resultsBuffer.append('\n');
-		resultsBuffer.append("___________________________________________________________");
-		resultsBuffer.append('\n');
-		resultsBuffer.append(StringUtils.rightPad("ID", 4));
-		resultsBuffer.append(StringUtils.rightPad("Active", 7));
-		resultsBuffer.append(StringUtils.rightPad("Full Name", 25));
-		resultsBuffer.append(StringUtils.rightPad("Last Modified", 25));
-		resultsBuffer.append('\n');
-		resultsBuffer.append("-----------------------------------------------------------");
-		resultsBuffer.append('\n');
-		final String sqlPassUsers = "SELECT PPID, ACTIVE, FULLNAME, MODIFIED FROM PASSPHRASES JOIN USERS ON PASSPHRASES.PPID = USERS.PPID;";
-		try {
-			Statement stmt = wsConnection.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlPassUsers);
-
-			while (rs.next()) {
-				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
-				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 7));
-				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 24), 25));
-				resultsBuffer.append(rs.getString(4).substring(0, 23));
-				resultsBuffer.append('\n');
-			}
-			resultsBuffer.append("___________________________________________________________");
-
-			rs.close();
-			stmt.close();
-
-		} catch (SQLException ex) {
+		boolean actionNumberInUse = false;
+		
+		if(this.isPPIDInUse(ppID)) {
+		
+			final String sqlSelect = "SELECT ACTION_NUMBER FROM ACTIONS_AVAILABLE WHERE PPID = ? ;";
 			
-			 throw new RuntimeException(ex);
-
-		}
-		
-		return resultsBuffer.toString();
-	}
-	
-	public synchronized boolean isPassPhraseInUse(CharSequence passSeq) {
-		
-		boolean passExists = false;
-		
-		String sqlPassPhrases = "SELECT PASSPHRASE FROM PASSPHRASES;";
-		try {
-			Statement stmt = wsConnection.createStatement();
-			ResultSet rs = stmt.executeQuery(sqlPassPhrases);
-
-			while (rs.next()) {
-				char[] dbPassPhraseArray = rs.getString(1).toCharArray();
-				CharSequence dbPassSeq = CharBuffer.wrap(dbPassPhraseArray);
+			try {
 				
-				if(dbPassSeq.equals(passSeq)) {
-					passExists = true;
-					break;
+				PreparedStatement stmt = wsConnection.prepareStatement(sqlSelect);
+				stmt.setInt(1, ppID);
+				ResultSet rs = stmt.executeQuery();
+				
+				while(rs.next()) {
+					int dbAction = rs.getInt(1);
+					
+					if(dbAction == action) {
+						actionNumberInUse = true;
+						break;
+					}
 				}
+				
+				rs.close();
+				stmt.close();
+				
+			} catch(SQLException ex) {
+				
+				throw new RuntimeException(ex);
+	
 			}
-
-			rs.close();
-			stmt.close();
-
-		} catch (SQLException ex) {
-			
-			throw new RuntimeException(ex);
-			
 		}
 		
-		return passExists;
+		return actionNumberInUse;
 		
 	}
 
 	public synchronized boolean isPPIDInUse(int ppID) {
-
+	
 		boolean idExists = false;
 		
 		if(ppID > 0) {
-
+	
 			String sqlidLookup = "SELECT PPID FROM PASSPHRASES;";
 			
 			try {
+				
 				Statement stmt = wsConnection.createStatement();
 				ResultSet rs = stmt.executeQuery(sqlidLookup);
 				
@@ -208,12 +207,48 @@ public class WSDatabase {
 			} catch (SQLException ex) {
 				
 				throw new RuntimeException(ex);
-
+	
 			}
-
+	
 		} // ppID > 0 
 		
 		return idExists;
+	}
+
+	public synchronized boolean isPassPhraseInUse(CharSequence passSeq) {
+		
+		boolean passExists = false;
+		
+		String sqlPassPhrases = "SELECT PASSPHRASE FROM PASSPHRASES;";
+		try {
+			Statement stmt = wsConnection.createStatement();
+			ResultSet rs = stmt.executeQuery(sqlPassPhrases);
+
+			while (rs.next()) {
+				
+				char[] dbPassPhraseArray = rs.getString(1).toCharArray();
+				CharSequence dbPassSeq = CharBuffer.wrap(dbPassPhraseArray);
+				
+				if(dbPassSeq.equals(passSeq)) {
+					
+					passExists = true;
+					break;
+					
+				}
+				
+			}	// while loop...
+
+			rs.close();
+			stmt.close();
+
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+			
+		}
+		
+		return passExists;
+		
 	}
 
 	public synchronized boolean getActivationStatus(int ppID) {
@@ -345,8 +380,8 @@ public class WSDatabase {
 
 			while (rs.next()) {
 				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
-				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 7));
-				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 24), 25));
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 2));
+				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 29), 30));
 				final String lastExecuted = rs.getString(4);
 				if(lastExecuted != null) {
 					resultsBuffer.append(lastExecuted.substring(0, 23));
@@ -356,6 +391,7 @@ public class WSDatabase {
 				resultsBuffer.append('\n');
 			}
 			resultsBuffer.append("___________________________________________________________");
+			resultsBuffer.append('\n');
 
 			rs.close();
 			ps.close();
@@ -457,6 +493,51 @@ public class WSDatabase {
 
 		}
 
+		return resultsBuffer.toString();
+	}
+
+	public synchronized String showUsers() {
+		
+		StringBuffer resultsBuffer = new StringBuffer();
+		resultsBuffer.append('\n');
+		resultsBuffer.append("Users:");
+		resultsBuffer.append('\n');
+		resultsBuffer.append("___________________________________________________________");
+		resultsBuffer.append('\n');
+		resultsBuffer.append(StringUtils.rightPad("ID", 4));
+		resultsBuffer.append(StringUtils.rightPad("Active", 7));
+		resultsBuffer.append(StringUtils.rightPad("Full Name", 25));
+		resultsBuffer.append(StringUtils.rightPad("Last Modified", 25));
+		resultsBuffer.append('\n');
+		resultsBuffer.append("-----------------------------------------------------------");
+		resultsBuffer.append('\n');
+		
+		final String sqlPassUsers = "SELECT PPID, ACTIVE, FULLNAME, MODIFIED FROM PASSPHRASES JOIN USERS ON PASSPHRASES.PPID = USERS.PPID;";
+		
+		try {
+		
+			Statement stmt = wsConnection.createStatement();
+			ResultSet rs = stmt.executeQuery(sqlPassUsers);
+	
+			while (rs.next()) {
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 7));
+				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 24), 25));
+				resultsBuffer.append(rs.getString(4).substring(0, 23));
+				resultsBuffer.append('\n');
+			}
+			resultsBuffer.append("___________________________________________________________");
+			resultsBuffer.append('\n');
+			
+			rs.close();
+			stmt.close();
+	
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+	
+		}
+		
 		return resultsBuffer.toString();
 	}
 

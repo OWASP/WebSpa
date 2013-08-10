@@ -19,7 +19,7 @@ public abstract class WSGestalt {
 		
 		StringBuilder displayBuilder = new StringBuilder();
 		
-		displayBuilder.append(" [Optional] ");
+		displayBuilder.append("-[Optional] ");
 		displayBuilder.append(displayString);
 		
 		return myConsole.readLine(displayBuilder.toString());
@@ -49,7 +49,7 @@ public abstract class WSGestalt {
 		
 		StringBuilder displayBuilder = new StringBuilder();
 		
-		displayBuilder.append(" [Required] ");
+		displayBuilder.append("=[Required] ");
 		displayBuilder.append(displayString);
 		
 		String outputString;
@@ -110,7 +110,7 @@ public abstract class WSGestalt {
 		
 		StringBuilder displayBuilder = new StringBuilder();
 		
-		displayBuilder.append(" [Required] ");
+		displayBuilder.append("=[Required] ");
 		displayBuilder.append(displayString);
 		
 		char[] passCharArrayOne, passCharArrayTwo;
@@ -119,7 +119,7 @@ public abstract class WSGestalt {
 		do {
 		
 			passCharArrayOne = myConsole.readPassword(displayBuilder.toString());
-			passCharArrayTwo = myConsole.readPassword(" [Required] Re-enter the above value: ");
+			passCharArrayTwo = myConsole.readPassword("=[Required] Re-enter the above value: ");
 			
 			passPhrasesMatch = Arrays.equals(passCharArrayOne, passCharArrayTwo);
 			

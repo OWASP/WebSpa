@@ -26,7 +26,9 @@ public class WSServerCommand {
 			
 			if(params.length > 1) {
 				
-				if(params[1].equalsIgnoreCase("create")) {
+				if(params[1].equalsIgnoreCase("add")) {
+					
+					actionAdd();
 					
 				}
 				else
@@ -165,6 +167,41 @@ public class WSServerCommand {
 			System.out.println("\nUnknown command - type \"help\" for more options");
 			
 		}
+	}
+	
+	private void actionAdd() {
+		
+		userShow();
+		final int ppID = myServer.readLineOptionalInt("Select a User ID: ");
+		final boolean userIDFound = myServer.getWSDatabase().isPPIDInUse(ppID);
+		
+		if(userIDFound == false) {
+			
+			myServer.println("User ID Not Found");
+
+		} else {
+			
+			myServer.println("The existing actions for this user are: ");
+			final String actions = myServer.getWSDatabase().showActions(ppID);
+			myServer.println(actions);
+			
+			final String osCommand = myServer.readLineRequired("Enter the new O/S Command: ");
+			int action = myServer.readLineRequiredInt("Select an action number for this O/S Command", 0, 9);
+			
+			final boolean actionNumberInUse = myServer.getWSDatabase().isActionNumberInUse(ppID, action);
+			
+			if(actionNumberInUse == false) {
+				
+				myServer.getWSDatabase().addAction(ppID, osCommand, action);
+				
+			} else {
+				
+				myServer.println("I am sorry, that Action Number is already in Use");
+				
+			}
+			
+		}
+		
 	}
 	
 	private void actionShow() {
