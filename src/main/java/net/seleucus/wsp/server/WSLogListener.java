@@ -1,5 +1,8 @@
 package net.seleucus.wsp.server;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
 
@@ -31,21 +34,30 @@ public class WSLogListener implements TailerListener {
 
     @Override
     public void handle(final String requestLine) {
-    	/*
+    	
         // Check if the line length is more than 65535 chars
-        if (requestLine.length() < WSConstants.MAX_REQUEST_LENGTH) {
-            // throw new InvalidWebSpaRequestException("invalid length");
-            return;
+        if (requestLine.length() > Character.MAX_VALUE) {
+        	return;
         }
-
-
+        
+                
         // Check if the regex pattern has been found
-        Pattern pattern = Pattern.compile(config.getProperty(WSConstants.LOGGING_REGEX_FOR_EACH_REQUEST));
-        Matcher matcher = pattern.matcher(requestLine);
-        if (!matcher.find()) {
+    	Pattern wsPattern = Pattern.compile(myConfiguration.getLoginRegexForEachRequest());
+    	Matcher wsMatcher = wsPattern.matcher(requestLine);        
+    	
+    	
+    	System.out.println("Matcher count is: " + wsMatcher.groupCount());
+        if (!wsMatcher.matches( ) || 
+            2 != wsMatcher.groupCount( )) {
+            System.err.println("\nRegex Problem?\n");
+            System.err.println(requestLine);
+            System.err.println(myConfiguration.getLoginRegexForEachRequest());
             return;
         }
-
+        System.out.println("IP Address: " + wsMatcher.group(1));
+        System.out.println("Request is: " + wsMatcher.group(2));
+	
+        /*
         // Check if the request is 100 base64 encoded chars in length
         byte[] decodedLineByteArray = Base64.decode(requestLine.getBytes());
         String decodedLine = new String(decodedLineByteArray);
