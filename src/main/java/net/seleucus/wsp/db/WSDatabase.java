@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.seleucus.wsp.crypto.WebSpaEncoder;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -250,6 +252,39 @@ public class WSDatabase {
 		return passExists;
 		
 	}
+	
+	public synchronized int getActionNumberFromRequest(final int ppID, final String webSpaRequest) {
+		
+		int actionNumber = -1;
+		
+		if(ppID > 0) {
+			
+			String sqlActivationLookup = "SELECT PASSPHRASE FROM PASSPHRASES WHERE PPID = ? ;";
+			try {
+				PreparedStatement psPassPhrase = wsConnection.prepareStatement(sqlActivationLookup);
+				psPassPhrase.setInt(1, ppID);
+				ResultSet rs = psPassPhrase.executeQuery();
+				
+				if (rs.next()) {
+					char[] dbPassPhraseArray = rs.getString(1).toCharArray();
+					CharSequence rawPassword = CharBuffer.wrap(dbPassPhraseArray);
+					
+					actionNumber = WebSpaEncoder.getActionNumber(rawPassword, webSpaRequest);
+
+				}
+				
+				rs.close();
+				psPassPhrase.close();
+				
+			} catch (SQLException ex) {
+
+				throw new RuntimeException(ex);
+
+			}
+		}
+
+		return actionNumber;
+	}
 
 	public synchronized boolean getActivationStatus(int ppID) {
 		
@@ -325,6 +360,43 @@ public class WSDatabase {
 		}
 
 		return outputStatusBuffer.toString();
+		
+	}
+
+	public synchronized int getPPIDFromRequest(final String webSpaRequest) {
+		
+		int output = -1;
+		final String sqlPassPhrases = "SELECT PASSPHRASE, PPID FROM PASSPHRASES;";
+		
+		try {
+			Statement stmt = wsConnection.createStatement();
+			ResultSet rs = stmt.executeQuery(sqlPassPhrases);
+	
+			while (rs.next()) {
+				
+				char[] dbPassPhraseArray = rs.getString(1).toCharArray();
+				final int dbPPID = rs.getInt(2);
+				CharSequence rawPassword = CharBuffer.wrap(dbPassPhraseArray);
+				
+				if(WebSpaEncoder.matches(rawPassword, webSpaRequest)) {
+					
+					output = dbPPID;
+					break;
+					
+				}
+				
+			}	// while loop...
+	
+			rs.close();
+			stmt.close();
+	
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+			
+		}
+		
+		return output;
 		
 	}
 

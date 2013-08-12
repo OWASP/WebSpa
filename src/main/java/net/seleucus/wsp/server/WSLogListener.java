@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.seleucus.wsp.config.WSConfiguration;
+import net.seleucus.wsp.crypto.WebSpaEncoder;
 import net.seleucus.wsp.db.WSDatabase;
 
 import org.apache.commons.io.input.Tailer;
@@ -45,8 +46,6 @@ public class WSLogListener implements TailerListener {
     	Pattern wsPattern = Pattern.compile(myConfiguration.getLoginRegexForEachRequest());
     	Matcher wsMatcher = wsPattern.matcher(requestLine);        
     	
-    	
-    	System.out.println("Matcher count is: " + wsMatcher.groupCount());
         if (!wsMatcher.matches( ) || 
             2 != wsMatcher.groupCount( )) {
             System.err.println("\nRegex Problem?\n");
@@ -54,48 +53,38 @@ public class WSLogListener implements TailerListener {
             System.err.println(myConfiguration.getLoginRegexForEachRequest());
             return;
         }
-        System.out.println("IP Address: " + wsMatcher.group(1));
-        System.out.println("Request is: " + wsMatcher.group(2));
-	
-        /*
-        // Check if the request is 100 base64 encoded chars in length
-        byte[] decodedLineByteArray = Base64.decode(requestLine.getBytes());
-        String decodedLine = new String(decodedLineByteArray);
-        
-        
-        try {
-        	
-            WSDatabaseAdaptorYiannis database = wsDatabaseManager.getInstanceOfAdaptor();
 
-            // Check if the request has been seen before in the wsDatabaseManager
-            if (database.getCountForRequest(requestLine) > 0) {
-                return;
-            }
-            ;
-            database.storeRequest(requestLine);
-            // For all the passwords in the wsDatabaseManager, check if we have a valid incoming password
-            List<String> passwords = database.getPasswords();
-            String providedPassword = extractHashFromRequestLine(requestLine, 1, 51);
-
-            if (!passwords.contains(providedPassword)) {
-                return;
-            }
-            // Having found a correct password, check if it is mapped against an action
-            List<String> commands = database.getActionsForPassword(providedPassword);
-            if (commands.size() > 1 || commands.size() == 0) {
-                return;
-            }
-            Runtime.getRuntime().exec(commands.get(0));
-            // Run the action, by executing the command found in the wsDatabaseManager
-
-
-        } catch (IOException e) {
-            // TODO
-        } catch (InvalidPropertyFileException e) {
-            //TODO
-
+        final String ipAddress = wsMatcher.group(1);
+        String webSpaRequest = wsMatcher.group(2);
+        if(webSpaRequest.endsWith("/")) {
+        	webSpaRequest = webSpaRequest.substring(0, webSpaRequest.length() - 1);
         }
-		*/
+
+        if(webSpaRequest.length() != 100) {
+            System.err.println("\nRequest is not 100 chars\n");
+            return;        	
+        }
+ 
+        // Get the unique user ID from the request
+        int ppID = myDatabase.getPPIDFromRequest(webSpaRequest);
+        System.out.println("\nPPID: " + ppID + "\n");
+        if(ppID < 0) {
+        	return;
+        }
+        
+        if(myDatabase.getActivationStatus(ppID)) {
+        	
+        	final int action = myDatabase.getActionNumberFromRequest(ppID, webSpaRequest);
+        	System.out.println("\nAction Number: " + action + "\n");
+        	if(action < 0) {
+        		
+        		return;
+        		
+        	} else {
+        		
+        		// Fetch and execute the O/S command...
+        	}
+        }
 
     }
 
@@ -107,12 +96,6 @@ public class WSLogListener implements TailerListener {
     @Override
     public void init(Tailer arg0) {
         // TODO Auto-generated method stub
-    }
-
-    private String extractHashFromRequestLine(String requestLine, int start, int end) {
-        byte[] bytes = requestLine.getBytes();
-        byte[] result = ArrayUtils.subarray(bytes, start, end);
-        return new String(result);
     }
 
 }
