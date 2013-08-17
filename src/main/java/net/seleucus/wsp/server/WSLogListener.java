@@ -4,12 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.seleucus.wsp.config.WSConfiguration;
-import net.seleucus.wsp.crypto.WebSpaEncoder;
 import net.seleucus.wsp.db.WSDatabase;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
-import org.apache.commons.lang3.ArrayUtils;
 
 public class WSLogListener implements TailerListener {
 
@@ -83,6 +81,19 @@ public class WSLogListener implements TailerListener {
         	} else {
         		
         		// Fetch and execute the O/S command...
+        		final String myCommand = myDatabase.getOSCommand(ppID, action);
+        		
+        		final WSAction myAction = new WSAction(myCommand);
+        		final Thread t = new Thread(myAction);
+                t.start();
+                
+                System.out.println("O/S Command: " + myAction.getCommand());
+                System.out.println("Has Executed: " + myAction.getHasExecuted());
+                System.out.println("Was Successfull: " + myAction.getWasSuccessful());
+                
+                System.out.println("STD Output: " + myAction.getStdOut());
+                System.out.println("STD Error: " + myAction.getStdErr());
+                
         	}
         }
 

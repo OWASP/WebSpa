@@ -363,6 +363,37 @@ public class WSDatabase {
 		
 	}
 
+	public String getOSCommand(final int ppID, final int actionNumber) {
+		
+		String command = "";
+		
+		final String sqlSelect = "SELECT COMMAND FROM ACTIONS_AVAILABLE WHERE PPID = ? AND ACTION_NUMBER = ? ;";
+		
+		PreparedStatement psPassPhrase;
+		try {
+			psPassPhrase = wsConnection.prepareStatement(sqlSelect);
+			psPassPhrase.setInt(1, ppID);
+			psPassPhrase.setInt(2, actionNumber);
+			ResultSet rs = psPassPhrase.executeQuery();
+			
+			if (rs.next()) {
+				
+				command = rs.getString(1);
+				
+			} 
+			
+			rs.close();
+			psPassPhrase.close();
+			
+		} catch (SQLException e) {
+			
+			throw new RuntimeException(e);
+			
+		}
+		
+		return command;
+	}
+
 	public synchronized int getPPIDFromRequest(final String webSpaRequest) {
 		
 		int output = -1;
