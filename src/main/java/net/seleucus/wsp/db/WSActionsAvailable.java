@@ -1,0 +1,324 @@
+package net.seleucus.wsp.db;
+
+import java.nio.CharBuffer;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.apache.commons.lang3.StringUtils;
+
+import net.seleucus.wsp.crypto.WebSpaEncoder;
+
+public class WSActionsAvailable {
+
+	private Connection wsConnection;
+	
+	protected WSActionsAvailable(Connection wsConnection) {
+		
+		this.wsConnection = wsConnection;
+		
+	}
+
+	public synchronized int getActionNumberFromRequest(final int ppID, final String webSpaRequest) {
+		
+		int actionNumber = -1;
+		
+		if(ppID > 0) {
+			
+			String sqlActivationLookup = "SELECT PASSPHRASE FROM PASSPHRASES WHERE PPID = ? ;";
+			try {
+				PreparedStatement psPassPhrase = wsConnection.prepareStatement(sqlActivationLookup);
+				psPassPhrase.setInt(1, ppID);
+				ResultSet rs = psPassPhrase.executeQuery();
+				
+				if (rs.next()) {
+					char[] dbPassPhraseArray = rs.getString(1).toCharArray();
+					CharSequence rawPassword = CharBuffer.wrap(dbPassPhraseArray);
+					
+					actionNumber = WebSpaEncoder.getActionNumber(rawPassword, webSpaRequest);
+	
+				}
+				
+				rs.close();
+				psPassPhrase.close();
+				
+			} catch (SQLException ex) {
+	
+				throw new RuntimeException(ex);
+	
+			}
+		}
+	
+		return actionNumber;
+	}
+
+	public synchronized void addAction(int ppID, String osCommand, int action) {
+		
+		final String sqlInsert = "INSERT INTO PUBLIC.ACTIONS_AVAILABLE (PPID, ACTION_NUMBER, COMMAND) VALUES (?, ?, ?); ";
+		
+		try {
+			
+			PreparedStatement preStatement = wsConnection.prepareStatement(sqlInsert);
+			preStatement.setInt(1, ppID);
+			preStatement.setInt(2, action);
+			preStatement.setString(3, osCommand);
+			
+			preStatement.executeUpdate();
+			
+			preStatement.close();
+			
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+			
+		}
+		
+	}
+
+	public String getOSCommand(final int ppID, final int actionNumber) {
+		
+		String command = "";
+		
+		final String sqlSelect = "SELECT COMMAND FROM ACTIONS_AVAILABLE WHERE PPID = ? AND ACTION_NUMBER = ? ;";
+		
+		PreparedStatement psPassPhrase;
+		try {
+			psPassPhrase = wsConnection.prepareStatement(sqlSelect);
+			psPassPhrase.setInt(1, ppID);
+			psPassPhrase.setInt(2, actionNumber);
+			ResultSet rs = psPassPhrase.executeQuery();
+			
+			if (rs.next()) {
+				
+				command = rs.getString(1);
+				
+			} 
+			
+			rs.close();
+			psPassPhrase.close();
+			
+		} catch (SQLException e) {
+			
+			throw new RuntimeException(e);
+			
+		}
+		
+		return command;
+	}
+
+	public synchronized boolean isActionNumberInUse(int ppID, int action) {
+		
+		boolean actionNumberInUse = false;
+		
+		if(this.isPPIDInUse(ppID)) {
+		
+			final String sqlSelect = "SELECT ACTION_NUMBER FROM ACTIONS_AVAILABLE WHERE PPID = ? ;";
+			
+			try {
+				
+				PreparedStatement stmt = wsConnection.prepareStatement(sqlSelect);
+				stmt.setInt(1, ppID);
+				ResultSet rs = stmt.executeQuery();
+				
+				while(rs.next()) {
+					int dbAction = rs.getInt(1);
+					
+					if(dbAction == action) {
+						actionNumberInUse = true;
+						break;
+					}
+				}
+				
+				rs.close();
+				stmt.close();
+				
+			} catch(SQLException ex) {
+				
+				throw new RuntimeException(ex);
+	
+			}
+		}
+		
+		return actionNumberInUse;
+		
+	}
+
+	private synchronized boolean isPPIDInUse(int ppID) {
+	
+		boolean idExists = false;
+		
+		if(ppID > 0) {
+	
+			String sqlidLookup = "SELECT PPID FROM PASSPHRASES;";
+			
+			try {
+				
+				Statement stmt = wsConnection.createStatement();
+				ResultSet rs = stmt.executeQuery(sqlidLookup);
+				
+				while (rs.next()) {
+					int dbPpID = rs.getInt(1);
+					
+					if(dbPpID == ppID) {
+						idExists = true;
+						break;
+					}
+				}
+				
+				rs.close();
+				stmt.close();
+				
+			} catch (SQLException ex) {
+				
+				throw new RuntimeException(ex);
+	
+			}
+	
+		} // ppID > 0 
+		
+		return idExists;
+	}
+
+	public synchronized String showActionDetails(final int aaID) {
+		
+		StringBuffer resultsBuffer = new StringBuffer();
+		
+		resultsBuffer.append('\n');
+		resultsBuffer.append("Action with ID: ");
+		resultsBuffer.append(aaID);
+		resultsBuffer.append('\n');
+		
+		final String sqlSelect = "SELECT PPID, COMMAND, ACTION_NUMBER, LAST_EXECUTED, LAST_RUN_SUCCESS, IP_ADDR FROM ACTIONS_AVAILABLE WHERE AAID = ? ;";
+		
+		try {
+			PreparedStatement ps = wsConnection.prepareStatement(sqlSelect);
+			ps.setInt(1, aaID);
+			ResultSet rs = ps.executeQuery();
+	
+			if (rs.next()) {
+				
+				resultsBuffer.append("Belongs to User: ");
+				resultsBuffer.append(rs.getString(1));
+				resultsBuffer.append('\n');
+				
+				resultsBuffer.append("Represents the O/S Command: ");
+				resultsBuffer.append(rs.getString(2));
+				resultsBuffer.append('\n');
+				
+				resultsBuffer.append("Has the Unique Action Number: ");
+				resultsBuffer.append(rs.getString(3));
+				resultsBuffer.append('\n');
+				
+				resultsBuffer.append('\n');
+	
+				final String lastExecuted = rs.getString(4);
+				if(lastExecuted == null) {
+					
+					resultsBuffer.append("Has Never Been Executed");
+					
+				} else {
+					
+					resultsBuffer.append("Was last Executed On: ");
+					resultsBuffer.append(lastExecuted.substring(0, 23));
+					
+				}
+				resultsBuffer.append('\n');
+				
+				final String lastSuccess = rs.getString(5);
+				resultsBuffer.append("The last Execution was Successful: ");
+				if(lastSuccess == null) {
+	
+					resultsBuffer.append("n/a");
+	
+				} else {
+					
+					resultsBuffer.append(lastSuccess);
+					
+				}
+				resultsBuffer.append('\n');
+				
+				final String remoteLocation = rs.getString(6);
+				resultsBuffer.append("It was Received from the Remote Location: ");
+				if(remoteLocation == null) {
+					
+					resultsBuffer.append("n/a");
+					
+				} else {
+					
+					resultsBuffer.append(remoteLocation);
+				}
+				resultsBuffer.append('\n');
+	
+			} else {
+	
+				resultsBuffer.append("Cannot Be Found!");
+	
+			}
+			
+			resultsBuffer.append('\n');
+			
+			rs.close();
+			ps.close();
+	
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+	
+		}
+	
+		return resultsBuffer.toString();
+	}
+
+	public synchronized String showActions(final int ppID) {
+		
+		StringBuffer resultsBuffer = new StringBuffer();
+		resultsBuffer.append('\n');
+		resultsBuffer.append("Actions for user with ID: ");
+		resultsBuffer.append(ppID);
+		resultsBuffer.append('\n');
+		resultsBuffer.append("___________________________________________________________");
+		resultsBuffer.append('\n');
+		resultsBuffer.append(StringUtils.rightPad("ID", 4));
+		resultsBuffer.append(StringUtils.rightPad("#", 2));
+		resultsBuffer.append(StringUtils.rightPad("O/S Command", 30));
+		resultsBuffer.append(StringUtils.rightPad("Last Executed", 25));
+		resultsBuffer.append('\n');
+		resultsBuffer.append("-----------------------------------------------------------");
+		resultsBuffer.append('\n');
+		final String sqlSelect = "SELECT AAID, ACTION_NUMBER, COMMAND, LAST_EXECUTED FROM ACTIONS_AVAILABLE WHERE PPID = ? ;";
+		try {
+			PreparedStatement ps = wsConnection.prepareStatement(sqlSelect);
+			ps.setInt(1, ppID);
+			ResultSet rs = ps.executeQuery();
+	
+			while (rs.next()) {
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 2));
+				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 29), 30));
+				final String lastExecuted = rs.getString(4);
+				if(lastExecuted != null) {
+					resultsBuffer.append(lastExecuted.substring(0, 23));
+				} else {
+					resultsBuffer.append("has never been executed");
+				}
+				resultsBuffer.append('\n');
+			}
+			resultsBuffer.append("___________________________________________________________");
+			resultsBuffer.append('\n');
+	
+			rs.close();
+			ps.close();
+	
+		} catch (SQLException ex) {
+			
+			 throw new RuntimeException(ex);
+	
+		}
+		
+	
+		return resultsBuffer.toString();
+	}
+
+}

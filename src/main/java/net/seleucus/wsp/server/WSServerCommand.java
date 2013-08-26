@@ -173,7 +173,7 @@ public class WSServerCommand {
 		
 		userShow();
 		final int ppID = myServer.readLineOptionalInt("Select a User ID: ");
-		final boolean userIDFound = myServer.getWSDatabase().isPPIDInUse(ppID);
+		final boolean userIDFound = myServer.getWSDatabase().passPhrases.isPPIDInUse(ppID);
 		
 		if(userIDFound == false) {
 			
@@ -182,17 +182,17 @@ public class WSServerCommand {
 		} else {
 			
 			myServer.println("The existing actions for this user are: ");
-			final String actions = myServer.getWSDatabase().showActions(ppID);
+			final String actions = myServer.getWSDatabase().actionsAvailable.showActions(ppID);
 			myServer.println(actions);
 			
 			final String osCommand = myServer.readLineRequired("Enter the new O/S Command: ");
 			int action = myServer.readLineRequiredInt("Select an action number for this O/S Command", 0, 9);
 			
-			final boolean actionNumberInUse = myServer.getWSDatabase().isActionNumberInUse(ppID, action);
+			final boolean actionNumberInUse = myServer.getWSDatabase().actionsAvailable.isActionNumberInUse(ppID, action);
 			
 			if(actionNumberInUse == false) {
 				
-				myServer.getWSDatabase().addAction(ppID, osCommand, action);
+				myServer.getWSDatabase().actionsAvailable.addAction(ppID, osCommand, action);
 				
 			} else {
 				
@@ -208,7 +208,7 @@ public class WSServerCommand {
 		
 		userShow();
 		final int ppID = myServer.readLineOptionalInt("Select a User ID: ");
-		final boolean userIDFound = myServer.getWSDatabase().isPPIDInUse(ppID);
+		final boolean userIDFound = myServer.getWSDatabase().passPhrases.isPPIDInUse(ppID);
 		
 		if(userIDFound == false) {
 			
@@ -216,11 +216,11 @@ public class WSServerCommand {
 
 		} else {
 			
-			final String actions = myServer.getWSDatabase().showActions(ppID);
+			final String actions = myServer.getWSDatabase().actionsAvailable.showActions(ppID);
 			myServer.println(actions);
 			
 			final int aaID = myServer.readLineOptionalInt("Select an Action ID: ");
-			final String actionDetails = myServer.getWSDatabase().showActionDetails(aaID);
+			final String actionDetails = myServer.getWSDatabase().actionsAvailable.showActionDetails(aaID);
 			myServer.println(actionDetails);
 			
 		}
@@ -229,7 +229,7 @@ public class WSServerCommand {
 
 	private void userShow() {
 
-		final String users = myServer.getWSDatabase().showUsers();
+		final String users = myServer.getWSDatabase().users.showUsers();
 		myServer.println(users);
 		
 	}
@@ -245,7 +245,7 @@ public class WSServerCommand {
 			
 			passSeq = myServer.readPasswordRequired("Enter the New User's Pass-Phrase: ");
 						
-			passPhraseInUse = myServer.getWSDatabase().isPassPhraseInUse(passSeq);
+			passPhraseInUse = myServer.getWSDatabase().passPhrases.isPassPhraseInUse(passSeq);
 			
 			if(passPhraseInUse == true) {
 				myServer.println("This Pass-Phrase is already taken and in use by another user");
@@ -258,14 +258,14 @@ public class WSServerCommand {
 		String eMail = myServer.readLineOptional("Please enter the New User's Email Address: ");
 		String phone = myServer.readLineOptional("Please enter the New User's Phone Number: ");
 				
-		myServer.getWSDatabase().addUser(fullName, passSeq, eMail, phone);
+		myServer.getWSDatabase().users.addUser(fullName, passSeq, eMail, phone);
 	}
 	
 	private void userActivate() {
 		
 		userShow();
 		int ppID = myServer.readLineOptionalInt("Select a User ID: ");
-		boolean userIDFound = myServer.getWSDatabase().isPPIDInUse(ppID);
+		boolean userIDFound = myServer.getWSDatabase().passPhrases.isPPIDInUse(ppID);
 		
 		if(userIDFound == false) {
 			
@@ -273,7 +273,7 @@ public class WSServerCommand {
 
 		} else {
 			
-			final String oldPPIDStatus = myServer.getWSDatabase().getActivationStatusString(ppID);
+			final String oldPPIDStatus = myServer.getWSDatabase().passPhrases.getActivationStatusString(ppID);
 			myServer.println(oldPPIDStatus);
 			
 			// Toggle user
@@ -283,11 +283,11 @@ public class WSServerCommand {
 				"y".equalsIgnoreCase(choice) ||
 				choice.isEmpty() ) {
 				
-				myServer.getWSDatabase().toggleUserActivation(ppID);
+				myServer.getWSDatabase().passPhrases.toggleUserActivation(ppID);
 				
 			}
 			
-			final String newPPIDStatus = myServer.getWSDatabase().getActivationStatusString(ppID);
+			final String newPPIDStatus = myServer.getWSDatabase().passPhrases.getActivationStatusString(ppID);
 			myServer.println(newPPIDStatus);
 		
 		}

@@ -3,16 +3,27 @@ package net.seleucus.wsp.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.Callable;
 
-public class WSAction implements Runnable {
+public class WSAction implements Callable<Boolean> {
 
 	private StringBuilder stdOutBuilder, stdErrorBuilder;
 	private boolean hasExecuted, wasSuccessful;
 	private final String command;
 	
-	public WSAction(final String command) {
+	private final WSServer myServer;
+	private final int action;
+	private final int ppID;
+	private final String ipAddress;
+	
+	public WSAction(final WSServer myServer, final int ppID, final int action, final String ipAddress) {
 		
-		this.command = command;
+		this.myServer = myServer;
+		this.action = action;
+		this.ppID = ppID;
+		this.ipAddress = ipAddress;
+		
+		this.command = myServer.getWSDatabase().actionsAvailable.getOSCommand(ppID, action);
 		
 		stdOutBuilder = new StringBuilder();
 		stdErrorBuilder = new StringBuilder();
@@ -90,7 +101,7 @@ public class WSAction implements Runnable {
 	}
 	
 	@Override
-	public void run() {
+	public Boolean call() {
 
 		if(hasExecuted == false) {
 		
@@ -98,6 +109,8 @@ public class WSAction implements Runnable {
 		}
 		
 		hasExecuted = true; 
+		
+		return wasSuccessful; 
 		
 	}
 

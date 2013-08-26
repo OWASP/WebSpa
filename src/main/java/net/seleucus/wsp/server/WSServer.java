@@ -2,6 +2,9 @@ package net.seleucus.wsp.server;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
@@ -14,10 +17,11 @@ import org.apache.commons.io.input.Tailer;
 public class WSServer extends WSGestalt {
 
 	private Tailer myLogTailer;
-	private WSDatabase myDatabase;
+	private ExecutorService myExecService;
 	
 	private boolean serviceStarted;
 	
+	private WSDatabase myDatabase;
 	private WSLogListener myLogListener;
 	private WSConfiguration myConfiguration;
 	private WSServerCommand myServerCommand;
@@ -27,13 +31,14 @@ public class WSServer extends WSGestalt {
 		super(myWebSpa);
 		
 		myLogTailer = null;
-
+		myExecService = Executors.newSingleThreadExecutor();
+		
 		serviceStarted = false;
 		
 		myDatabase = new WSDatabase();
 		myConfiguration = new WSConfiguration();
 		
-		myLogListener = new WSLogListener(myDatabase, myConfiguration);
+		myLogListener = new WSLogListener(this);
 		myServerCommand = new WSServerCommand(this);
 
 	}
@@ -96,6 +101,20 @@ public class WSServer extends WSGestalt {
 	@Override
 	public void exitConsole() {
 		println("\nGoodbye!\n");
+	}
+	
+	public void runOSCommand(final int ppID, final int actionNumber, final String ipAddress) {
+		
+		final WSAction action = new WSAction(this, ppID, actionNumber, ipAddress);
+		Future<Boolean> task = myExecService.submit(action);
+		
+        System.out.println("O/S Command: " + action.getCommand());
+        System.out.println("Has Executed: " + action.getHasExecuted());
+        System.out.println("Was Successfull: " + action.getWasSuccessful());
+        
+        System.out.println("STD Output: " + action.getStdOut());
+        System.out.println("STD Error: " + action.getStdErr());
+
 	}
 
 	@Override

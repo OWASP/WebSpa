@@ -11,12 +11,16 @@ import org.apache.commons.io.input.TailerListener;
 
 public class WSLogListener implements TailerListener {
 
+	private WSServer myServer;
 	private WSDatabase myDatabase;
 	private WSConfiguration myConfiguration;
 
- 	public WSLogListener(WSDatabase myDatabase, WSConfiguration myConfiguration) {
- 		this.myDatabase = myDatabase;
- 		this.myConfiguration = myConfiguration;
+ 	public WSLogListener(WSServer myServer) {
+ 		
+ 		this.myServer = myServer;
+ 		this.myDatabase = myServer.getWSDatabase();
+ 		this.myConfiguration = myServer.getWSConfiguration();
+ 		
  	}
 
 	@Override
@@ -64,36 +68,25 @@ public class WSLogListener implements TailerListener {
         }
  
         // Get the unique user ID from the request
-        int ppID = myDatabase.getPPIDFromRequest(webSpaRequest);
+        int ppID = myDatabase.passPhrases.getPPIDFromRequest(webSpaRequest);
         System.out.println("\nPPID: " + ppID + "\n");
         if(ppID < 0) {
         	return;
         }
         
-        if(myDatabase.getActivationStatus(ppID)) {
+        if(myDatabase.passPhrases.getActivationStatus(ppID)) {
         	
-        	final int action = myDatabase.getActionNumberFromRequest(ppID, webSpaRequest);
+        	final int action = myDatabase.actionsAvailable.getActionNumberFromRequest(ppID, webSpaRequest);
+        	
         	System.out.println("\nAction Number: " + action + "\n");
         	if(action < 0) {
         		
         		return;
         		
         	} else {
-        		
-        		// Fetch and execute the O/S command...
-        		final String myCommand = myDatabase.getOSCommand(ppID, action);
-        		
-        		final WSAction myAction = new WSAction(myCommand);
-        		final Thread t = new Thread(myAction);
-                t.start();
-                
-                System.out.println("O/S Command: " + myAction.getCommand());
-                System.out.println("Has Executed: " + myAction.getHasExecuted());
-                System.out.println("Was Successfull: " + myAction.getWasSuccessful());
-                
-                System.out.println("STD Output: " + myAction.getStdOut());
-                System.out.println("STD Error: " + myAction.getStdErr());
-                
+        		// Fetch and execute the O/S command...        		
+        		myServer.runOSCommand(ppID, action, ipAddress);
+
         	}
         }
 
