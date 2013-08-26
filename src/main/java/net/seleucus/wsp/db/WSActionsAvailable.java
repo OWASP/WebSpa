@@ -107,6 +107,37 @@ public class WSActionsAvailable {
 		
 		return command;
 	}
+	
+	public int getAAID(final int ppID, final int actionNumber) {
+		
+		int output = -1;
+		
+		final String sqlSelect = "SELECT AAID FROM ACTIONS_AVAILABLE WHERE PPID = ? AND ACTION_NUMBER = ? ;";
+		
+		PreparedStatement psStatement;
+		try {
+			psStatement = wsConnection.prepareStatement(sqlSelect);
+			psStatement.setInt(1, ppID);
+			psStatement.setInt(2, actionNumber);
+			ResultSet rs = psStatement.executeQuery();
+			
+			if (rs.next()) {
+				
+				output = rs.getInt(1);
+				
+			}
+			
+			rs.close();
+			psStatement.close();
+			
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+			
+		}
+		
+		return output;
+	}
 
 	public synchronized boolean isActionNumberInUse(int ppID, int action) {
 		
@@ -319,6 +350,30 @@ public class WSActionsAvailable {
 		
 	
 		return resultsBuffer.toString();
+	}
+
+	public synchronized void updateAction(final int ppID, final int action, 
+										  final boolean success, final String ipAddress) {
+
+		final String sqlUpdate = "UPDATE PUBLIC.ACTIONS_AVAILABLE SET LAST_EXECUTED = CURRENT_TIMESTAMP, LAST_RUN_SUCCESS = ?, IP_ADDR = ? WHERE PPID = ? AND ACTION_NUMBER = ? ;";
+		
+		try {
+				
+		    	PreparedStatement psPassPhrase = wsConnection.prepareStatement(sqlUpdate);
+		    	psPassPhrase.setBoolean(1, success);
+		    	psPassPhrase.setString(2, ipAddress);
+		    	psPassPhrase.setInt(3, ppID);
+		    	psPassPhrase.setInt(4, action);
+		    	
+		    	psPassPhrase.executeUpdate();
+		    	psPassPhrase.close();
+		    	
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+				 
+		}
+		
 	}
 
 }

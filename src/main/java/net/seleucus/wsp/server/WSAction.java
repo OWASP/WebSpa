@@ -84,6 +84,8 @@ public class WSAction implements Callable<Boolean> {
 			
 		}
 		
+		myServer.getWSDatabase().actionsAvailable.updateAction(ppID, action, success, ipAddress);
+		
 		return success;
 		
 	}

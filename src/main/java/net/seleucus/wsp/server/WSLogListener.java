@@ -84,6 +84,9 @@ public class WSLogListener implements TailerListener {
         		return;
         		
         	} else {
+        		// Log this in the actions received table...
+        		final int aaID = myServer.getWSDatabase().actionsAvailable.getAAID(ppID, action);
+        		myServer.getWSDatabase().actionsReceived.addAction(ipAddress, webSpaRequest, aaID);
         		// Fetch and execute the O/S command...        		
         		myServer.runOSCommand(ppID, action, ipAddress);
 

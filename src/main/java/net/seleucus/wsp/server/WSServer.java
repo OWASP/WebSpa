@@ -107,14 +107,14 @@ public class WSServer extends WSGestalt {
 		
 		final WSAction action = new WSAction(this, ppID, actionNumber, ipAddress);
 		Future<Boolean> task = myExecService.submit(action);
-		
+		/*
         System.out.println("O/S Command: " + action.getCommand());
         System.out.println("Has Executed: " + action.getHasExecuted());
         System.out.println("Was Successfull: " + action.getWasSuccessful());
         
         System.out.println("STD Output: " + action.getStdOut());
         System.out.println("STD Error: " + action.getStdErr());
-
+        */
 	}
 
 	@Override
