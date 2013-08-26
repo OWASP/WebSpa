@@ -21,6 +21,29 @@ public class WSActionsAvailable {
 		
 	}
 
+	public synchronized void addAction(int ppID, String osCommand, int action) {
+		
+		final String sqlInsert = "INSERT INTO PUBLIC.ACTIONS_AVAILABLE (PPID, ACTION_NUMBER, COMMAND) VALUES (?, ?, ?); ";
+		
+		try {
+			
+			PreparedStatement preStatement = wsConnection.prepareStatement(sqlInsert);
+			preStatement.setInt(1, ppID);
+			preStatement.setInt(2, action);
+			preStatement.setString(3, osCommand);
+			
+			preStatement.executeUpdate();
+			
+			preStatement.close();
+			
+		} catch (SQLException ex) {
+			
+			throw new RuntimeException(ex);
+			
+		}
+		
+	}
+
 	public synchronized int getActionNumberFromRequest(final int ppID, final String webSpaRequest) {
 		
 		int actionNumber = -1;
@@ -52,29 +75,6 @@ public class WSActionsAvailable {
 		}
 	
 		return actionNumber;
-	}
-
-	public synchronized void addAction(int ppID, String osCommand, int action) {
-		
-		final String sqlInsert = "INSERT INTO PUBLIC.ACTIONS_AVAILABLE (PPID, ACTION_NUMBER, COMMAND) VALUES (?, ?, ?); ";
-		
-		try {
-			
-			PreparedStatement preStatement = wsConnection.prepareStatement(sqlInsert);
-			preStatement.setInt(1, ppID);
-			preStatement.setInt(2, action);
-			preStatement.setString(3, osCommand);
-			
-			preStatement.executeUpdate();
-			
-			preStatement.close();
-			
-		} catch (SQLException ex) {
-			
-			throw new RuntimeException(ex);
-			
-		}
-		
 	}
 
 	public String getOSCommand(final int ppID, final int actionNumber) {

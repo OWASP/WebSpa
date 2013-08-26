@@ -156,7 +156,14 @@ public class WSServer extends WSGestalt {
 		return myDatabase;
 	}
 
-	public void shutdown() throws SQLException {	
+	public void shutdown() throws SQLException {
+		
+		if(serviceStarted == true) {
+			
+			this.serverStop();
+			
+		}
+		
 		myDatabase.shutdown();	
 	}
 
