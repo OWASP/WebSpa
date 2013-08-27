@@ -212,39 +212,35 @@ public class WSActionsAvailable {
 		return idExists;
 	}
 
-	public synchronized String showActionDetails(final int aaID) {
+	public synchronized String showActionDetails(final int ppID, final int actionNumber) {
 		
 		StringBuffer resultsBuffer = new StringBuffer();
 		
 		resultsBuffer.append('\n');
-		resultsBuffer.append("Action with ID: ");
-		resultsBuffer.append(aaID);
+		resultsBuffer.append("Action with Number: ");
+		resultsBuffer.append(actionNumber);
 		resultsBuffer.append('\n');
 		
-		final String sqlSelect = "SELECT PPID, COMMAND, ACTION_NUMBER, LAST_EXECUTED, LAST_RUN_SUCCESS, IP_ADDR FROM ACTIONS_AVAILABLE WHERE AAID = ? ;";
+		final String sqlSelect = "SELECT COMMAND, LAST_EXECUTED, LAST_RUN_SUCCESS, IP_ADDR FROM ACTIONS_AVAILABLE WHERE PPID = ? AND ACTION_NUMBER = ? ;";
 		
 		try {
 			PreparedStatement ps = wsConnection.prepareStatement(sqlSelect);
-			ps.setInt(1, aaID);
+			ps.setInt(1, ppID);
+			ps.setInt(2, actionNumber);
 			ResultSet rs = ps.executeQuery();
 	
 			if (rs.next()) {
 				
 				resultsBuffer.append("Belongs to User: ");
-				resultsBuffer.append(rs.getString(1));
+				resultsBuffer.append(ppID);
 				resultsBuffer.append('\n');
 				
 				resultsBuffer.append("Represents the O/S Command: ");
-				resultsBuffer.append(rs.getString(2));
-				resultsBuffer.append('\n');
-				
-				resultsBuffer.append("Has the Unique Action Number: ");
-				resultsBuffer.append(rs.getString(3));
-				resultsBuffer.append('\n');
-				
+				resultsBuffer.append(rs.getString(1));
+				resultsBuffer.append('\n');				
 				resultsBuffer.append('\n');
 	
-				final String lastExecuted = rs.getString(4);
+				final String lastExecuted = rs.getString(2);
 				if(lastExecuted == null) {
 					
 					resultsBuffer.append("Has Never Been Executed");
@@ -257,7 +253,7 @@ public class WSActionsAvailable {
 				}
 				resultsBuffer.append('\n');
 				
-				final String lastSuccess = rs.getString(5);
+				final String lastSuccess = rs.getString(3);
 				resultsBuffer.append("The last Execution was Successful: ");
 				if(lastSuccess == null) {
 	
@@ -270,7 +266,7 @@ public class WSActionsAvailable {
 				}
 				resultsBuffer.append('\n');
 				
-				final String remoteLocation = rs.getString(6);
+				final String remoteLocation = rs.getString(4);
 				resultsBuffer.append("It was Received from the Remote Location: ");
 				if(remoteLocation == null) {
 					
@@ -280,7 +276,7 @@ public class WSActionsAvailable {
 					
 					resultsBuffer.append(remoteLocation);
 				}
-				resultsBuffer.append('\n');
+				// resultsBuffer.append('\n');
 	
 			} else {
 	
@@ -311,24 +307,25 @@ public class WSActionsAvailable {
 		resultsBuffer.append('\n');
 		resultsBuffer.append("___________________________________________________________");
 		resultsBuffer.append('\n');
-		resultsBuffer.append(StringUtils.rightPad("ID", 4));
-		resultsBuffer.append(StringUtils.rightPad("#", 2));
-		resultsBuffer.append(StringUtils.rightPad("O/S Command", 30));
+		// resultsBuffer.append(StringUtils.rightPad("ID", 4));
+		resultsBuffer.append(" #  ");
+		resultsBuffer.append(StringUtils.rightPad("O/S Command", 32));
 		resultsBuffer.append(StringUtils.rightPad("Last Executed", 25));
 		resultsBuffer.append('\n');
 		resultsBuffer.append("-----------------------------------------------------------");
 		resultsBuffer.append('\n');
-		final String sqlSelect = "SELECT AAID, ACTION_NUMBER, COMMAND, LAST_EXECUTED FROM ACTIONS_AVAILABLE WHERE PPID = ? ;";
+		final String sqlSelect = "SELECT ACTION_NUMBER, COMMAND, LAST_EXECUTED FROM ACTIONS_AVAILABLE WHERE PPID = ? ;";
 		try {
 			PreparedStatement ps = wsConnection.prepareStatement(sqlSelect);
 			ps.setInt(1, ppID);
 			ResultSet rs = ps.executeQuery();
 	
 			while (rs.next()) {
-				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
-				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 2));
-				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 29), 30));
-				final String lastExecuted = rs.getString(4);
+				resultsBuffer.append(' ');
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 3));
+				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(2), 30), 32));
+				final String lastExecuted = rs.getString(3);
+				
 				if(lastExecuted != null) {
 					resultsBuffer.append(lastExecuted.substring(0, 23));
 				} else {

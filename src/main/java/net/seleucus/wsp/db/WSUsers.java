@@ -60,8 +60,8 @@ public class WSUsers {
 		resultsBuffer.append("___________________________________________________________");
 		resultsBuffer.append('\n');
 		resultsBuffer.append(StringUtils.rightPad("ID", 4));
-		resultsBuffer.append(StringUtils.rightPad("Active", 7));
-		resultsBuffer.append(StringUtils.rightPad("Full Name", 25));
+		resultsBuffer.append(StringUtils.rightPad("Active", 8));
+		resultsBuffer.append(StringUtils.rightPad("Full Name", 24));
 		resultsBuffer.append(StringUtils.rightPad("Last Modified", 25));
 		resultsBuffer.append('\n');
 		resultsBuffer.append("-----------------------------------------------------------");
@@ -76,8 +76,8 @@ public class WSUsers {
 	
 			while (rs.next()) {
 				resultsBuffer.append(StringUtils.rightPad(rs.getString(1), 4));
-				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 7));
-				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 24), 25));
+				resultsBuffer.append(StringUtils.rightPad(rs.getString(2), 8));
+				resultsBuffer.append(StringUtils.rightPad(StringUtils.abbreviate(rs.getString(3), 23), 24));
 				resultsBuffer.append(rs.getString(4).substring(0, 23));
 				resultsBuffer.append('\n');
 			}

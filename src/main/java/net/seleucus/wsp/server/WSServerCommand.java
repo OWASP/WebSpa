@@ -219,8 +219,8 @@ public class WSServerCommand {
 			final String actions = myServer.getWSDatabase().actionsAvailable.showActions(ppID);
 			myServer.println(actions);
 			
-			final int aaID = myServer.readLineOptionalInt("Select an Action ID: ");
-			final String actionDetails = myServer.getWSDatabase().actionsAvailable.showActionDetails(aaID);
+			final int actionNumber = myServer.readLineOptionalInt("Select an Action Number: ");
+			final String actionDetails = myServer.getWSDatabase().actionsAvailable.showActionDetails(ppID, actionNumber);
 			myServer.println(actionDetails);
 			
 		}
