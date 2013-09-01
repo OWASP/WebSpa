@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 
 import net.seleucus.wsp.util.WSConstants;
 
+import org.apache.commons.io.IOUtils;
+
 public class WSServerCommand {
 
 	private WSServer myServer;
@@ -296,26 +298,48 @@ public class WSServerCommand {
 
 	private static void showHelp(final String topic) {
 
+		final int MAX_CHARS = 4096;
+		
 		InputStream fstream = ClassLoader.getSystemResourceAsStream("help/" + topic);
 		DataInputStream in = new DataInputStream(fstream);
+		BufferedReader br = null;
 
-		BufferedReader br;
-		String line;
+		StringBuffer fileContents = new StringBuffer(MAX_CHARS + 100);
+		
+		int counter = 0;
+		int currentChar;
 		
 		try {
+			
 			br = new BufferedReader(new InputStreamReader(in));
 			
-			while ((line = br.readLine()) != null) {
-				System.out.println(line);
+			while (((currentChar = in.read()) > 0) && (counter < MAX_CHARS)) {
+				
+				if( (currentChar >= 32 && currentChar < 127) || (currentChar == 10) ) {
+					fileContents.append((char) currentChar);
+				}
+				counter++;
+				
 			}
 			
 			br.close();
-		
+			in.close();
+			
 		} catch (IOException e) {
 			
-			throw new RuntimeException(e);
+			fileContents.append("Attempting to open the file caused an I/O Error:\n\n" + topic);
 			
+		} finally {
+			
+			IOUtils.closeQuietly(br);
+			IOUtils.closeQuietly(in);
 		}
+		
+		if(counter == MAX_CHARS) {
+			fileContents.append("\n... stopped reading after " + MAX_CHARS + " characters.\n");
+		}
+		
+		System.out.println(fileContents.toString());
 		
 	}
 
