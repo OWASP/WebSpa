@@ -1,2 +1,51 @@
 
-Apologies, this help file has not been written yet...
+The USER command allows you as a web-spa administrator to:
+
+1. Add New Users
+2. Show the Current Users
+3. Activate / De-activate User Accounts
+
+1. Adding New Users 'user add'
+
+When adding new users, you MUST:
+
+1.1 Specify the user's name
+
+This is used for reference purposes and is not actively 
+entered in the generation of a new web-spa request.
+
+1.2 Specify the user's unique pass-phrase
+
+What identifies each user uniquely is the pass-phrase you 
+select. Also the security of the web-spa channel is defined
+by the strength of the password you set.
+
+Finally, there are two optional fields that you MAY populate,
+but have the choice of leaving blank. These are the user's 
+e-mail address and phone number.
+
+2. Show the Current Users 'user show'
+
+This option displays the existing users of web-spa. It lists
+their unique 'ID', if their account is 'Active', each user's
+'Full Name' and the last modification date of their account.
+
+|Example Output:
+|___________________________________________________________
+|ID  Active  Full Name               Last Modified            
+|-----------------------------------------------------------
+|11  true    Jennifer                2013-09-01 22:43:40.459
+|12  true    Paul                    2013-09-01 22:43:51.020
+|13  false   Sandra                  2013-09-01 22:44:25.884
+|___________________________________________________________
+
+3. Activate / De-activate User Accounts 'user activate'
+
+This option toggles the activation and de-activation of a
+user account. 
+
+Selecting a user with an existing ID (e.g. 11) will give you
+the option to toggle their activation status.
+
+Thus, if a user is active you can de-activate their account
+and vice-versa.

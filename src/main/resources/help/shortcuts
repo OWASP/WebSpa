@@ -1,2 +1,10 @@
 
-Apologies, this help file has not been written yet...
+There are a number of shortcuts for each command:
+
+COMMANDS/OPTIONS:
+
+  config
+    show      - shortcut 'c'
+
+  exit        - shortcut 'x'
+  

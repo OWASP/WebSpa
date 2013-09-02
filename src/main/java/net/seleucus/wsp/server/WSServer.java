@@ -133,7 +133,8 @@ public class WSServer extends WSGestalt {
 			if( "exit".equalsIgnoreCase(command) ||
 				"quit".equalsIgnoreCase(command) ||
 				"laterz".equalsIgnoreCase(command) ||
-				"bye".equalsIgnoreCase(command) ) {
+				"bye".equalsIgnoreCase(command) ||
+				"x".equalsIgnoreCase(command)) {
 				
 				this.shutdown();
 				

@@ -19,6 +19,8 @@ COMMANDS/OPTIONS:
     activate  - activate / de-activate user accounts
     add       - add new users to the database
     show      - show the current web-spa users
+
+  exit        - stop the service and exit web-spa
     
 EXAMPLES:
 

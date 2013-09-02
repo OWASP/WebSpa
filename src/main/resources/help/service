@@ -1,11 +1,34 @@
 
-The service command is responsible for starting and stopping web-spa.
+The SERVICE command allows you to start, stop and query the
+current status of the web-spa service. It does this in the 
+following way:
 
-It has three (3) options:
+1. Start the Service 'service start'
+2. Stop the Service 'service stop'
+3. Query the Status 'service status'
 
-web-spa-server> service start
-  Use this option to start web-spa.
-web-spa-server> service status
-  Use this option to check the status of web-spa.
-web-spa-server> service stop
-  Use this option to stop web-spa.
+1. Starting the Service 'service start'
+
+This enables to 'tail' log listening to begin on the file of 
+your choice. The file is specified within the first property
+ of the config setup. Please type 'show config' to understand
+ which file this is.
+
+2. Stopping the Service 'service stop'
+
+This disables the log listening service and stops web-spa from 
+accepting any more commands in the form of web-knocks.
+
+3. Querying the Service Status 'service status'
+
+This will return a message of the service either being started
+or stopped. An example output can be seen below:
+
+|web-spa-server>service status
+|
+|Web-Spa is Stopped
+|
+|web-spa-server>
+
+In this example the web-spa service is stopped and no further 
+O/S commands can be received as web-knocks.

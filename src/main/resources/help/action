@@ -1,2 +1,65 @@
 
-Apologies, this help file has not been written yet...
+The ACTION command allows you as a web-spa administrator to:
+
+
+1. Add New Actions
+2. Show the Current Actions
+
+1. Adding New Action 'action add'
+
+When adding new action, you MUST:
+
+1.1 Specify the O/S command
+
+This is used to map the action number to an actual Operating
+System (O/S) command. 
+
+It is important that the user assigned to execute this command
+would be authorised to do so under the permissions that the 
+web-spa jar file is run under.
+
+Also a valid, active user must already exist in order for the
+O/S command to run successfully. Please user the command
+'user add' to first add a user before using the 'action add'
+command.
+
+1.2 Specify a Unique Action Number [0-9]
+
+Each command must be mapped to a single digit number. This 
+number is a value that will be asked to be entered by a web-spa
+user utilsing the web-spa client. 
+
+Each O/S command is mapped to a unique number and each user can
+only have 10 commands allocated to their pass-phrase.
+
+If more than 10 O/S commands are required, a web-spa 
+administrator would have to create a secondary user account 
+with a separate unique pass-phrase. 
+
+2. Show the Current Actions 'action show'
+
+This option displays the existing O/S commands for a user of
+web-spa. It lists each command number, the respective actual
+O/S command and the time it was last executed.
+
+|Example Output:
+|Actions for user with ID: 12
+|___________________________________________________________
+| #  O/S Command                     Last Executed            
+|-----------------------------------------------------------
+| 0  sh -c "service apache2 star...  has never been executed
+| 1  sh -c "service apache2 stop...  has never been executed
+| 2  sh -c "/etc/init.d/ssh star...  has never been executed
+| 3  sh -c "/etc/init.d/ssh stop...  has never been executed
+| 4  sh -c "service mysql start;...  has never been executed
+| 5  sh -c "service mysql stop; ...  has never been executed
+|___________________________________________________________
+
+In this example you can see web-spa being setup to allow for
+the start/stop of the apache web server, SSH and also the 
+MySQL database.
+
+Please note that 'action show' only works on an individual 
+user basis: You can only list the actions of one user at a
+time.
+
