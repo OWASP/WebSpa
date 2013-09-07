@@ -1,6 +1,7 @@
 package net.seleucus.wsp.crypto;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.codec.binary.Base64;
@@ -62,8 +63,23 @@ public class WebSpaEncoderTest {
 	}
 	
 	@Test
+	public final void testMatchesFalse() {
+		
+		String passPhraseTrue = RandomStringUtils.randomAlphabetic(20);
+		String passPhraseFalse = RandomStringUtils.randomAlphabetic(20);
+		
+		int actionNumber = 7;
+		
+		WebSpaEncoder myEncoder = new WebSpaEncoder(passPhraseTrue, actionNumber);
+		String calculatedWebSpaRequest = myEncoder.getKnock();
+		
+		assertFalse(WebSpaEncoder.matches(passPhraseFalse, calculatedWebSpaRequest));
+		
+	}
+	
+	@Test
 	public final void testMatchesShouldReturnFalseIfWebSpaRequestIsNot100Chars() {
-		assertTrue(! WebSpaEncoder.matches("A-Pa$$w0rd", "A-Web-Spa-Request-Of-Length-Not-100"));
+		assertFalse(WebSpaEncoder.matches("A-Pa$$w0rd", "A-Web-Spa-Request-Of-Length-Not-100"));
 	}
 	
 	@Test
