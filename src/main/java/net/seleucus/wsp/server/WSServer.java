@@ -24,7 +24,7 @@ public class WSServer extends WSGestalt {
 	private WSDatabase myDatabase;
 	private WSLogListener myLogListener;
 	private WSConfiguration myConfiguration;
-	private WSServerCommand myServerCommand;
+	private WSServerConsole myServerCommand;
 	
 	public WSServer(WebSpa myWebSpa) throws Exception {
 
@@ -39,7 +39,7 @@ public class WSServer extends WSGestalt {
 		myConfiguration = new WSConfiguration();
 		
 		myLogListener = new WSLogListener(this);
-		myServerCommand = new WSServerCommand(this);
+		myServerCommand = new WSServerConsole(this);
 
 	}
 	
@@ -73,11 +73,11 @@ public class WSServer extends WSGestalt {
 		
 		if(serviceStarted) {
 			
-			return "\nWeb-Spa is Running";
+			return "Web-Spa is Running!";
 			
 		} else {
 			
-			return "\nWeb-Spa is Stopped";
+			return "Web-Spa is Stopped.";
 			
 		}
 	}
@@ -121,18 +121,18 @@ public class WSServer extends WSGestalt {
 	public void runConsole() throws SQLException {
 		
 		println("");
-		println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
+		println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
+		println("");
+		println("This is a holding prompt, type \"exit\" to quit");        
 		println("");
 		
-		println("This is a holding prompt, type \"exit\" to quit");        
-		// TODO Add a boolean which gets set to true to exit from this loop		
 		do {
 
-			String command = readLineMainPrompt();
+			String command = readLineServerPrompt();
 			
-			if( "exit".equalsIgnoreCase(command) ||
+			if( "laterz".equalsIgnoreCase(command) ||
+				"exit".equalsIgnoreCase(command) ||
 				"quit".equalsIgnoreCase(command) ||
-				"laterz".equalsIgnoreCase(command) ||
 				"bye".equalsIgnoreCase(command) ||
 				"x".equalsIgnoreCase(command)) {
 				

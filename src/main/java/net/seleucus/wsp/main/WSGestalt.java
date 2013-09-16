@@ -100,9 +100,9 @@ public abstract class WSGestalt {
 		
 	}
 	
-	public String readLineMainPrompt() {
+	public String readLineServerPrompt() {
 		
-		return myConsole.readLine("\nweb-spa-server>");
+		return myConsole.readLine("web-spa-server>");
 		
 	}
 	
