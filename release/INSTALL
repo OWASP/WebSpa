@@ -1,0 +1,36 @@
+=================================================
+Thank you for downloading web-spa!
+=================================================
+
+This program is a web knocking implementation
+that allows a single HTTP/S request to authorise 
+an O/S command to be executed. 
+
+Please also see the README file for further 
+information.
+
+=================================================
+INSTALL: Table of contents
+=================================================
+
+- Prerequisites for web-spa
+
+=================================================
+- Prerequisites for web-spa
+=================================================
+
+The following programs must be installed in order
+for web-spa to run:
+
+- Java 1.6 or later
+  
+Java can be downloaded at 
+http://www.java.com/en/download/
+
+You only need to download and install the "Java 
+Runtime Environment (JRE)".
+
+For development and contributing to the code base
+of web-spa, you will require the "Java 
+Development Kit (JDK)".
+=================================================
