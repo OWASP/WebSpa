@@ -3,7 +3,11 @@ package net.seleucus.wsp.main;
 import java.io.Console;
 import java.nio.CharBuffer;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class WSGestalt {
 
@@ -106,6 +110,16 @@ public abstract class WSGestalt {
 		
 	}
 	
+	public void log(final String display) {
+		
+		final Date currentDate = new Date();
+		final SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
+		final String formattedDate = sdf.format(currentDate);
+		
+		System.out.print('\n' + formattedDate + StringUtils.abbreviateMiddle(display, "...", 40) );
+		
+	}
+	
 	public CharSequence readPasswordRequired(final String displayString) {
 		
 		StringBuilder displayBuilder = new StringBuilder();
@@ -144,6 +158,15 @@ public abstract class WSGestalt {
 		
 		myConsole.writer().println(line);
 		
+	}
+	
+	public void printlnWithTimeStamp(final String line) {
+		
+		final Date currentDate = new Date();
+		final SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
+		final String formattedDate = sdf.format(currentDate);
+		
+		myConsole.writer().println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 40) );
 	}
 	
 	public abstract void exitConsole();

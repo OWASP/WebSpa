@@ -98,7 +98,8 @@ public class WSHelpOptions extends WSCommandOption {
 		
 		boolean valid = false;
 		
-		if(cmd.equalsIgnoreCase("help")) {
+		if(cmd.equalsIgnoreCase("help")  || 
+		   cmd.equalsIgnoreCase("?")) {
 			
 			valid = true;
 			

@@ -11,8 +11,7 @@ public class WSServiceStatus extends WSCommandOption {
 	@Override
 	protected void execute() {
 
-		String status = myServer.serverStatus();
-		myServer.println(status);
+		myServer.serverStatus();
 		
 	} // execute method
 

@@ -4,7 +4,7 @@
   <groupId>net.seleucus</groupId>
   <artifactId>web-spa</artifactId>
   <name>Web-Spa</name>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.6-SNAPSHOT</version>
   <description>Web Single Request Authorisation</description>
   <url>https://code.google.com/p/web-spa/</url>
   <build>

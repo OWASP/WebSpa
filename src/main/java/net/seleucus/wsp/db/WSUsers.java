@@ -50,6 +50,35 @@ public class WSUsers {
 		}
 	
 	}
+	
+	public synchronized String getUsersFullName(int ppID) {
+		
+		String fullName = "Invalid User"; 
+		
+		if(ppID > 0) {
+			
+			String sqlActivationLookup = "SELECT FULLNAME FROM USERS WHERE PPID = ? ;";
+			try {
+				PreparedStatement psPassPhrase = wsConnection.prepareStatement(sqlActivationLookup);
+				psPassPhrase.setInt(1, ppID);
+				ResultSet rs = psPassPhrase.executeQuery();
+				
+				if (rs.next()) {
+					fullName = rs.getString(1);
+				}
+				
+				rs.close();
+				psPassPhrase.close();
+				
+			} catch (SQLException ex) {
+	
+				throw new RuntimeException(ex);
+	
+			}
+		}
+		
+		return fullName;
+	}
 
 	public synchronized String showUsers() {
 		

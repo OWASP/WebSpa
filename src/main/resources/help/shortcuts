@@ -5,6 +5,7 @@ COMMANDS/OPTIONS:
 
   config
     show      - shortcut 'c'
-
+  help        - shortcut '?'
+  
   exit        - shortcut 'x'
   

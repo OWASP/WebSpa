@@ -45,39 +45,53 @@ public class WSServer extends WSGestalt {
 	
 	public void serverStart() {
 		
-		File accessLog = new File(myConfiguration.getAccesLogFileLocation());
-		if(accessLog.exists()) {
+		if(serviceStarted == true) {
 			
-			println("Access log file found at: " + accessLog.getPath());
-			
-			serviceStarted = true; 
-			
-			if(myLogTailer == null) {
-				
-				myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
-				
-			} else {
-				
-				// myLogTailer.run();
-			}
+			printlnWithTimeStamp("Service is already running");
 			
 		} else {
 			
-			println("Access log file NOT found at: " + accessLog.getPath());
-			println("Web-Spa Server Not Started");
+			printlnWithTimeStamp("Attempting to start web-spa...");
+			File accessLog = new File(myConfiguration.getAccesLogFileLocation());
+
+			if(accessLog.exists()) {
+
+				printlnWithTimeStamp("Found access log file: " + accessLog.getPath());			
+				serviceStarted = true; 
+
+				if(myLogTailer == null) {
+					
+					printlnWithTimeStamp("Creating tail listener...");
+					myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
+
+				} else {
+
+					printlnWithTimeStamp("Re-starting listener...");
+					myLogTailer.run();
+					
+				}
+
+				printlnWithTimeStamp("Web-Spa Server Started");
+
+			} else {
+
+				printlnWithTimeStamp("Access log file NOT found at: " + accessLog.getPath());
+				printlnWithTimeStamp("Web-Spa Server Not Started\n");
+
+			}
 		}
-		
+
 	}
 	
-	public String serverStatus() {
+	public void serverStatus() {
 		
 		if(serviceStarted) {
 			
-			return "Web-Spa is Running!";
+			printlnWithTimeStamp("Web-Spa is Running!");
 			
 		} else {
 			
-			return "Web-Spa is Stopped.";
+			printlnWithTimeStamp("Web-Spa is Stopped.");
 			
 		}
 	}
@@ -86,42 +100,36 @@ public class WSServer extends WSGestalt {
 		
 		if (myLogTailer == null) {
 			
-			println("Web-Spa Server Had Not Started");
+			printlnWithTimeStamp("Web-Spa Server Had Not Started");
 			
 		} else {
 			
-			println("Web-Spa Server Stopped");
+			printlnWithTimeStamp("Web-Spa Server Stopped");
 			myLogTailer.stop();
 			
 			serviceStarted = false;
 		}
-
+		
 	}
 
 	@Override
 	public void exitConsole() {
-		println("\nGoodbye!\n");
+		printlnWithTimeStamp("Goodbye!\n");
 	}
 	
 	public void runOSCommand(final int ppID, final int actionNumber, final String ipAddress) {
 		
 		final WSAction action = new WSAction(this, ppID, actionNumber, ipAddress);
 		Future<Boolean> task = myExecService.submit(action);
-		/*
-        System.out.println("O/S Command: " + action.getCommand());
-        System.out.println("Has Executed: " + action.getHasExecuted());
-        System.out.println("Was Successfull: " + action.getWasSuccessful());
-        
-        System.out.println("STD Output: " + action.getStdOut());
-        System.out.println("STD Error: " + action.getStdErr());
-        */
+		
 	}
 
 	@Override
 	public void runConsole() throws SQLException {
 		
 		println("");
-		println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
+		println("Web-Spa - Single HTTP/S Request Authorisation");
+		println("version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
 		println("");
 		println("This is a holding prompt, type \"exit\" to quit");        
 		println("");

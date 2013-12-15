@@ -7,9 +7,9 @@ import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
 
 import org.apache.commons.io.input.Tailer;
-import org.apache.commons.io.input.TailerListener;
+import org.apache.commons.io.input.TailerListenerAdapter;
 
-public class WSLogListener implements TailerListener {
+public class WSLogListener extends TailerListenerAdapter {
 
 	private WSServer myServer;
 	private WSDatabase myDatabase;
@@ -22,7 +22,7 @@ public class WSLogListener implements TailerListener {
  		this.myConfiguration = myServer.getWSConfiguration();
  		
  	}
-
+ 	/*
 	@Override
     public void fileNotFound() {
         // TODO Auto-generated method stub
@@ -34,7 +34,7 @@ public class WSLogListener implements TailerListener {
         // TODO Auto-generated method stub
 
     }
-
+	*/
     @Override
     public void handle(final String requestLine) {
     	
@@ -50,9 +50,9 @@ public class WSLogListener implements TailerListener {
     	
         if (!wsMatcher.matches( ) || 
             2 != wsMatcher.groupCount( )) {
-            System.err.println("\nRegex Problem?\n");
-            System.err.println(requestLine);
-            System.err.println(myConfiguration.getLoginRegexForEachRequest());
+        	myServer.log("Regex Problem?\n");
+        	myServer.log(requestLine);
+        	myServer.log(myConfiguration.getLoginRegexForEachRequest());
             return;
         }
 
@@ -61,37 +61,54 @@ public class WSLogListener implements TailerListener {
         if(webSpaRequest.endsWith("/")) {
         	webSpaRequest = webSpaRequest.substring(0, webSpaRequest.length() - 1);
         }
+        
 
-        if(webSpaRequest.length() != 100) {
-            System.err.println("\nRequest is not 100 chars\n");
-            return;        	
+        if(webSpaRequest.length() == 100) {
+        	
+        	// Nest the world away!
+        	myServer.log(webSpaRequest); 
+            // Get the unique user ID from the request
+            final int ppID = myDatabase.passPhrases.getPPIDFromRequest(webSpaRequest);
+            
+            if(ppID < 0) {
+                
+            	myServer.log("No User Found");
+            	
+            } else {
+
+            	String username = myDatabase.users.getUsersFullName(ppID); 
+            	myServer.log("User Found: " + username);
+            	// Check the user's activation status
+            	final boolean userActive = myDatabase.passPhrases.getActivationStatus(ppID);
+            	myServer.log(myDatabase.passPhrases.getActivationStatusString(ppID));
+            	
+                if(userActive) {
+                	
+                	final int action = myDatabase.actionsAvailable.getActionNumberFromRequest(ppID, webSpaRequest);
+                	myServer.log("Action Number: " + action);
+                	
+                	if( (action >= 0) && (action <= 9) ) {
+                	
+                		// Log this in the actions received table...
+                		final int aaID = myServer.getWSDatabase().actionsAvailable.getAAID(ppID, action);
+                		myServer.getWSDatabase().actionsReceived.addAction(ipAddress, webSpaRequest, aaID);
+                		
+                		// Log this on the screen for the user
+                		final String osCommand = myServer.getWSDatabase().actionsAvailable.getOSCommand(ppID, action);
+                		myServer.log(ipAddress + " " + osCommand);
+                		
+                		// Fetch and execute the O/S command...        		
+                		myServer.runOSCommand(ppID, action, ipAddress);
+
+                	}
+                }
+
+            }
+            
+            
         }
  
-        // Get the unique user ID from the request
-        int ppID = myDatabase.passPhrases.getPPIDFromRequest(webSpaRequest);
-        System.out.println("\nPPID: " + ppID + "\n");
-        if(ppID < 0) {
-        	return;
-        }
-        
-        if(myDatabase.passPhrases.getActivationStatus(ppID)) {
-        	
-        	final int action = myDatabase.actionsAvailable.getActionNumberFromRequest(ppID, webSpaRequest);
-        	
-        	System.out.println("\nAction Number: " + action + "\n");
-        	if(action < 0) {
-        		
-        		return;
-        		
-        	} else {
-        		// Log this in the actions received table...
-        		final int aaID = myServer.getWSDatabase().actionsAvailable.getAAID(ppID, action);
-        		myServer.getWSDatabase().actionsReceived.addAction(ipAddress, webSpaRequest, aaID);
-        		// Fetch and execute the O/S command...        		
-        		myServer.runOSCommand(ppID, action, ipAddress);
 
-        	}
-        }
 
     }
 
