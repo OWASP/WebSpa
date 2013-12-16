@@ -63,12 +63,12 @@ public class WSServer extends WSGestalt {
 					printlnWithTimeStamp("Creating tail listener...");
 					myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
 
-				} else {
+				} /* else {
 
 					printlnWithTimeStamp("Re-starting listener...");
 					myLogTailer.run();
 					
-				}
+				} */ 
 
 				printlnWithTimeStamp("Web-spa server started!");
 				printlnWithTimeStamp("Please make sure your web server is also up");
@@ -106,8 +106,10 @@ public class WSServer extends WSGestalt {
 			
 			printlnWithTimeStamp("Web-Spa Server Stopped");
 			myLogTailer.stop();
-			
+
+			myLogTailer = null; 
 			serviceStarted = false;
+			
 		}
 		
 	}
