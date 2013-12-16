@@ -4,7 +4,6 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
@@ -71,7 +70,8 @@ public class WSServer extends WSGestalt {
 					
 				}
 
-				printlnWithTimeStamp("Web-Spa Server Started");
+				printlnWithTimeStamp("Web-spa server started!");
+				printlnWithTimeStamp("Please make sure your web server is also up");
 
 			} else {
 
@@ -120,7 +120,8 @@ public class WSServer extends WSGestalt {
 	public void runOSCommand(final int ppID, final int actionNumber, final String ipAddress) {
 		
 		final WSAction action = new WSAction(this, ppID, actionNumber, ipAddress);
-		Future<Boolean> task = myExecService.submit(action);
+		// Future<Boolean> task = myExecService.submit(action);
+		myExecService.submit(action);
 		
 	}
 
@@ -131,7 +132,10 @@ public class WSServer extends WSGestalt {
 		println("Web-Spa - Single HTTP/S Request Authorisation");
 		println("version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
 		println("");
-		println("This is a holding prompt, type \"exit\" to quit");        
+		println("This is a holding prompt, type \"exit\" or \"x\" to quit");
+		println("");
+		println("- type \"service start\" to start the web-spa server");
+		println("- type \"help\" or \"?\" for more options");
 		println("");
 		
 		do {

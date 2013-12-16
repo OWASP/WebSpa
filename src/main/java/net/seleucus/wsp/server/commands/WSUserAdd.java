@@ -18,7 +18,7 @@ public class WSUserAdd extends WSCommandOption {
 		
 		do {
 			
-			passSeq = myServer.readPasswordRequired("Enter the New User's Pass-Phrase: ");
+			passSeq = myServer.readPasswordRequired("Enter the New User's Pass-Phrase");
 						
 			passPhraseInUse = myServer.getWSDatabase().passPhrases.isPassPhraseInUse(passSeq);
 			

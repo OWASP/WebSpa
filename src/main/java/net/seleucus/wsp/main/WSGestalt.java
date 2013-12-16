@@ -1,8 +1,6 @@
 package net.seleucus.wsp.main;
 
 import java.io.Console;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.CharBuffer;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -122,7 +120,7 @@ public abstract class WSGestalt {
 		final SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
 		final String formattedDate = sdf.format(currentDate);
 		
-		System.out.print('\n' + formattedDate + StringUtils.abbreviateMiddle(display, "...", 40) );
+		System.out.print('\n' + formattedDate + StringUtils.abbreviateMiddle(display, "...", 50) );
 		
 	}
 	
@@ -132,6 +130,8 @@ public abstract class WSGestalt {
 		
 		displayBuilder.append("=[Required] ");
 		displayBuilder.append(displayString);
+		displayBuilder.append(':');
+		displayBuilder.append(' ');
 		
 		char[] passCharArrayOne, passCharArrayTwo;
 		boolean passPhrasesMatch = false;
@@ -172,11 +172,11 @@ public abstract class WSGestalt {
 		final SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
 		final String formattedDate = sdf.format(currentDate);
 		
-		myConsole.writer().println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 40) );
+		myConsole.writer().println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 50) );
 	}
 	
 	public abstract void exitConsole();
 
-	public abstract void runConsole() throws SQLException, IOException;
+	public abstract void runConsole() throws SQLException;
 	
 }

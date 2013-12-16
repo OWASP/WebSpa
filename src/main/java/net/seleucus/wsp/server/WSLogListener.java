@@ -22,19 +22,7 @@ public class WSLogListener extends TailerListenerAdapter {
  		this.myConfiguration = myServer.getWSConfiguration();
  		
  	}
- 	/*
-	@Override
-    public void fileNotFound() {
-        // TODO Auto-generated method stub
 
-    }
-
-    @Override
-    public void fileRotated() {
-        // TODO Auto-generated method stub
-
-    }
-	*/
     @Override
     public void handle(final String requestLine) {
     	
@@ -42,8 +30,7 @@ public class WSLogListener extends TailerListenerAdapter {
         if (requestLine.length() > Character.MAX_VALUE) {
         	return;
         }
-        
-                
+                      
         // Check if the regex pattern has been found
     	Pattern wsPattern = Pattern.compile(myConfiguration.getLoginRegexForEachRequest());
     	Matcher wsMatcher = wsPattern.matcher(requestLine);        
@@ -95,7 +82,7 @@ public class WSLogListener extends TailerListenerAdapter {
                 		
                 		// Log this on the screen for the user
                 		final String osCommand = myServer.getWSDatabase().actionsAvailable.getOSCommand(ppID, action);
-                		myServer.log(ipAddress + " " + osCommand);
+                		myServer.log(ipAddress + " ->  '" + osCommand + "'");
                 		
                 		// Fetch and execute the O/S command...        		
                 		myServer.runOSCommand(ppID, action, ipAddress);
