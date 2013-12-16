@@ -14,7 +14,7 @@ public class WSActionShow extends WSCommandOption {
 		final String users = this.myServer.getWSDatabase().users.showUsers();
 		myServer.println(users);
 		
-		final int ppID = myServer.readLineOptionalInt("Select a User ID: ");
+		final int ppID = myServer.readLineOptionalInt("Select a User ID");
 		final boolean userIDFound = myServer.getWSDatabase().passPhrases.isPPIDInUse(ppID);
 		
 		if(userIDFound == false) {
@@ -26,7 +26,7 @@ public class WSActionShow extends WSCommandOption {
 			final String actions = myServer.getWSDatabase().actionsAvailable.showActions(ppID);
 			myServer.println(actions);
 			
-			final int actionNumber = myServer.readLineOptionalInt("Select an Action Number: ");
+			final int actionNumber = myServer.readLineOptionalInt("Select an Action Number");
 			final String actionDetails = myServer.getWSDatabase().actionsAvailable.showActionDetails(ppID, actionNumber);
 			myServer.println(actionDetails);
 			

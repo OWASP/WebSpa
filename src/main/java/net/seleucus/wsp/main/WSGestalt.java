@@ -1,6 +1,8 @@
 package net.seleucus.wsp.main;
 
 import java.io.Console;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.CharBuffer;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -25,6 +27,8 @@ public abstract class WSGestalt {
 		
 		displayBuilder.append("-[Optional] ");
 		displayBuilder.append(displayString);
+		displayBuilder.append(':');
+		displayBuilder.append(' ');
 		
 		return myConsole.readLine(displayBuilder.toString());
 		
@@ -41,7 +45,7 @@ public abstract class WSGestalt {
 			
 		} catch(NumberFormatException ex) {
 			
-			println("Invalid Number");
+			printlnWithTimeStamp("Invalid Number");
 			
 		}
 		
@@ -55,6 +59,8 @@ public abstract class WSGestalt {
 		
 		displayBuilder.append("=[Required] ");
 		displayBuilder.append(displayString);
+		displayBuilder.append(':');
+		displayBuilder.append(' ');
 		
 		String outputString;
 		
@@ -64,7 +70,7 @@ public abstract class WSGestalt {
 			
 			if(outputString.isEmpty()) {
 			
-				println("Your Input Cannot Be Blank");
+				printlnWithTimeStamp("Your Input Cannot Be Blank");
 				
 			}
 			
@@ -82,7 +88,7 @@ public abstract class WSGestalt {
 		displayBuilder.append(minInclusiveValue);
 		displayBuilder.append(',');
 		displayBuilder.append(maxInclusiveValue);
-		displayBuilder.append("]: ");
+		displayBuilder.append(']');
 		
 		int output = -1;
 		do {
@@ -94,7 +100,7 @@ public abstract class WSGestalt {
 			
 			} catch(NumberFormatException ex) {
 			
-				println("Invalid Number");
+				printlnWithTimeStamp("Invalid Number");
 			
 			}
 		
@@ -171,6 +177,6 @@ public abstract class WSGestalt {
 	
 	public abstract void exitConsole();
 
-	public abstract void runConsole() throws SQLException;
+	public abstract void runConsole() throws SQLException, IOException;
 	
 }

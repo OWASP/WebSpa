@@ -14,7 +14,7 @@ public class WSActionAdd extends WSCommandOption {
 		final String users = this.myServer.getWSDatabase().users.showUsers();
 		myServer.println(users);
 		
-		final int ppID = myServer.readLineOptionalInt("Select a User ID: ");
+		final int ppID = myServer.readLineOptionalInt("Select a User ID");
 		final boolean userIDFound = myServer.getWSDatabase().passPhrases.isPPIDInUse(ppID);
 		
 		if(userIDFound == false) {
@@ -27,7 +27,7 @@ public class WSActionAdd extends WSCommandOption {
 			final String actions = myServer.getWSDatabase().actionsAvailable.showActions(ppID);
 			myServer.println(actions);
 			
-			final String osCommand = myServer.readLineRequired("Enter the new O/S Command: ");
+			final String osCommand = myServer.readLineRequired("Enter the new O/S Command");
 			int action = myServer.readLineRequiredInt("Select an action number for this O/S Command", 0, 9);
 			
 			final boolean actionNumberInUse = myServer.getWSDatabase().actionsAvailable.isActionNumberInUse(ppID, action);

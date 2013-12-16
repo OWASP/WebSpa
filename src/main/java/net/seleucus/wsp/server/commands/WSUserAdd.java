@@ -11,7 +11,7 @@ public class WSUserAdd extends WSCommandOption {
 	@Override
 	protected void execute() {
 		
-		String fullName = myServer.readLineRequired("Enter the New User's Full Name: ");
+		String fullName = myServer.readLineRequired("Enter the New User's Full Name");
 		
 		boolean passPhraseInUse = true;
 		CharSequence passSeq;
@@ -30,8 +30,8 @@ public class WSUserAdd extends WSCommandOption {
 			
 		} while(passPhraseInUse);
 				
-		String eMail = myServer.readLineOptional("Please enter the New User's Email Address: ");
-		String phone = myServer.readLineOptional("Please enter the New User's Phone Number: ");
+		String eMail = myServer.readLineOptional("Please enter the New User's Email Address");
+		String phone = myServer.readLineOptional("Please enter the New User's Phone Number");
 				
 		myServer.getWSDatabase().users.addUser(fullName, passSeq, eMail, phone);
 		

@@ -1,8 +1,11 @@
 package net.seleucus.wsp.client;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.cert.Certificate;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import net.seleucus.wsp.main.WSGestalt;
 import net.seleucus.wsp.main.WSVersion;
@@ -16,35 +19,87 @@ public class WSClient extends WSGestalt {
 	
 	@Override
 	public void exitConsole() {
-		println("\nGoodbye!\n");
+		printlnWithTimeStamp("Goodbye!\n");
 	}
 	
 	@Override
-	public void runConsole() {
+	public void runConsole() throws IOException {
 		
 		println("");
-		println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
+		println("Web-Spa - Single HTTP/S Request Authorisation");
+		println("version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
 		println("");
 
-		String host = readLineRequired("Please enter the target host [e.g. http://localhost/]: ");
-		CharSequence password = readPasswordRequired("Please enter your pass-phrase for that host: ");
-		int action = readLineRequiredInt("Please enter the action you want to execute on the host", 0, 9);
+		String host = readLineRequired("Host [e.g. https://localhost/]");
+		CharSequence password = readPasswordRequired("Your pass-phrase for that host: ");
+		int action = readLineRequiredInt("The action you want to execute", 0, 9);
 		
 		WSRequestBuilder myClient = new WSRequestBuilder(host, password, action);
 		String knock = myClient.getKnock();
 		
-		println("\nYour Web-Spa Knock is:\n\n" + knock + "\n");
+		printlnWithTimeStamp("Your Web-Spa Knock is:");
+		println("\n" + knock + "\n");
 		
-		// Clipboard nonsense 
-		final String choice = readLineOptional("Copy the above URL to the clipboard [Y/n]? ");
+		// URL nonsense 
+		final String choice = readLineOptional("Send the above URL [Y/n]");
 				
 		if("yes".equalsIgnoreCase(choice) ||
 			"y".equalsIgnoreCase(choice) ||
 			choice.isEmpty() ) {
 			
-			final StringSelection data = new StringSelection(knock);
-			final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clipboard.setContents(data, data);
+			URL webKnock = new URL(knock);
+			
+			if(webKnock.getProtocol().equalsIgnoreCase("http")) {
+				
+				printlnWithTimeStamp("Sending the above HTTP request");
+				
+				HttpURLConnection straightConnection = (HttpURLConnection) webKnock.openConnection();
+				straightConnection.setRequestMethod("GET");
+				straightConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+				straightConnection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
+				straightConnection.setRequestProperty("Accept-Language", "en-US,en;q=0.8,el;q=0.6");
+				straightConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36");
+
+				int responseCode = straightConnection.getResponseCode();
+				printlnWithTimeStamp("Response Code : " + responseCode);
+
+				straightConnection.disconnect();
+				
+			} else if(webKnock.getProtocol().equalsIgnoreCase("https")) {
+				
+				printlnWithTimeStamp("Sending the above HTTPS request");
+				
+				HttpsURLConnection sslConnection = (HttpsURLConnection) webKnock.openConnection();
+
+				sslConnection.setRequestMethod("GET");
+				sslConnection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+				sslConnection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
+				sslConnection.setRequestProperty("Accept-Language", "en-US,en;q=0.8,el;q=0.6");
+				sslConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36");
+
+				printlnWithTimeStamp("Response Code : " + sslConnection.getResponseCode());
+				printlnWithTimeStamp("Cipher Suite: " + sslConnection.getCipherSuite());
+				
+				Certificate[] certs = sslConnection.getServerCertificates();
+				for(Certificate cert : certs){
+
+					printlnWithTimeStamp("Cert Type : " + cert.getType());
+					printlnWithTimeStamp("Cert Hash Code : " + cert.hashCode());
+					printlnWithTimeStamp("Cert Public Key Algorithm : " 
+							+ cert.getPublicKey().getAlgorithm());
+					printlnWithTimeStamp("Cert Public Key Format : " 
+							+ cert.getPublicKey().getFormat());
+					printlnWithTimeStamp("");
+				}
+
+				sslConnection.disconnect();
+
+			} else {
+				
+				printlnWithTimeStamp("The URL is neither HTTP nor HTTPS");
+				printlnWithTimeStamp("No action will be taken");
+				
+			}
 			
 		}
 

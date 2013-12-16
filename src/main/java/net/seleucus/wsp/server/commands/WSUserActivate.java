@@ -14,7 +14,7 @@ public class WSUserActivate extends WSCommandOption {
 		final String users = this.myServer.getWSDatabase().users.showUsers();
 		myServer.println(users);
 		
-		int ppID = myServer.readLineOptionalInt("Select a User ID: ");
+		int ppID = myServer.readLineOptionalInt("Select a User ID");
 		boolean userIDFound = myServer.getWSDatabase().passPhrases.isPPIDInUse(ppID);
 		
 		if(userIDFound == false) {
@@ -27,7 +27,7 @@ public class WSUserActivate extends WSCommandOption {
 			myServer.println(oldPPIDStatus);
 			
 			// Toggle user
-			final String choice = myServer.readLineOptional("Toggle user activation [Y/n]? ");
+			final String choice = myServer.readLineOptional("Toggle user activation [Y/n]");
 			
 			if("yes".equalsIgnoreCase(choice) ||
 				"y".equalsIgnoreCase(choice) ||
