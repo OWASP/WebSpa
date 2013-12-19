@@ -33,17 +33,19 @@ public class WSClient extends WSGestalt {
 
 		String host = readLineRequired("Host [e.g. https://localhost/]");
 		CharSequence password = readPasswordRequired("Your pass-phrase for that host");
-		int action = readLineRequiredInt("The action you want to execute", 0, 9);
+		int action = readLineRequiredInt("The action number", 0, 9);
 		
 		WSRequestBuilder myClient = new WSRequestBuilder(host, password, action);
 		String knock = myClient.getKnock();
 		
+		println("");
 		printlnWithTimeStamp("Your Web-Spa Knock is:");
 		println("\n" + knock + "\n");
 		
 		// URL nonsense 
 		final String choice = readLineOptional("Send the above URL [Y/n]");
-				
+		println("");
+		
 		if("yes".equalsIgnoreCase(choice) ||
 			"y".equalsIgnoreCase(choice) ||
 			choice.isEmpty() ) {

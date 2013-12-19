@@ -7,7 +7,7 @@ import net.seleucus.wsp.server.WSServer;
 
 public class WebSpa {
 
-	private static final String[] ALLOWED_FIRST_PARAM = {"-help", "-client", "-server", "-version"};
+	protected static final String[] ALLOWED_FIRST_PARAM = {"-help", "-client", "-server", "-version"};
 	
 	private Console myConsole;
 	

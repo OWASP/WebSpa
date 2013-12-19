@@ -6,16 +6,13 @@ public class WSHelper extends WSGestalt {
 		super(myWebSpa);
 	}
 
-	@Override
-	public void exitConsole() {
-		// Nothing to add here...
-	}
 
 	@Override
 	public void runConsole() {
 		
 		println("");
-		println("Web-Spa - Single HTTP/S Request Authorisation - version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 
+		println("Web-Spa - Single HTTP/S Request Authorisation");
+		println("version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
 		println("");
 		
 		println("Usage: java -jar web-spa.jar [-option]");
@@ -30,6 +27,11 @@ public class WSHelper extends WSGestalt {
 		println("java -jar web-spa.jar -client");
 		println("java -jar web-spa.jar -server");
 		println("");
+		
+	}
+
+	@Override
+	public void exitConsole() {
 		
 	}
 
