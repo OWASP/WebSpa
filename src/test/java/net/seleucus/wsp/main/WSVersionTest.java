@@ -4,13 +4,36 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.sql.SQLException;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class WSVersionTest {
 
 	private static int VERSION_MIN = 0;
 	private static int VERSION_MAX = 10;
+	
+	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
+	@Before
+	public void setUpStreams() {
+	
+		System.setOut(new PrintStream(outContent));
+	    System.setErr(new PrintStream(errContent));
+
+	}
+
+	@After
+	public void cleanUpStreams() {
+	    System.setOut(null);
+	    System.setErr(null);
+	}
+	
 	@Test
 	public final void testGetMajor() {
 		int majorVersion = WSVersion.getMajor();
@@ -50,6 +73,15 @@ public class WSVersionTest {
 	@Test
 	public final void testIsValidFalse() {
 		assertFalse(WSVersion.isCurrentVersion("0.4"));
+	}
+	
+	@Test
+	public void testRunConsole() throws SQLException {
+		
+		WSVersion myVersion = new WSVersion(new WebSpa(System.console()));
+		myVersion.runConsole();
+		assertEquals(WSVersion.getValue() + '\n', outContent.toString());
+		
 	}
 	
 }

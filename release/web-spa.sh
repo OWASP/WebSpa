@@ -1,7 +1,7 @@
 #!/bin/sh
 
 JAVA=`which java`
-WEB_SPA="web-spa-0.5.jar"
+WEB_SPA="web-spa-0.6.jar"
 JAVA_PARAMS="-Xms64m -Xmx256m"
 
 # launch web-spa
@@ -11,7 +11,8 @@ if [ -r ./$WEB_SPA ]; then
 fi
 
 echo ""
-echo "Web-Spa - Single HTTP/S Request Authorisation - version 0.5 (web-spa@seleucus.net)"
+echo "Web-Spa - Single HTTP/S Request Authorisation"
+echo "version 0.6 (web-spa@seleucus.net)"
 echo ""
 echo "Unable to find $WEB_SPA file."
 echo "$0 needs to be in the same directory as $WEB_SPA"

@@ -162,7 +162,14 @@ public abstract class WSGestalt {
 	
 	public void println(final String line) {
 		
-		myConsole.writer().println(line);
+		if(myConsole == null) {
+			
+			System.out.println(line);
+			
+		} else { 
+			
+			myConsole.writer().println(line);
+		}
 		
 	}
 	

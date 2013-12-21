@@ -41,12 +41,12 @@ Typically, we like to store things in /opt, ergo:
 bash-3.00# unzip webspa-{xx}.zip -d /opt/
 Archive:  webspa-{xx}.zip
   inflating: ...
-bash-3.00#cd /opt/web-spa-0.5 
+bash-3.00#cd /opt/web-spa-0.6 
 
 You can quickly test web-spa, by issuing:
 
-bash-3.00# java -jar webspa-05.jar -version
-0.5
+bash-3.00# java -jar webspa-06.jar -version
+0.6
 bash-3.00#
 
 This will simply print the version of web-spa
@@ -63,7 +63,7 @@ following four (4) options:
   -client : Run the client, generate requests
   -help   : Print this usage message
   -server : Run the server
- -version : 0.5
+ -version : 0.6
 
 If no option is selected, the help message
 detailing the above options will be displayed.
@@ -81,11 +81,11 @@ permissions. If you have followed the
 instructions above and placed web-spa in /opt
 issue the following: 
 
-bash-3.00# chmod 744 /opt/web-spa-0.5/web-spa.sh
+bash-3.00# chmod 744 /opt/web-spa-0.6/web-spa.sh
 
 You can test the web-spa script, by issuing:
 bash-3.00# ./web-spa.sh -version
-0.5
+0.6
 bash-3.00#
 
 You will be required to have a java 1.6 JRE or
