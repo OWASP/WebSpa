@@ -179,7 +179,8 @@ public abstract class WSGestalt {
 		final SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
 		final String formattedDate = sdf.format(currentDate);
 		
-		myConsole.writer().println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 50) );
+		this.println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 50) );
+		
 	}
 	
 	public abstract void exitConsole();

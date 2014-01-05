@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 
 public class WSConfiguration {
 
-	private static final String CONFIG_PATH = "web-spa-config";
+	protected static final String CONFIG_PATH = "web-spa-config.properties";
 
 	private Properties configProperties;
 	
@@ -20,7 +20,7 @@ public class WSConfiguration {
 		
 		// Check if the configuration properties file is present, if not create
 		// it from the bundled template...
-		File configFile = new File(CONFIG_PATH + ".properties");
+		File configFile = new File(CONFIG_PATH);
 		if (!configFile.exists()) {
 			URL bundledConfigLocation = ClassLoader
 					.getSystemResource("config/bundled-web-spa-config.properties");

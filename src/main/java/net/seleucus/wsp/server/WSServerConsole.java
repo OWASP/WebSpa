@@ -18,6 +18,9 @@ import net.seleucus.wsp.server.commands.WSUserShow;
 
 public class WSServerConsole {
 
+	protected static final String UNKNOWN_CMD_MESSAGE = 
+			"\nUnknown command - type \"help\" for more options\n";
+	
 	private WSServer myServer;
 	private ArrayList<WSCommandOption> commands;
 	
@@ -53,7 +56,7 @@ public class WSServerConsole {
 
 		if( (commandFound == false) && (command.isEmpty() == false) ) {
 			
-			System.out.println("\nUnknown command - type \"help\" for more options\n");
+			myServer.println(UNKNOWN_CMD_MESSAGE);
 
 		}
 
