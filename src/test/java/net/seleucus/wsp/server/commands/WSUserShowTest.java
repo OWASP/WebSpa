@@ -1,18 +1,20 @@
-package net.seleucus.wsp.server;
+package net.seleucus.wsp.server.commands;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 
 import net.seleucus.wsp.main.WebSpa;
+import net.seleucus.wsp.server.WSServer;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class WSServerTest {
+public class WSUserShowTest {
+
 
 	private ByteArrayOutputStream outContent; // = new ByteArrayOutputStream();
 	private ByteArrayOutputStream errContent; // = new ByteArrayOutputStream();
@@ -58,13 +60,23 @@ public class WSServerTest {
 	    System.setOut(null);
 	    System.setErr(null);
 	}
-
+	
 	@Test
-	public void testServerStatusWhenServiceHasNotStarted() throws Exception {
+	public void testIsValidShouldReturnTrueIfCommandIsServiceStopIgnoreCase() {
 		
-		wsServer.serverStatus();	
-		assertTrue(outContent.toString().endsWith("Web-Spa is Stopped." + '\n'));
-				
+		WSUserShow myUserShow = new WSUserShow(wsServer);
+		assertTrue(myUserShow.isValid("UseR sHow"));
+		
 	}
+	
+	@Test
+	public void testIsValidShouldReturnFalseIfCommandIsServiceWithAnyOtherTextAfterIt() {
+		
+		WSUserShow myUserShow = new WSUserShow(wsServer);
+		assertFalse(myUserShow.isValid("Anything"));
+		
+	}
+	
+
 
 }
