@@ -17,45 +17,61 @@ public class WSServerConsoleTest {
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
+	private WSServer wsServer;
+	
 	@Before
-	public void setUpStreams() {
-
+	public void setUpStreams() throws Exception {
+	
 		System.setOut(new PrintStream(outContent));
-		System.setErr(new PrintStream(errContent));
+	    System.setErr(new PrintStream(errContent));
 
+	    wsServer = new WSServer(new WebSpa(System.console()));
 	}
 
 	@After
-	public void cleanUpStreams() {
+	public void cleanUpStreams() throws Exception {
+		
+		wsServer.shutdown();
+		
+		final String DB_PATH = "web-spa-db";
+		
+		final String[] extensions = { ".properties", ".script", ".log", 
+				".data", ".backup" };
 
-		System.setOut(null);
-		System.setErr(null);
+		for (String extension : extensions) {
 
+			File dbFile = new File(DB_PATH + extension);
+			if (dbFile.exists()) {
+				dbFile.delete();
+			}
+
+		}	// for loop
+		
+		final File configFile = new File("web-spa-config.properties");
+		if(configFile.exists()) {
+			configFile.delete();
+		}
+		
+	    System.setOut(null);
+	    System.setErr(null);
 	}
 
 	@Test
 	public void testExecuteCommandPrintsNothingIfNoInputIsGiven() throws Exception {
 
-		WSServer myServer = new WSServer( new WebSpa(System.console()) );
-		WSServerConsole myConsole = new WSServerConsole( myServer );
-
+		WSServerConsole myConsole = new WSServerConsole( wsServer );
 		myConsole.executeCommand("");
 		assertTrue( outContent.toString().equals("") );
-
-		myServer.shutdownAndDeleteAllFiles();
 
 	}
 
 	@Test
 	public void testExecuteCommandPrintsDefaultUnknownCmdMessageIfCommandNotFound() throws Exception {
 
-		WSServer myServer = new WSServer( new WebSpa(System.console()) );
-		WSServerConsole myConsole = new WSServerConsole( myServer );
+		WSServerConsole myConsole = new WSServerConsole( wsServer );
 
 		myConsole.executeCommand("<user_typed_non_existant_command>");
 		assertTrue( outContent.toString().contains(WSServerConsole.UNKNOWN_CMD_MESSAGE) );
-
-		myServer.shutdownAndDeleteAllFiles();
 
 	}
 

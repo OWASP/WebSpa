@@ -2,26 +2,58 @@ package net.seleucus.wsp.server;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
+import net.seleucus.wsp.main.WebSpa;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class WSActionTest {
-	/*
-	@Test
-	public final void testGetCommand() {
+
+	private WSServer wsServer;
+	
+	@Before
+	public void setUpStreams() throws Exception {
+
+		wsServer = new WSServer(new WebSpa(System.console()));
 		
-		final String command = "ping www.google.com";
-		WSAction action = new WSAction(command);
+	}
+
+	@After
+	public void cleanUpStreams() throws Exception {
 		
-		assertEquals(command, action.getCommand());	
+		wsServer.shutdown();
+		
+		final String DB_PATH = "web-spa-db";
+		
+		final String[] extensions = { ".properties", ".script", ".log", 
+				".data", ".backup" };
+
+		for (String extension : extensions) {
+
+			File dbFile = new File(DB_PATH + extension);
+			if (dbFile.exists()) {
+				dbFile.delete();
+			}
+
+		}	// for loop
+		
+		final File configFile = new File("web-spa-config.properties");
+		if(configFile.exists()) {
+			configFile.delete();
+		}
+		
 	}
 
 	@Test
-	public final void testGetHasExecuted() {
-		
-		WSAction action = new WSAction("uname");
-		action.call();
-		
-		assertTrue(action.getHasExecuted());
+	public void testWSActionSetsExecutionAndSuccessToFalse() throws Exception {
+	
+		WSAction wsAction = new WSAction(wsServer, 0, 0, "127.0.0.1");
+		assertFalse(wsAction.getHasExecuted());
+		assertFalse(wsAction.getWasSuccessful());
+
 	}
-	*/
+
 }

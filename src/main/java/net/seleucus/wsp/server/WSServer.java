@@ -188,28 +188,4 @@ public class WSServer extends WSGestalt {
 		
 	}
 
-	public void shutdownAndDeleteAllFiles() throws SQLException {
-
-		this.shutdown();
-		
-		final String DB_PATH = "web-spa-db";
-		
-		final String[] extensions = { ".properties", ".script", ".log", 
-				".data", ".backup" };
-
-		for (String extension : extensions) {
-
-			File dbFile = new File(DB_PATH + extension);
-			if (dbFile.exists()) {
-				dbFile.delete();
-			}
-
-		}	// for loop
-		
-		final File configFile = new File("web-spa-config.properties");
-		if(configFile.exists()) {
-			configFile.delete();
-		}
-	}
-
 }
