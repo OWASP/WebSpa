@@ -3,7 +3,7 @@ package net.seleucus.wsp.crypto;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.security.crypto.util.EncodingUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class WebSpaEncoder {
 
@@ -19,7 +19,7 @@ public class WebSpaEncoder {
 		byte[] passKnockBytes = PassPhraseCrypto.getHashedPassPhraseNow(passPhrase);
 		byte[] actionKnockBytes = ActionNumberCrypto.getHashedActionNumberNow(passPhrase, actionNumber);
 		
-		byte[] allBytes = EncodingUtils.concatenate(passKnockBytes, actionKnockBytes);
+		byte[] allBytes = ArrayUtils.addAll(passKnockBytes, actionKnockBytes);
 		
 		return Base64.encodeBase64URLSafeString(allBytes);
 	}
@@ -38,7 +38,7 @@ public class WebSpaEncoder {
 		} else {
 			
 			byte[] webSpaBytes = Base64.decodeBase64(webSpaRequest);
-			byte[] passBytes = EncodingUtils.subArray(webSpaBytes, 0, 51);
+			byte[] passBytes = ArrayUtils.subarray(webSpaBytes, 0, 51);
 			byte randomByte = webSpaBytes[0];
 			
 			byte[] expectedBytes = PassPhraseCrypto.getHashedPassPhraseNowWithSalt(rawPassword, randomByte);
@@ -54,8 +54,8 @@ public class WebSpaEncoder {
 		if(WebSpaEncoder.matches(rawPassword, webSpaRequest)) {
 			
 			byte[] webSpaBytes = Base64.decodeBase64(webSpaRequest);
-			byte[] actionBytes = EncodingUtils.subArray(webSpaBytes, 51, 75);
-			byte[] actionSalt = EncodingUtils.subArray(actionBytes, 0, 4);
+			byte[] actionBytes = ArrayUtils.subarray(webSpaBytes, 51, 75);
+			byte[] actionSalt = ArrayUtils.subarray(actionBytes, 0, 4);
 						
 			for(int count = 0; count <= 9; count++) {
 				

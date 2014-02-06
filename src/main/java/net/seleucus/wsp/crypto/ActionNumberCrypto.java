@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.security.crypto.util.EncodingUtils;
 
 public class ActionNumberCrypto extends WebSpaUtils {
 
@@ -23,10 +22,10 @@ public class ActionNumberCrypto extends WebSpaUtils {
 		
 		Arrays.sort(sortedBytes);
 
-		byte[] allBytes = EncodingUtils.concatenate(sortedBytes, salt);
+		byte[] allBytes = ArrayUtils.addAll(sortedBytes, salt);
 		byte[] hashedBytes = ArrayUtils.subarray(digest(allBytes), 0, 20); 
 		
-		return EncodingUtils.concatenate(salt, hashedBytes);
+		return ArrayUtils.addAll(salt, hashedBytes);
 		
 	}
 	

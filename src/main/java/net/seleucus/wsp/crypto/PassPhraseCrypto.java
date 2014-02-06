@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.security.crypto.util.EncodingUtils;
 
 public final class PassPhraseCrypto extends WebSpaUtils {
 	
@@ -24,10 +23,10 @@ public final class PassPhraseCrypto extends WebSpaUtils {
 		byte[] randomBytes = new byte[1];
 		randomBytes[0] = salt;
 		
-		byte[] allBytes = EncodingUtils.concatenate(sortedBytes, randomBytes);
+		byte[] allBytes = ArrayUtils.addAll(sortedBytes, randomBytes);
 		byte[] hashedBytes = ArrayUtils.subarray(digest(allBytes), 0, 50); 
 		
-		return EncodingUtils.concatenate(randomBytes, hashedBytes);
+		return ArrayUtils.addAll(randomBytes, hashedBytes);
 		
 	}
 

@@ -5,10 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
-import org.springframework.security.crypto.util.EncodingUtils;
 
 public class WebSpaEncoderTest {
 
@@ -42,7 +41,7 @@ public class WebSpaEncoderTest {
 		byte[] expectedPassBytes = PassPhraseCrypto.getHashedPassPhraseNowWithSalt(passPhrase, passSalt);
 		byte[] expectedActionBytes = ActionNumberCrypto.getHashedActionNumberNowWithSalt(passPhrase, actionNumber, actionSalt);
 		
-		byte[] expectedAllBytes = EncodingUtils.concatenate(expectedPassBytes, expectedActionBytes);
+		byte[] expectedAllBytes = ArrayUtils.addAll(expectedPassBytes, expectedActionBytes);
 		String expectedWebSpaRequest = Base64.encodeBase64URLSafeString(expectedAllBytes);
 		
 		assertEquals(expectedWebSpaRequest, calculatedWebSpaRequest);

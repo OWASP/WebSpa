@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.seleucus</groupId>
 	<artifactId>web-spa</artifactId>
-	<version>0.6-SNAPSHOT</version>
+	<version>0.7-SNAPSHOT</version>
 	<name>Web-Spa</name>
 	<description>Web Single Request Authorisation</description>
 
@@ -39,13 +39,7 @@
 			<artifactId>commons-math3</artifactId>
 			<version>3.2</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-crypto</artifactId>
-			<version>3.1.4.RELEASE</version>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
