@@ -15,7 +15,7 @@ import org.apache.commons.io.IOUtils;
 
 public class WSHelpOptions extends WSCommandOption {
 	
-    private static final String[] ARRAY_COMMANDS = new String[] { "action", "config", "help", "service", "shortcuts", "user" };
+    private static final String[] ARRAY_COMMANDS = new String[] { "action", "config", "help", "pass-phrase", "service", "shortcuts", "user" };
     private static final Set<String> SERVER_COMMANDS = new HashSet<String>(Arrays.asList(ARRAY_COMMANDS));
 
 	private String option;

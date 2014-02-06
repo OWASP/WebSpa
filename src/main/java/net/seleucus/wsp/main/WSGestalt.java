@@ -11,6 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public abstract class WSGestalt {
 
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_RESET = "\u001B[0m";
+
 	private Console myConsole;
 
 	public WSGestalt(WebSpa myWebSpa) {
@@ -110,7 +113,7 @@ public abstract class WSGestalt {
 	
 	public String readLineServerPrompt() {
 		
-		return myConsole.readLine("web-spa-server>");
+		return myConsole.readLine(ANSI_RED + "web-spa-server" + ANSI_RESET + "> ");
 		
 	}
 	

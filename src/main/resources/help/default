@@ -11,6 +11,8 @@ COMMANDS/OPTIONS:
   help
     [command] - show help for that command
     shortcuts - show various command shortcuts
+  pass-phrase
+    show      - show the pass-phrase for that user
   service
     start     - start web-spa
     status    - check if web-spa is running

@@ -115,7 +115,8 @@ public class WSPassPhrases {
 				throw new RuntimeException(ex);
 	
 			}
-		}
+			
+		} // ppID > 0
 		
 		return activationStatus;
 	}
@@ -190,7 +191,8 @@ public class WSPassPhrases {
 				throw new RuntimeException(ex);
 				
 			}
-		}
+			
+		} // ppID > 0
 		
 		return success;
 		
@@ -231,6 +233,72 @@ public class WSPassPhrases {
 		
 		return output;
 		
+	}
+	
+	public synchronized CharSequence getPassPhrase(final int ppID) {
+		
+		CharSequence rawPassPhrase = CharBuffer.wrap("<could-not-find-pass-phrase>".toCharArray());
+		
+		if(ppID > 0) {
+			
+			final String sqlPassPhraseLookup = "SELECT PASSPHRASE FROM PASSPHRASES WHERE PPID = ? ;";
+			
+			PreparedStatement psPassPhrase;
+			try {
+				psPassPhrase = wsConnection.prepareStatement(sqlPassPhraseLookup);
+				psPassPhrase.setInt(1, ppID);
+				ResultSet rs = psPassPhrase.executeQuery();
+				
+				if (rs.next()) {
+					char[] dbPassPhraseArray = rs.getString(1).toCharArray();
+					rawPassPhrase = CharBuffer.wrap(dbPassPhraseArray);
+				}
+				
+				rs.close();
+				psPassPhrase.close();
+				
+			} catch (SQLException ex) {
+				
+				throw new RuntimeException(ex);
+				
+			}
+			
+		} // ppID > 0
+		
+		return rawPassPhrase;
+		
+	}
+	
+	public synchronized String getLastModifiedDate(final int ppID) {
+		
+		String lastModified = "0000-00-00 00:00:00.000";
+		
+		if(ppID > 0) {
+			
+			final String sqlModifiedLookup = "SELECT MODIFIED FROM PASSPHRASES WHERE PPID = ? ;";
+			
+			PreparedStatement psModified;
+			try {
+				psModified = wsConnection.prepareStatement(sqlModifiedLookup);
+				psModified.setInt(1, ppID);
+				ResultSet rs = psModified.executeQuery();
+				
+				if (rs.next()) {
+					lastModified = rs.getString(1).substring(0, 23);
+				}
+				
+				rs.close();
+				psModified.close();
+				
+			} catch (SQLException ex) {
+				
+				throw new RuntimeException(ex);
+				
+			}
+			
+		} // ppID > 0
+		
+		return lastModified;
 	}
 
 }

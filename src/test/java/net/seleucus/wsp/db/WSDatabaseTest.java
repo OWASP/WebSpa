@@ -2,22 +2,65 @@ package net.seleucus.wsp.db;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class WSDatabaseTest {
 
+	protected static void deleteAllDBFiles() throws Exception {
+
+		final String DB_PATH = "web-spa-db";
+		
+		final String[] extensions = {
+				".properties", ".script", 
+				".log", ".data", ".backup" };
+
+		for (String extension : extensions) {
+
+			File dbFile = new File(DB_PATH + extension);
+			if (dbFile.exists()) {
+				dbFile.delete();
+			}
+
+		}	// for loop
+		
+	}
+	
+	@Before
+	public void setUp() throws Exception {
+		
+		WSDatabaseTest.deleteAllDBFiles();
+		
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		
+		WSDatabaseTest.deleteAllDBFiles();
+
+	}
+	
 	@Test
-	public void testWSDatabase() throws Exception {
+	public void testWSDatabaseShouldAlwaysLeaveAPropertiesFileBehind() throws Exception {
 		
-		// String filePath = "src/test/resources/data/web-spa-test1";		
-		// String filePath = "111b-spa-test1";		
-		// WSDatabase myDatabase = new WSDatabase(filePath);
-		// File myDBPropFile = new File(myDatabase.getDatabasePathProperties());
-		// final boolean myDBPropFileExists = myDBPropFile.exists();
+		new WSDatabase();
+		File propertiesFile = new File(WSDatabase.DB_PATH + ".properties");
 		
-		// myDatabase.deleteAllDatabaseFiles();
+		assertTrue(propertiesFile.exists());
 		
-		assertTrue(true);
+	}
+	
+	@Test
+	public void testWSDatabaseShouldAlwaysLeaveAScriptFileBehind() throws Exception {
+		
+		new WSDatabase();
+		File scriptFile = new File(WSDatabase.DB_PATH + ".script");
+		
+		assertTrue(scriptFile.exists());
+		
 	}
 
 }

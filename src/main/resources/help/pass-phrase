@@ -1,0 +1,15 @@
+
+The PASS-PHRASE command allows you to view and change
+pass-phrases for user accounts. 
+
+This command can be used with the following OPTIONS
+
+'pass-phrase show' - To display the pass-phrase of an
+existing user
+
+'pass-phrase modify' - To change the pass-phrase of an 
+existing user
+
+A normal user does not have the ability to change 
+their pass-phrase. They rely on the web-spa 
+administrator for that.

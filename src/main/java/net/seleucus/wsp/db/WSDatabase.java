@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 public class WSDatabase {
 
-	private static final String DB_PATH = "web-spa-db";
+	protected static final String DB_PATH = "web-spa-db";
 
 	private Connection wsConnection;
 
@@ -71,27 +71,5 @@ public class WSDatabase {
 		}
 
 	}
-
-	protected synchronized void deleteAllDatabaseFiles() {
-
-		this.shutdown();
-
-		final String[] extensions = { ".properties", ".script", ".log", 
-									  ".data", ".backup" };
-		
-		for (String extension : extensions) {
-			
-			File dbFile = new File(DB_PATH + extension);
-			
-			if (dbFile.exists()) {
-			
-				dbFile.delete();
-				
-			}
-			
-		}	// for loop
-
-	}
-
 
 }
