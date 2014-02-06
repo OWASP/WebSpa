@@ -1,11 +1,13 @@
 
-A few commands/options have assigned 'one-letter' shortcuts.
+A few commands/options have assigned shortcuts.
 
 COMMANDS/OPTIONS:
 
   config
     show      - shortcut 'c'
   help        - shortcut '?'
+  pass-phrase
+    modify    - shortcut 'passwd'
   
   exit        - shortcut 'x'
   

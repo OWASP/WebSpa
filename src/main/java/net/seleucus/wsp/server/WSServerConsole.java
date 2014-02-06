@@ -8,6 +8,7 @@ import net.seleucus.wsp.server.commands.WSActionShow;
 import net.seleucus.wsp.server.commands.WSCommandOption;
 import net.seleucus.wsp.server.commands.WSConfigShow;
 import net.seleucus.wsp.server.commands.WSHelpOptions;
+import net.seleucus.wsp.server.commands.WSPassPhraseModify;
 import net.seleucus.wsp.server.commands.WSPassPhraseShow;
 import net.seleucus.wsp.server.commands.WSServiceStart;
 import net.seleucus.wsp.server.commands.WSServiceStatus;
@@ -35,6 +36,7 @@ public class WSServerConsole {
 		this.commands.add(new WSConfigShow(this.myServer));
 		this.commands.add(new WSHelpOptions(this.myServer));
 		this.commands.add(new WSPassPhraseShow(this.myServer));
+		this.commands.add(new WSPassPhraseModify(this.myServer));
 		this.commands.add(new WSServiceStart(this.myServer));
 		this.commands.add(new WSServiceStatus(this.myServer));
 		this.commands.add(new WSServiceStop(this.myServer));

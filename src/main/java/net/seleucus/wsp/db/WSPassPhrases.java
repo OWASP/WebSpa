@@ -301,4 +301,35 @@ public class WSPassPhrases {
 		return lastModified;
 	}
 
+	public synchronized boolean updatePassPhrase(final int ppID, final CharSequence passSeq) {
+		
+		boolean success = false;
+		
+		if(ppID > 0) {
+			
+			final String passPhraseUpdate = "UPDATE PASSPHRASES SET PASSPHRASE = ? , MODIFIED = CURRENT_TIMESTAMP WHERE PPID = ? ;";
+			
+			try {
+				PreparedStatement ps = wsConnection.prepareStatement(passPhraseUpdate);
+				ps.setString(1, passSeq.toString());
+				ps.setInt(2, ppID);
+				
+				int rowCount = ps.executeUpdate();
+				
+				if(rowCount == 1) {
+					success = true;
+				}
+				
+			} catch (SQLException ex) {
+
+				throw new RuntimeException(ex);
+				
+			}
+			
+		}
+		
+		return success; 
+		
+	}
+
 }
