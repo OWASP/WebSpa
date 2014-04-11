@@ -2,7 +2,7 @@
 The configuration of web-spa, when running in server mode can
 be found in a file called:
 
-	'web-spa-config.properties'
+	'webspa-config.properties'
 	
 This file contains two (2) very important properties:
 
@@ -15,7 +15,7 @@ the filesystem where the access log file of the web server is.
 This has a default value:
 	'/var/log/apache2/access.log'
 	
-Which can be modified before starting web-spa in server mode.
+Which can be modified before starting webspa in server mode.
 
 2. The logging-regex-for-each-request property is the regular
 expression indicating where within each line of the access log

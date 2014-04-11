@@ -1,5 +1,5 @@
 
-The USER command allows you as a web-spa administrator to:
+The USER command allows you as a WebSpa administrator to:
 
 1. Add New Users
 2. Show the Current Users
@@ -12,12 +12,12 @@ When adding new users, you MUST:
 1.1 Specify the user's name
 
 This is used for reference purposes and is not actively 
-entered in the generation of a new web-spa request.
+entered in the generation of a new WebSpa request.
 
 1.2 Specify the user's unique pass-phrase
 
 What identifies each user uniquely is the pass-phrase you 
-select. Also the security of the web-spa channel is defined
+select. Also the security of the WebSpa channel is defined
 by the strength of the password you set.
 
 Finally, there are two optional fields that you MAY populate,
@@ -26,7 +26,7 @@ e-mail address and phone number.
 
 2. Show the Current Users 'user show'
 
-This option displays the existing users of web-spa. It lists
+This option displays the existing users of WebSpa. It lists
 their unique 'ID', if their account is 'Active', each user's
 'Full Name' and the last modification date of their account.
 

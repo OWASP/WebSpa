@@ -12,7 +12,7 @@ public class WSDatabaseTest {
 
 	protected static void deleteAllDBFiles() throws Exception {
 
-		final String DB_PATH = "web-spa-db";
+		final String DB_PATH = "webspa-db";
 		
 		final String[] extensions = {
 				".properties", ".script", 

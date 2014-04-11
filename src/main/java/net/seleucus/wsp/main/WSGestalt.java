@@ -113,7 +113,7 @@ public abstract class WSGestalt {
 	
 	public String readLineServerPrompt() {
 		
-		return myConsole.readLine(ANSI_RED + "web-spa-server" + ANSI_RESET + "> ");
+		return myConsole.readLine(ANSI_RED + "webspa-server" + ANSI_RESET + "> ");
 		
 	}
 	

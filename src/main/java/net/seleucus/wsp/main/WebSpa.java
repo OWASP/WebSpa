@@ -25,19 +25,19 @@ public class WebSpa {
 		int mode = -1;
 		
 		if(args.length > 0) {
-			// java -jar web-spa.jar -help
+			// java -jar webspa.jar -help
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[0])) {
 				mode = 0;
 			}
-			// java -jar web-spa.jar -client
+			// java -jar webspa.jar -client
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[1])) {
 				mode = 1;
 			}
-			// java -jar web-spa.jar -server
+			// java -jar webspa.jar -server
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[2])) {
 				mode = 2;
 			}
-			// java -jar web-spa.jar -version
+			// java -jar webspa.jar -version
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[3])) {
 				mode = 3;
 			}

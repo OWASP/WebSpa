@@ -36,7 +36,7 @@ public class WSServerTest {
 		
 		wsServer.shutdown();
 		
-		final String DB_PATH = "web-spa-db";
+		final String DB_PATH = "webspa-db";
 		
 		final String[] extensions = { ".properties", ".script", ".log", 
 				".data", ".backup" };
@@ -50,7 +50,7 @@ public class WSServerTest {
 
 		}	// for loop
 		
-		final File configFile = new File("web-spa-config.properties");
+		final File configFile = new File("webspa-config.properties");
 		if(configFile.exists()) {
 			configFile.delete();
 		}
@@ -63,7 +63,7 @@ public class WSServerTest {
 	public void testServerStatusWhenServiceHasNotStarted() throws Exception {
 		
 		wsServer.serverStatus();	
-		assertTrue(outContent.toString().endsWith("Web-Spa is Stopped." + '\n'));
+		assertTrue(outContent.toString().endsWith("WebSpa is Stopped." + '\n'));
 				
 	}
 

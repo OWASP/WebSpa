@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 
 public class WSConfiguration {
 
-	protected static final String CONFIG_PATH = "web-spa-config.properties";
+	protected static final String CONFIG_PATH = "webspa-config.properties";
 
 	private Properties configProperties;
 	
@@ -23,7 +23,7 @@ public class WSConfiguration {
 		File configFile = new File(CONFIG_PATH);
 		if (!configFile.exists()) {
 			URL bundledConfigLocation = ClassLoader
-					.getSystemResource("config/bundled-web-spa-config.properties");
+					.getSystemResource("config/bundled-webspa-config.properties");
 			FileUtils.copyURLToFile(bundledConfigLocation, configFile);
 		}
 		

@@ -67,7 +67,7 @@ public class WSVersionTest {
 	
 	@Test
 	public final void testIsValidTrue() {
-		assertTrue(WSVersion.isCurrentVersion("0.6"));
+		assertTrue(WSVersion.isCurrentVersion("0.7"));
 	}
 	
 	@Test

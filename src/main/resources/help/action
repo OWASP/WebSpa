@@ -1,5 +1,5 @@
 
-The ACTION command allows you as a web-spa administrator to:
+The ACTION command allows you as a WebSpa administrator to:
 
 
 1. Add New Actions
@@ -16,7 +16,7 @@ System (O/S) command.
 
 It is important that the user assigned to execute this command
 would be authorised to do so under the permissions that the 
-web-spa jar file is run under.
+WebSpa jar file is run under.
 
 Also a valid, active user must already exist in order for the
 O/S command to run successfully. Please user the command
@@ -26,20 +26,20 @@ command.
 1.2 Specify a Unique Action Number [0-9]
 
 Each command must be mapped to a single digit number. This 
-number is a value that will be asked to be entered by a web-spa
-user utilsing the web-spa client. 
+number is a value that will be asked to be entered by a WebSpa
+user utilsing the WebSpa client. 
 
 Each O/S command is mapped to a unique number and each user can
 only have 10 commands allocated to their pass-phrase.
 
-If more than 10 O/S commands are required, a web-spa 
+If more than 10 O/S commands are required, a WebSpa 
 administrator would have to create a secondary user account 
 with a separate unique pass-phrase. 
 
 2. Show the Current Actions 'action show'
 
 This option displays the existing O/S commands for a user of
-web-spa. It lists each command number, the respective actual
+WebSpa. It lists each command number, the respective actual
 O/S command and the time it was last executed.
 
 |Example Output:
@@ -55,7 +55,7 @@ O/S command and the time it was last executed.
 | 5  sh -c "service mysql stop; ...  has never been executed
 |___________________________________________________________
 
-In this example you can see web-spa being setup to allow for
+In this example you can see WebSpa being setup to allow for
 the start/stop of the apache web server, SSH and also the 
 MySQL database.
 

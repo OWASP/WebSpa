@@ -1,6 +1,6 @@
 
 The SERVICE command allows you to start, stop and query the
-current status of the web-spa service. It does this in the 
+current status of the WebSpa service. It does this in the 
 following way:
 
 1. Start the Service 'service start'
@@ -16,7 +16,7 @@ your choice. The file is specified within the first property
 
 2. Stopping the Service 'service stop'
 
-This disables the log listening service and stops web-spa from 
+This disables the log listening service and stops WebSpa from 
 accepting any more commands in the form of web-knocks.
 
 3. Querying the Service Status 'service status'
@@ -24,11 +24,11 @@ accepting any more commands in the form of web-knocks.
 This will return a message of the service either being started
 or stopped. An example output can be seen below:
 
-|web-spa-server>service status
+|WebSpa-server>service status
 |
-|Web-Spa is Stopped
+|WebSpa is Stopped
 |
-|web-spa-server>
+|WebSpa-server>
 
-In this example the web-spa service is stopped and no further 
+In this example the WebSpa service is stopped and no further 
 O/S commands can be received as web-knocks.

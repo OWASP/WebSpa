@@ -26,7 +26,7 @@ public class WSActionTest {
 		
 		wsServer.shutdown();
 		
-		final String DB_PATH = "web-spa-db";
+		final String DB_PATH = "webspa-db";
 		
 		final String[] extensions = { ".properties", ".script", ".log", 
 				".data", ".backup" };
@@ -40,7 +40,7 @@ public class WSActionTest {
 
 		}	// for loop
 		
-		final File configFile = new File("web-spa-config.properties");
+		final File configFile = new File("webspa-config.properties");
 		if(configFile.exists()) {
 			configFile.delete();
 		}

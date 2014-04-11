@@ -27,8 +27,8 @@ public class WSClient extends WSGestalt {
 	public void runConsole() {
 		
 		println("");
-		println("Web-Spa - Single HTTP/S Request Authorisation");
-		println("version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
+		println("WebSpa - Single HTTP/S Request Authorisation");
+		println("version " + WSVersion.getValue() + " (WebSpa@seleucus.net)"); 		
 		println("");
 
 		String host = readLineRequired("Host [e.g. https://localhost/]");
@@ -39,7 +39,7 @@ public class WSClient extends WSGestalt {
 		String knock = myClient.getKnock();
 		
 		println("");
-		printlnWithTimeStamp("Your Web-Spa Knock is:");
+		printlnWithTimeStamp("Your WebSpa Knock is:");
 		println("\n" + knock + "\n");
 		
 		// URL nonsense 

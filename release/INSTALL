@@ -1,5 +1,5 @@
 =================================================
-Thank you for downloading web-spa!
+Thank you for downloading WebSpa!
 =================================================
 
 This program is a web knocking implementation
@@ -13,14 +13,14 @@ information.
 INSTALL: Table of contents
 =================================================
 
-- Prerequisites for web-spa
+- Prerequisites for WebSpa
 
 =================================================
-- Prerequisites for web-spa
+- Prerequisites for WebSpa
 =================================================
 
 The following programs must be installed in order
-for web-spa to run:
+for WebSpa to run:
 
 - Java 1.6 or later
   
@@ -31,6 +31,6 @@ You only need to download and install the "Java
 Runtime Environment (JRE)".
 
 For development and contributing to the code base
-of web-spa, you will require the "Java 
+of WebSpa, you will require the "Java 
 Development Kit (JDK)".
 =================================================

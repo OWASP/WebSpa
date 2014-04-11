@@ -50,7 +50,7 @@ public class WSServer extends WSGestalt {
 			
 		} else {
 			
-			printlnWithTimeStamp("Attempting to start web-spa...");
+			printlnWithTimeStamp("Attempting to start WebSpa...");
 			File accessLog = new File(myConfiguration.getAccesLogFileLocation());
 
 			if(accessLog.exists()) {
@@ -70,13 +70,13 @@ public class WSServer extends WSGestalt {
 					
 				} */ 
 
-				printlnWithTimeStamp("Web-spa server started!");
+				printlnWithTimeStamp("WebSpa server started!");
 				printlnWithTimeStamp("Please make sure your web server is also up");
 
 			} else {
 
 				printlnWithTimeStamp("Access log file NOT found at: " + accessLog.getPath());
-				printlnWithTimeStamp("Web-Spa Server Not Started\n");
+				printlnWithTimeStamp("WebSpa Server Not Started\n");
 
 			}
 		}
@@ -87,11 +87,11 @@ public class WSServer extends WSGestalt {
 		
 		if(serviceStarted) {
 			
-			printlnWithTimeStamp("Web-Spa is Running!");
+			printlnWithTimeStamp("WebSpa is Running!");
 			
 		} else {
 			
-			printlnWithTimeStamp("Web-Spa is Stopped.");
+			printlnWithTimeStamp("WebSpa is Stopped.");
 			
 		}
 	}
@@ -100,11 +100,11 @@ public class WSServer extends WSGestalt {
 		
 		if (myLogTailer == null) {
 			
-			printlnWithTimeStamp("Web-Spa Server Had Not Started");
+			printlnWithTimeStamp("WebSpa Server Had Not Started");
 			
 		} else {
 			
-			printlnWithTimeStamp("Web-Spa Server Stopped");
+			printlnWithTimeStamp("WebSpa Server Stopped");
 			myLogTailer.stop();
 
 			myLogTailer = null; 
@@ -131,12 +131,12 @@ public class WSServer extends WSGestalt {
 	public void runConsole() throws SQLException {
 		
 		println("");
-		println("Web-Spa - Single HTTP/S Request Authorisation");
-		println("version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
+		println("WebSpa - Single HTTP/S Request Authorisation");
+		println("version " + WSVersion.getValue() + " (WebSpa@seleucus.net)"); 		
 		println("");
 		println("This is a holding prompt, type \"exit\" or \"x\" to quit");
 		println("");
-		println("- type \"service start\" to start the web-spa server");
+		println("- type \"service start\" to start the WebSpa server");
 		println("- type \"help\" or \"?\" for more options");
 		println("");
 		

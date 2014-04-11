@@ -1,5 +1,5 @@
 =================================================
-Thank you for downloading web-spa!
+Thank you for downloading WebSpa!
 =================================================
 
 This program is a web knocking implementation
@@ -13,25 +13,25 @@ information.
 README: Table of contents
 =================================================
 
-- The web-spa download
-- Installing web-spa on (*nix)
-- Running web-spa on (*nix)
+- The WebSpa download
+- Installing WebSpa on (*nix)
+- Running WebSpa on (*nix)
 
 =================================================
-- The web-spa download
+- The WebSpa download
 =================================================
 
-Each release of web-spa comes in a single zip 
+Each release of WebSpa comes in a single zip 
 file called:
 
 webspa-{xx}.zip
 
 Where {xx} represents the version number. If you
 had downloaded, say as an example, webspa-25.zip
-you would be running web-spa version 2.5 . 
+you would be running WebSpa version 2.5 . 
 
 =================================================
-- Installing web-spa on (*nix)
+- Installing WebSpa on (*nix)
 =================================================
 
 Obtain a copy of the latest webspa-{xx}.zip
@@ -41,19 +41,19 @@ Typically, we like to store things in /opt, ergo:
 bash-3.00# unzip webspa-{xx}.zip -d /opt/
 Archive:  webspa-{xx}.zip
   inflating: ...
-bash-3.00#cd /opt/web-spa-0.6 
+bash-3.00#cd /opt/webspa-0.7 
 
-You can quickly test web-spa, by issuing:
+You can quickly test WebSpa, by issuing:
 
 bash-3.00# java -jar webspa-06.jar -version
-0.6
+0.7
 bash-3.00#
 
-This will simply print the version of web-spa
+This will simply print the version of WebSpa
 and return.
 
 =================================================
-- Running web-spa on (*nix)
+- Running WebSpa on (*nix)
 =================================================
 
 In running the standalone jar file (i.e. 
@@ -63,7 +63,7 @@ following four (4) options:
   -client : Run the client, generate requests
   -help   : Print this usage message
   -server : Run the server
- -version : 0.6
+ -version : 0.7
 
 If no option is selected, the help message
 detailing the above options will be displayed.
@@ -71,21 +71,21 @@ detailing the above options will be displayed.
 With each download of the standalone jar file 
 (i.e. webspa-{xx}.zip, see section above)
 there is a rather basic shell script available,
-named 'web-spa.sh'.
+named 'WebSpa.sh'.
 
 This script performs a `which java` and sets 
 the initial and maximum Java heap size.
 
 This script needs to be chmod-ed to have execute
 permissions. If you have followed the
-instructions above and placed web-spa in /opt
+instructions above and placed WebSpa in /opt
 issue the following: 
 
-bash-3.00# chmod 744 /opt/web-spa-0.6/web-spa.sh
+bash-3.00# chmod 744 /opt/webspa-0.7/webspa.sh
 
-You can test the web-spa script, by issuing:
-bash-3.00# ./web-spa.sh -version
-0.6
+You can test the WebSpa script, by issuing:
+bash-3.00# ./webspa.sh -version
+0.7
 bash-3.00#
 
 You will be required to have a java 1.6 JRE or

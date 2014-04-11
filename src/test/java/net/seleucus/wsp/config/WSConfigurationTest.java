@@ -19,7 +19,7 @@ public class WSConfigurationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		// Deletes the file "web-spa-config.properties" if found...
+		// Deletes the file "webspa-config.properties" if found...
 		File configFile = new File(WSConfiguration.CONFIG_PATH);
 		if(configFile.exists()) {
 			configFile.delete();
@@ -29,7 +29,7 @@ public class WSConfigurationTest {
 	
 	@After
 	public void tearDown() throws Exception {
-		// Deletes the file "web-spa-config.properties" if found...
+		// Deletes the file "webspa-config.properties" if found...
 		File configFile = new File(WSConfiguration.CONFIG_PATH);
 		if(configFile.exists()) {
 			configFile.delete();
@@ -43,7 +43,7 @@ public class WSConfigurationTest {
 		new WSConfiguration();
 		File configFile = new File(WSConfiguration.CONFIG_PATH);
 		// Running the constructor, creates the file
-		// "web-spa-config.properties" if one does 
+		// "webspa-config.properties" if one does 
 		// not exist
 		assertTrue(configFile.exists());
 				
@@ -111,7 +111,7 @@ public class WSConfigurationTest {
 		WSConfiguration myConfig = new WSConfiguration();
 		
 		URL bundledConfigLocation = ClassLoader
-				.getSystemResource("config/bundled-web-spa-config.properties");
+				.getSystemResource("config/bundled-webspa-config.properties");
 		
 		FileInputStream in = new FileInputStream(new File(bundledConfigLocation.toURI()));
 		Properties configProperties = new Properties();
@@ -129,7 +129,7 @@ public class WSConfigurationTest {
 		WSConfiguration myConfig = new WSConfiguration();
 		
 		URL bundledConfigLocation = ClassLoader
-				.getSystemResource("config/bundled-web-spa-config.properties");
+				.getSystemResource("config/bundled-webspa-config.properties");
 		
 		FileInputStream in = new FileInputStream(new File(bundledConfigLocation.toURI()));
 		Properties configProperties = new Properties();

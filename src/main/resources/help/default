@@ -5,7 +5,7 @@ COMMANDS/OPTIONS:
 
   action
     add       - assign O/S commands to users
-    show      - show the actions available for a web-spa user
+    show      - show the actions available for a WebSpa user
   config
     show      - show the configuration parameters loaded from file
   help
@@ -15,19 +15,19 @@ COMMANDS/OPTIONS:
     show      - show the pass-phrase for a user
     modify    - change the pass-phrase of a user
   service
-    start     - start web-spa
-    status    - check if web-spa is running
-    stop      - stop web-spa
+    start     - start WebSpa
+    status    - check if WebSpa is running
+    stop      - stop WebSpa
   user
     activate  - activate / de-activate user accounts
     add       - add new users to the database
-    show      - show the current web-spa users
+    show      - show the current WebSpa users
 
-  exit        - stop the service and exit web-spa
+  exit        - stop the service and exit WebSpa
     
 EXAMPLES:
 
-  web-spa-server> user add
-  web-spa-server> config show
-  web-spa-server> action create
+  WebSpa-server> user add
+  WebSpa-server> config show
+  WebSpa-server> action create
   

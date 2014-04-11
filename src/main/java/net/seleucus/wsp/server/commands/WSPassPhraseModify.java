@@ -41,7 +41,7 @@ public class WSPassPhraseModify extends WSCommandOption {
 					
 					if(passPhraseInUse == true) {
 						myServer.println("This Pass-Phrase is already taken and in use by another user");
-						myServer.println("Web-Spa pass-phrases have to be unique for each user");
+						myServer.println("WebSpa pass-phrases have to be unique for each user");
 					}
 					
 					

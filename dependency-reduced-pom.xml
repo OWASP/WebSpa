@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.seleucus</groupId>
-  <artifactId>web-spa</artifactId>
-  <name>Web-Spa</name>
+  <artifactId>webspa</artifactId>
+  <name>WebSpa</name>
   <version>0.7-SNAPSHOT</version>
   <description>Web Single Request Authorisation</description>
-  <url>https://code.google.com/p/web-spa/</url>
+  <url>https://www.owasp.org/index.php/OWASP_WebSpa_Project</url>
   <build>
     <plugins>
       <plugin>

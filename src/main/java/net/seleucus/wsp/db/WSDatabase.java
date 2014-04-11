@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 
 public class WSDatabase {
 
-	protected static final String DB_PATH = "web-spa-db";
+	protected static final String DB_PATH = "webspa-db";
 
 	private Connection wsConnection;
 
@@ -30,7 +30,7 @@ public class WSDatabase {
 		File propsFile = new File(DB_PATH + ".properties");
 		if (!propsFile.exists()) {
 			URL bundledPropsLocation = ClassLoader
-					.getSystemResource("data/bundled-web-spa-db.properties");
+					.getSystemResource("data/bundled-webspa-db.properties");
 			FileUtils.copyURLToFile(bundledPropsLocation, propsFile);
 		}
 
@@ -39,7 +39,7 @@ public class WSDatabase {
 		File scriptFile = new File(DB_PATH + ".script");
 		if (!scriptFile.exists()) {
 			URL bundledScriptlocation = ClassLoader
-					.getSystemResource("data/bundled-web-spa-db.script");
+					.getSystemResource("data/bundled-webspa-db.script");
 			FileUtils.copyURLToFile(bundledScriptlocation, scriptFile);
 		}
 

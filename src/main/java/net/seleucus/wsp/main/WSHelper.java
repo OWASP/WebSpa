@@ -11,11 +11,11 @@ public class WSHelper extends WSGestalt {
 	public void runConsole() {
 		
 		println("");
-		println("Web-Spa - Single HTTP/S Request Authorisation");
-		println("version " + WSVersion.getValue() + " (web-spa@seleucus.net)"); 		
+		println("WebSpa - Single HTTP/S Request Authorisation");
+		println("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
 		println("");
 		
-		println("Usage: java -jar web-spa.jar [-option]");
+		println("Usage: java -jar webspa.jar [-option]");
 		println("");
 		println("\t-client         : Run the client, generate valid requests");
 		println("\t-help           : Print this usage message");
@@ -24,8 +24,8 @@ public class WSHelper extends WSGestalt {
 		println("");
 		println("Examples:");
 		println("");
-		println("java -jar web-spa.jar -client");
-		println("java -jar web-spa.jar -server");
+		println("java -jar webspa.jar -client");
+		println("java -jar webspa.jar -server");
 		println("");
 		
 	}
