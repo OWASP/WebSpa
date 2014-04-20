@@ -2,10 +2,12 @@ package net.seleucus.wsp.crypto;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -23,9 +25,7 @@ public class ActionNumberCryptoTest {
 	private static final byte[] SALT = {100, Byte.MIN_VALUE, Byte.MAX_VALUE, -33};
 	// The expected byte array when using all the above
 	private static final byte[] EXPECTED_BYTES = {
-		100, -128, 127,  -33, -84, 107, 23, -124,
-		 75,   38, 123, -104,   6, 109, 22,  -83, 
-		-17,  125,  47,  -11,   7,   4, 17,  -65
+		100, -128, 127, -33, 38, 101, 82, -41, 111, 69, -33, 19, 56, -21, 111, -7, 83, 26, -22, 110, -82, -52, -50, 94
 	};
 
 	
@@ -68,6 +68,7 @@ public class ActionNumberCryptoTest {
 	public final void testGetHashedActionNumberInTimeWithSalt() {
 		final byte[] byteArray = ActionNumberCrypto.getHashedActionNumberInTimeWithSalt(PASS_PHRASE, ACTION_NUMBER, MINUTES, SALT);
 
+		// fail("Array is: " + Arrays.toString(byteArray));
 		assertArrayEquals(EXPECTED_BYTES, byteArray);
 	}
 

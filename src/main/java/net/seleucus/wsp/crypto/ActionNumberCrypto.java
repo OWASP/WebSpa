@@ -20,8 +20,6 @@ public class ActionNumberCrypto extends WebSpaUtils {
 		System.arraycopy(timeBytes, 4, sortedBytes, passBytes.length, timeBytes.length - 4);
 		System.arraycopy(actionBytes, actionBytes.length - 1, sortedBytes, sortedBytes.length - 1, 1);
 		
-		Arrays.sort(sortedBytes);
-
 		byte[] allBytes = ArrayUtils.addAll(sortedBytes, salt);
 		byte[] hashedBytes = ArrayUtils.subarray(digest(allBytes), 0, 20); 
 		
