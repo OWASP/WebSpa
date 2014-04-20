@@ -6,8 +6,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -17,6 +19,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 
 public class WSConnection {
 	
@@ -25,8 +29,8 @@ public class WSConnection {
 		"The URL is neither HTTP nor HTTPS: No action will be taken",
 		"Malformed URL: No action will be taken", 
 		"I/O Exception: No action will be taken", 
-		"Sending the above HTTP request",
-		"Sending the above HTTPS request"
+		"Starting to send the above HTTP request",
+		"Starting to send the above HTTPS request"
 	};
 
 	protected static String[] RESPONSE_MESSAGES = {
@@ -59,21 +63,8 @@ public class WSConnection {
 				connection = (HttpURLConnection) knockURL.openConnection();
 			}
 			
-			// connection = knockURL.openConnection();
-			
 			setRequestProperties();
 			
-			/*
-			if(connection instanceof HttpURLConnection) {
-				action = 4;
-			}
-			
-			if(connection instanceof HttpsURLConnection) {
-				action = 5;
-				trustAllHosts();
-				((HttpsURLConnection) connection).setHostnameVerifier(DO_NOT_VERIFY);
-			}
-			*/
 		} catch (MalformedURLException e) {
 			
 			action = 2;
@@ -170,7 +161,7 @@ public class WSConnection {
 
 			} catch (IOException e) {
 				
-				e.printStackTrace();
+				// e.printStackTrace();
 				return "***";
 
 			}			
@@ -195,9 +186,9 @@ public class WSConnection {
 		return (connection instanceof HttpsURLConnection);
 	}
 
-	public String getCertHash() {
+	public String getCertSHA1Hash() {
 		
-		String hashCode = "n/a";
+		String hashCode = "SSL Check - ";
 		
 		if(action == 5) {
 			
@@ -205,14 +196,22 @@ public class WSConnection {
 				
 				Certificate[] certs = ((HttpsURLConnection) connection).getServerCertificates();
 				
-				for(Certificate cert : certs) {
-					
-					hashCode = cert.getPublicKey().getFormat();
-				}
+				hashCode = certs[0].getPublicKey().getAlgorithm() + " key fingerprint is (SHA1) ";
+				hashCode += formatWithColons(DigestUtils.sha1Hex(certs[0].getEncoded()).toUpperCase(Locale.ENGLISH));
+				hashCode += ".";
 				
 			} catch (SSLPeerUnverifiedException e) {
 				
-				hashCode = "No Certificate Hash Values";
+				hashCode += "No Certificate Hash Values";
+				
+			} catch (CertificateEncodingException e) {
+				
+				hashCode += "Certificate Encoding Exception";
+				
+			} catch (IllegalStateException e) {
+				
+				hashCode += "Illegal State Exception";
+				
 			}
 					
 
@@ -222,4 +221,22 @@ public class WSConnection {
 		return hashCode;
 		
 	}
+
+	private static String formatWithColons(String input) {
+		
+		StringBuilder sb = new StringBuilder();
+		char[] inputCharArray = input.toCharArray();
+		
+		for(int count = 0; count < inputCharArray.length; count++) {
+			
+			if(count % 2 == 0 && count != 0) {
+				sb.append(':');
+			}
+			sb.append(inputCharArray[count]);
+		}
+		
+		return sb.toString();
+		
+	}
+	
 }

@@ -51,27 +51,31 @@ public class WSClient extends WSGestalt {
 			// is the connection HTTPS
 			if( myConnection.isHttps() ) {
 
-				// printlnWithTimeStamp(myConnection.getCertHash());
+				println(myConnection.getCertSHA1Hash());
 				
-				final String trustChoice = readLineOptional("Are you sure you want to continue connecting [Y/n]");
+				final String trustChoice = readLineRequired("Are you sure you want to continue connecting [y/n]");
 				
-				if("yes".equalsIgnoreCase(sendChoice) ||
-						"y".equalsIgnoreCase(sendChoice) ||
-						sendChoice.isEmpty() ) {
+				if("yes".equalsIgnoreCase(trustChoice) ||
+						"y".equalsIgnoreCase(trustChoice) ) {
 					
 					myConnection.sendRequest();
+					printlnWithTimeStamp(myConnection.responseMessage());
+					printlnWithTimeStamp("Response Code : " + myConnection.responseCode());
+					
+				} else {
+					
+					printlnWithTimeStamp("Nothing was sent.");
 					
 				}
 				
 			} else {
 				
 				myConnection.sendRequest();
-				
+				printlnWithTimeStamp(myConnection.responseMessage());
+				printlnWithTimeStamp("Response Code : " + myConnection.responseCode());
+	
 			}
-			
-			printlnWithTimeStamp(myConnection.responseMessage());
-			printlnWithTimeStamp("Response Code : " + myConnection.responseCode());
-			
+						
 		}
 
 	}
