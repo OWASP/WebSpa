@@ -20,13 +20,8 @@ public class PassPhraseCryptoTest {
 	// A salt value of a single byte
 	private static final byte SALT = -33;
 	// The expected byte array when using all the above
-	private static final byte[] EXPECTED_BYTES = {
-		-33,  -52,   76,   31, 108, -65, -37,   6, -55,  23, 
-		103, -113,  123,  -23,  56,  76,  63, -17, -78, 114,
-		-50, -103, -114, -113, 111,  29,  76, -95,  -6, -50,
-		 48,   12,   91,    7,  16,  74,  85, -62,   1,  64, 
-		  5,   80,  -82,   51,  40,  62, -23,   5,  57,  46, 
-		 57
+	private static final byte[] EXPECTED_BYTES = { 
+		-33, 18, 48, 42, 39, -38, -19, -4, -47, -71, -118, 71, 18, -97, -41, -11, -46, -6, 23, 38, -79, 13, -69, -103, -70, -110, -116, -79, 55, 8, 32, -7, -47, 43, -8, -99, 48, -39, -88, 35, -111, 14, 101, 4, 127, -56, 36, -24, 99, -45, -31
 	};
 	
 	@Test
@@ -54,6 +49,7 @@ public class PassPhraseCryptoTest {
 	public final void testGetHashedPassPhraseInTimeWithSalt() {
 		byte[] byteArray = PassPhraseCrypto.getHashedPassPhraseInTimeWithSalt(PASS_PHRASE, MINUTES, SALT);
 		
+		// fail("Array is: " + Arrays.toString(byteArray));
 		assertArrayEquals(EXPECTED_BYTES, byteArray);
 
 	}

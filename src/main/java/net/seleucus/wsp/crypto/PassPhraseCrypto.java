@@ -2,7 +2,6 @@ package net.seleucus.wsp.crypto;
 
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.lang3.ArrayUtils;
@@ -18,8 +17,6 @@ public final class PassPhraseCrypto extends WebSpaUtils {
 		System.arraycopy(passBytes, 0, sortedBytes, 0, passBytes.length);
 		System.arraycopy(timeBytes, 4, sortedBytes, passBytes.length, timeBytes.length - 4);
 
-		Arrays.sort(sortedBytes);
-		
 		byte[] randomBytes = new byte[1];
 		randomBytes[0] = salt;
 		
