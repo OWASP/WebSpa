@@ -27,5 +27,42 @@ public class WebSpaUtils {
 		return outputByteArray;
 		
 	}
+	
+	protected static boolean equals(byte[] first, byte[] second) {
+		
+		boolean arraysAreEqual = false;
+				
+		boolean foundOneValueThatDoesNotMatch = false;
+		
+		if(first == null || second == null) {
+			
+			arraysAreEqual = false;
+			
+		} else {
+
+			int maximum = (first.length < second.length) ? first.length : second.length;
+
+			for(int count = 0; count < maximum; count++) {
+				
+				if(first[count] != second[count]) {
+					
+					foundOneValueThatDoesNotMatch = true;
+					
+				}
+			}
+
+			arraysAreEqual = ! (foundOneValueThatDoesNotMatch);
+
+			if(first.length != second.length) {
+				
+				arraysAreEqual = false;
+				
+			}
+		}
+		
+		
+		return arraysAreEqual;
+		
+	}
 
 }

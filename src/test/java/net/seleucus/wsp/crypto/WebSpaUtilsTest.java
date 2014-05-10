@@ -32,7 +32,66 @@ public class WebSpaUtilsTest {
 		byte [] inputByteArray = {-72, Byte.MIN_VALUE, 33};
 		byte timeByte = -72;
 		byte [] outputByteArray = {0, 56, -103};
+		
 		assertArrayEquals(outputByteArray, WebSpaUtils.xor(inputByteArray, timeByte));
+		
+	}
+	
+	@Test
+	public final void testEqualsShouldReturnFalseIfBothAreNull() {
+		
+		assertFalse(WebSpaUtils.equals(null, null));
+		
+	}
+	
+	@Test
+	public final void testEqualsShouldReturnFalseIfFirstIsNull() {
+		
+		byte[] first = null;
+		byte[] second = {Byte.MIN_VALUE, -123, -1, 0, 1, 123, Byte.MAX_VALUE};
+		
+		assertFalse(WebSpaUtils.equals(first, second));
+		
+	}
+	
+	@Test
+	public final void testEqualsShouldReturnFalseIfSecondIsNull() {
+		
+		byte[] first = {Byte.MIN_VALUE, -123, -1, 0, 1, 123, Byte.MAX_VALUE};
+		byte[] second = null;
+		
+		assertFalse(WebSpaUtils.equals(first, second));
+		
+	}
+	
+	@Test
+	public final void testEqualsShouldReturnTrueIfTwoArraysAreTheSame() {
+		
+		byte[] first = {Byte.MIN_VALUE, -123, -1, 0, 1, 123, Byte.MAX_VALUE};
+		byte[] second = {Byte.MIN_VALUE, -123, -1, 0, 1, 123, Byte.MAX_VALUE};
+		
+		assertTrue(WebSpaUtils.equals(first, second));
+		
+	}
+	
+	@Test
+	public final void testEqualsShouldReturnFalseIfTwoArraysAreNotTheSame() {
+		
+		byte[] first = {Byte.MIN_VALUE, -123, -1, 1, 1, 123, Byte.MAX_VALUE};
+		byte[] second = {Byte.MIN_VALUE, -123, -1, 0, 1, 123, Byte.MAX_VALUE};
+		
+		assertFalse(WebSpaUtils.equals(first, second));
+		
+	}
+	
+	@Test
+	public final void testEqualsShouldReturnFalseIfTwoArraysAreNotEqualInLength() {
+		
+		byte[] first = {Byte.MIN_VALUE, -123, -1, 0, 1, 123, Byte.MAX_VALUE, 1, 2, 3};
+		byte[] second = {Byte.MIN_VALUE, -123, -1, 0, 1, 123, Byte.MAX_VALUE};
+		
+		assertFalse(WebSpaUtils.equals(first, second));
+		
 	}
 	
 }

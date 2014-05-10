@@ -43,7 +43,7 @@ public class WebSpaEncoder {
 			
 			byte[] expectedBytes = PassPhraseCrypto.getHashedPassPhraseNowWithSalt(rawPassword, randomByte);
 			
-			return Arrays.equals(passBytes, expectedBytes);
+			return WebSpaUtils.equals(passBytes, expectedBytes);
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class WebSpaEncoder {
 				byte[] calculatedActionBytes = 
 						ActionNumberCrypto.getHashedActionNumberNowWithSalt(rawPassword, count, actionSalt);
 				
-				if(Arrays.equals(calculatedActionBytes, actionBytes)) {
+				if(WebSpaUtils.equals(calculatedActionBytes, actionBytes)) {
 					returnAction = count;
 					break;
 				}
