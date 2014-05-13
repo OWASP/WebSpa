@@ -17,7 +17,7 @@ your choice. The file is specified within the first property
 2. Stopping the Service 'service stop'
 
 This disables the log listening service and stops WebSpa from 
-accepting any more commands in the form of web-knocks.
+accepting any more commands in the form of WebKnocks.
 
 3. Querying the Service Status 'service status'
 
@@ -31,4 +31,4 @@ or stopped. An example output can be seen below:
 |WebSpa-server>
 
 In this example the WebSpa service is stopped and no further 
-O/S commands can be received as web-knocks.
+O/S commands can be received as WebKnocks.

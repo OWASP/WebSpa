@@ -1,5 +1,5 @@
 
-The configuration of web-spa, when running in server mode can
+The configuration of WebSpa, when running in server mode can
 be found in a file called:
 
 	'webspa-config.properties'
