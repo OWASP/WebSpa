@@ -24,9 +24,9 @@ README: Table of contents
 Each release of WebSpa comes in a single zip 
 file called:
 
-webspa-{xx}.zip
+webspa-{xy}.zip
 
-Where {xx} represents the version number. If you
+Where {xy} represents the version number. If you
 had downloaded, say as an example, webspa-25.zip
 you would be running WebSpa version 2.5 . 
 
@@ -34,19 +34,19 @@ you would be running WebSpa version 2.5 .
 - Installing WebSpa on (*nix)
 =================================================
 
-Obtain a copy of the latest webspa-{xx}.zip
+Obtain a copy of the latest webspa-{xy}.zip
 
 Typically, we like to store things in /opt, ergo:
 
-bash-3.00# unzip webspa-{xx}.zip -d /opt/
-Archive:  webspa-{xx}.zip
+bash-3.00# unzip webspa-{xy}.zip -d /opt/
+Archive:  webspa-{xy}.zip
   inflating: ...
-bash-3.00#cd /opt/webspa-0.7 
+bash-3.00#cd /opt/webspa-{xy}
 
 You can quickly test WebSpa, by issuing:
 
 bash-3.00# java -jar webspa-06.jar -version
-0.7
+x.y
 bash-3.00#
 
 This will simply print the version of WebSpa
@@ -57,19 +57,19 @@ and return.
 =================================================
 
 In running the standalone jar file (i.e. 
-webspa-{xx}.jar, you have to select one of the 
+webspa-{xy}.jar, you have to select one of the 
 following four (4) options: 
 
   -client : Run the client, generate requests
   -help   : Print this usage message
   -server : Run the server
- -version : 0.7
+ -version : x.y
 
 If no option is selected, the help message
 detailing the above options will be displayed.
 
 With each download of the standalone jar file 
-(i.e. webspa-{xx}.zip, see section above)
+(i.e. webspa-{xy}.zip, see section above)
 there is a rather basic shell script available,
 named 'WebSpa.sh'.
 
@@ -81,11 +81,11 @@ permissions. If you have followed the
 instructions above and placed WebSpa in /opt
 issue the following: 
 
-bash-3.00# chmod 744 /opt/webspa-0.7/webspa.sh
+bash-3.00# chmod 744 /opt/webspa-{xy}/webspa.sh
 
 You can test the WebSpa script, by issuing:
 bash-3.00# ./webspa.sh -version
-0.7
+x.y
 bash-3.00#
 
 You will be required to have a java 1.6 JRE or

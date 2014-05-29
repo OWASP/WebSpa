@@ -2,7 +2,7 @@ package net.seleucus.wsp.main;
 
 public class WSVersion extends WSGestalt {
 
-	private static final byte[] VERSION = {0,7};
+	private static final byte[] VERSION = {0,8};
 
 	public WSVersion(WebSpa myWebSpa) {
 		super(myWebSpa);

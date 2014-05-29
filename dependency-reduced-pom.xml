@@ -4,7 +4,7 @@
   <groupId>net.seleucus</groupId>
   <artifactId>webspa</artifactId>
   <name>WebSpa</name>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.8-SNAPSHOT</version>
   <description>Web Single Request Authorisation</description>
   <url>https://www.owasp.org/index.php/OWASP_WebSpa_Project</url>
   <build>

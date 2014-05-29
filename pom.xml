@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.seleucus</groupId>
 	<artifactId>webspa</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>0.8-SNAPSHOT</version>
 	<name>WebSpa</name>
 	<description>Web Single Request Authorisation</description>
 
