@@ -1,7 +1,5 @@
 package net.seleucus.wsp.crypto;
 
-import java.util.Arrays;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 
