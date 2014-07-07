@@ -4,6 +4,8 @@ JAVA=`which java`
 WEB_SPA="webspa-0.8.jar"
 JAVA_PARAMS="-Xms64m -Xmx256m"
 
+umask 077
+
 # launch webspa
 if [ -r ./$WEB_SPA ]; then
     $JAVA $JAVA_PARAMS -jar ./$WEB_SPA $@
