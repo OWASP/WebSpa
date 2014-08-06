@@ -56,6 +56,36 @@ public class WebSpaTest {
 		assertEquals(myWebSpa.processParameters(argArray), 3);
 		
 	}
+	
+	@Test
+	public void testProcessParameterReturnsFourIfStartIsTheFirstArgument() {
+		
+		WebSpa myWebSpa = new WebSpa(System.console());
+		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 4, 5);
+		assertEquals(argArray[0], "-start");
+		assertEquals(myWebSpa.processParameters(argArray), 4);
+		
+	}
+
+	@Test
+	public void testProcessParameterReturnsFiveIfStopIsTheFirstArgument() {
+		
+		WebSpa myWebSpa = new WebSpa(System.console());
+		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 5, 6);
+		assertEquals(argArray[0], "-stop");
+		assertEquals(myWebSpa.processParameters(argArray), 5);
+		
+	}
+
+	@Test
+	public void testProcessParameterReturnsSixIfStatusIsTheFirstArgument() {
+		
+		WebSpa myWebSpa = new WebSpa(System.console());
+		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 6, 7);
+		assertEquals(argArray[0], "-status");
+		assertEquals(myWebSpa.processParameters(argArray), 6);
+		
+	}
 
 	@Test
 	public void testProcessParameterProcessesOnlyTheFirstArgument() {

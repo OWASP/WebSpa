@@ -3,11 +3,14 @@ package net.seleucus.wsp.main;
 import java.io.Console;
 
 import net.seleucus.wsp.client.WSClient;
+import net.seleucus.wsp.daemon.WSDaemonStart;
+import net.seleucus.wsp.daemon.WSDaemonStatus;
+import net.seleucus.wsp.daemon.WSDaemonStop;
 import net.seleucus.wsp.server.WSServer;
 
 public class WebSpa {
 
-	protected static final String[] ALLOWED_FIRST_PARAM = {"-help", "-client", "-server", "-version"};
+	protected static final String[] ALLOWED_FIRST_PARAM = {"-help", "-client", "-server", "-version", "-start", "-stop", "-status"};
 	
 	private Console myConsole;
 	
@@ -41,6 +44,18 @@ public class WebSpa {
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[3])) {
 				mode = 3;
 			}
+			// java -jar webspa.jar -start
+			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[4])) {
+				mode = 4;
+			}
+			// java -jar webspa.jar -stop
+			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[5])) {
+				mode = 5;
+			}
+			// java -jar webspa.jar -status
+			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[6])) {
+				mode = 6;
+			}
 		}
 		
 		return mode;
@@ -72,6 +87,21 @@ public class WebSpa {
 		case 3:
 			// System.out.println("version");
 			myGestalt = new WSVersion(mySpa);
+			myGestalt.runConsole();
+			break;
+		case 4:
+			System.out.println("start");
+			myGestalt = new WSDaemonStart(mySpa);
+			myGestalt.runConsole();
+			break;
+		case 5:
+			System.out.println("stop");
+			myGestalt = new WSDaemonStop(mySpa);
+			myGestalt.runConsole();
+			break;
+		case 6:
+			System.out.println("status");
+			myGestalt = new WSDaemonStatus(mySpa);
 			myGestalt.runConsole();
 			break;
 		default:
