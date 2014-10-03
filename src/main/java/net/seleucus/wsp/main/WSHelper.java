@@ -10,27 +10,27 @@ public class WSHelper extends WSGestalt {
 	@Override
 	public void runConsole() {
 		
-		println("");
-		println("WebSpa - Single HTTP/S Request Authorisation");
-		println("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
-		println("");
+		myConsole.println("");
+		myConsole.println("WebSpa - Single HTTP/S Request Authorisation");
+		myConsole.println("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
+		myConsole.println("");
 		
-		println("Usage: java -jar webspa.jar [-option]");
-		println("");
-		println("\t-client         : Run the client, generate valid requests");
-		println("\t-help           : Print this usage message");
-		println("\t-server         : Run the server");
-		println("\t-start          : Start the daemon service");
-		println("\t-status         : Display the status of the daemon service");
-		println("\t-stop           : Stop the daemon service");
-		println("\t-version        : " + WSVersion.getValue());
-		println("");
-		println("Examples:");
-		println("");
-		println("java -jar webspa.jar -client");
-		println("java -jar webspa.jar -server");
-		println("java -jar webspa.jar -status");
-		println("");
+		myConsole.println("Usage: java -jar webspa.jar [-option]");
+		myConsole.println("");
+		myConsole.println("\t-client         : Run the client, generate valid requests");
+		myConsole.println("\t-help           : Print this usage message");
+		myConsole.println("\t-server         : Run the server");
+		myConsole.println("\t-start          : Start the daemon service");
+		myConsole.println("\t-status         : Display the status of the daemon service");
+		myConsole.println("\t-stop           : Stop the daemon service");
+		myConsole.println("\t-version        : " + WSVersion.getValue());
+		myConsole.println("");
+		myConsole.println("Examples:");
+		myConsole.println("");
+		myConsole.println("java -jar webspa.jar -client");
+		myConsole.println("java -jar webspa.jar -server");
+		myConsole.println("java -jar webspa.jar -status");
+		myConsole.println("");
 		
 	}
 

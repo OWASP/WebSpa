@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.sql.SQLException;
 
+import net.seleucus.wsp.console.WSConsole;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,7 +80,7 @@ public class WSVersionTest {
 	@Test
 	public void testRunConsole() throws SQLException {
 		
-		WSVersion myVersion = new WSVersion(new WebSpa(System.console()));
+		WSVersion myVersion = new WSVersion(new WebSpa(WSConsole.getWsConsole()));
 		myVersion.runConsole();
 		assertEquals(WSVersion.getValue() + '\n', outContent.toString());
 		

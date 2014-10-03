@@ -1,11 +1,12 @@
 package net.seleucus.wsp.main;
 
-import java.io.Console;
 import java.nio.CharBuffer;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+
+import net.seleucus.wsp.console.WSConsole;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +15,7 @@ public abstract class WSGestalt {
 	public static final String ANSI_RED = "\u001B[31m";
 	public static final String ANSI_RESET = "\u001B[0m";
 
-	private Console myConsole;
+	protected WSConsole myConsole;
 
 	public WSGestalt(WebSpa myWebSpa) {
 		
@@ -148,12 +149,12 @@ public abstract class WSGestalt {
 			
 			if(!passPhrasesMatch) {
 				
-				println("The Pass-Phrases Entered do not Match");
-				println("Please try again");
+				myConsole.println("The Pass-Phrases Entered do not Match");
+				myConsole.println("Please try again");
 				
 			} else if(passCharArrayOne.length <= 0) {
 
-				println("The Pass-Phrase Cannot Be Blank");
+				myConsole.println("The Pass-Phrase Cannot Be Blank");
 
 			}
 						
@@ -163,26 +164,13 @@ public abstract class WSGestalt {
 		
 	}
 	
-	public void println(final String line) {
-		
-		if(myConsole == null) {
-			
-			System.out.println(line);
-			
-		} else { 
-			
-			myConsole.writer().println(line);
-		}
-		
-	}
-	
 	public void printlnWithTimeStamp(final String line) {
 		
 		final Date currentDate = new Date();
 		final SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
 		final String formattedDate = sdf.format(currentDate);
 		
-		this.println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 50) );
+		myConsole.println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 50) );
 		
 	}
 	

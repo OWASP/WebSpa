@@ -1,8 +1,7 @@
 package net.seleucus.wsp.main;
 
-import java.io.Console;
-
 import net.seleucus.wsp.client.WSClient;
+import net.seleucus.wsp.console.WSConsole;
 import net.seleucus.wsp.daemon.WSDaemonStart;
 import net.seleucus.wsp.daemon.WSDaemonStatus;
 import net.seleucus.wsp.daemon.WSDaemonStop;
@@ -12,15 +11,15 @@ public class WebSpa {
 
 	protected static final String[] ALLOWED_FIRST_PARAM = {"-help", "-client", "-server", "-version", "-start", "-stop", "-status"};
 	
-	private Console myConsole;
+	private WSConsole myConsole;
 	
-	public WebSpa(final Console myConsole) {
+	public WebSpa(final WSConsole myConsole) {
 		
 		this.myConsole = myConsole;
 		
 	}
 	
-	public Console getConsole() {
+	public WSConsole getConsole() {
 		return myConsole;
 	}
 	
@@ -63,14 +62,10 @@ public class WebSpa {
 	
 	public static void main(String[] args) throws Exception {
 
-		final Console myConsole = System.console();
-		if(myConsole == null) {
-			System.err.println("Could not get console; will exit now...");
-			System.exit(1);	
-		}
+		final WSConsole myWsConsole = WSConsole.getWsConsole();
 		
 		WSGestalt myGestalt; 
-		WebSpa mySpa = new WebSpa(myConsole);
+		WebSpa mySpa = new WebSpa(myWsConsole);
 		int mode = mySpa.processParameters(args);
 
 		switch (mode) {

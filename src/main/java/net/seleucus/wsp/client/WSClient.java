@@ -18,10 +18,10 @@ public class WSClient extends WSGestalt {
 	@Override
 	public void runConsole() {
 		
-		println("");
-		println("WebSpa - Single HTTP/S Request Authorisation");
-		println("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
-		println("");
+		myConsole.println("");
+		myConsole.println("WebSpa - Single HTTP/S Request Authorisation");
+		myConsole.println("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
+		myConsole.println("");
 
 		String host = readLineRequired("Host [e.g. https://localhost/]");
 		CharSequence password = readPasswordRequired("Your pass-phrase for that host");
@@ -30,13 +30,13 @@ public class WSClient extends WSGestalt {
 		WSRequestBuilder myClient = new WSRequestBuilder(host, password, action);
 		String knock = myClient.getKnock();
 		
-		println("");
+		myConsole.println("");
 		printlnWithTimeStamp("Your WebSpa Knock is:");
-		println("\n" + knock + "\n");
+		myConsole.println("\n" + knock + "\n");
 		
 		// URL nonsense 
 		final String sendChoice = readLineOptional("Send the above URL [Y/n]");
-		println("");
+		myConsole.println("");
 		
 		if("yes".equalsIgnoreCase(sendChoice) ||
 			"y".equalsIgnoreCase(sendChoice) ||
@@ -51,8 +51,13 @@ public class WSClient extends WSGestalt {
 			// is the connection HTTPS
 			if( myConnection.isHttps() ) {
 
-				println(myConnection.getCertSHA1Hash());
-				
+				try {
+					myConsole.println(myConnection.getCertSHA1Hash());
+				} catch (NullPointerException npEx) {
+					myConsole.println("Couldn't get the SHA1 hash of the server certificate - probably a self signed certificate.");
+					myConsole.println("Be sure to run WebSpa with a JRE 1.7 or greater in this case.");
+				}
+
 				final String trustChoice = readLineRequired("Are you sure you want to continue connecting [y/n]");
 				
 				if("yes".equalsIgnoreCase(trustChoice) ||

@@ -130,15 +130,15 @@ public class WSServer extends WSGestalt {
 	@Override
 	public void runConsole() throws SQLException {
 		
-		println("");
-		println("WebSpa - Single HTTP/S Request Authorisation");
-		println("version " + WSVersion.getValue() + " (WebSpa@seleucus.net)"); 		
-		println("");
-		println("This is a holding prompt, type \"exit\" or \"x\" to quit");
-		println("");
-		println("- type \"service start\" to start the WebSpa server");
-		println("- type \"help\" or \"?\" for more options");
-		println("");
+		myConsole.println("");
+		myConsole.println("WebSpa - Single HTTP/S Request Authorisation");
+		myConsole.println("version " + WSVersion.getValue() + " (WebSpa@seleucus.net)"); 		
+		myConsole.println("");
+		myConsole.println("This is a holding prompt, type \"exit\" or \"x\" to quit");
+		myConsole.println("");
+		myConsole.println("- type \"service start\" to start the WebSpa server");
+		myConsole.println("- type \"help\" or \"?\" for more options");
+		myConsole.println("");
 		
 		do {
 
@@ -186,6 +186,10 @@ public class WSServer extends WSGestalt {
 		
 		myServerCommand.executeCommand(command.trim());
 		
+	}
+
+	public void println(final String msg) {
+		myConsole.println(msg);
 	}
 
 }

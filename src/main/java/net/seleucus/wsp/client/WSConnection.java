@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Locale;
 
@@ -56,7 +55,15 @@ public class WSConnection {
 				action = 5;
 			    trustAllHosts();
 				HttpsURLConnection https = (HttpsURLConnection) knockURL.openConnection();
-				https.setHostnameVerifier(DO_NOT_VERIFY);
+				https.setHostnameVerifier(new HostnameVerifier() {
+					/**
+					 * Always verify the host - dont check for certificate
+					 */
+					@Override
+					public boolean verify(String hostname, SSLSession session) {
+						return true;
+					}
+				});
 				connection = https;
 			} else {
 				action = 4;
@@ -75,14 +82,6 @@ public class WSConnection {
 			
 		} 
 	}
-	
-
-	// always verify the host - dont check for certificate
-	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
-		public boolean verify(String hostname, SSLSession session) {
-			return true;
-		}
-	};
 
 	/**
 	 * Trust every server - dont check for any certificate
@@ -91,16 +90,15 @@ public class WSConnection {
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				// return new java.security.cert.X509Certificate[] {};
 				return new X509Certificate[] {};
 			}
 
 			public void checkClientTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
 			}
 
 			public void checkServerTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
 			}
 		} };
 
@@ -108,13 +106,12 @@ public class WSConnection {
 		try {
 			SSLContext sc = SSLContext.getInstance("TLS");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			HttpsURLConnection
-					.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void setRequestProperties() {
 
 		connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");

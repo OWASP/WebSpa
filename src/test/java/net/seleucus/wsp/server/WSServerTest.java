@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 
+import net.seleucus.wsp.console.WSConsole;
 import net.seleucus.wsp.main.WebSpa;
 
 import org.junit.After;
@@ -28,7 +29,7 @@ public class WSServerTest {
 		System.setOut(new PrintStream(outContent));
 	    System.setErr(new PrintStream(errContent));
 
-	    wsServer = new WSServer(new WebSpa(System.console()));
+	    wsServer = new WSServer(new WebSpa(WSConsole.getWsConsole()));
 	}
 
 	@After
