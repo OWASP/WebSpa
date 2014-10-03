@@ -6,6 +6,7 @@ import net.seleucus.wsp.daemon.WSDaemonStart;
 import net.seleucus.wsp.daemon.WSDaemonStatus;
 import net.seleucus.wsp.daemon.WSDaemonStop;
 import net.seleucus.wsp.server.WSServer;
+import net.seleucus.wsp.util.WSUtil;
 
 public class WebSpa {
 
@@ -64,6 +65,11 @@ public class WebSpa {
 
 		final WSConsole myWsConsole = WSConsole.getWsConsole();
 		
+		if(!WSUtil.hasMinJreRequirements(1, 6)) {
+			myWsConsole.println("!!! Minimum JRE requirements are 1.6 !!!");
+			System.exit(1);
+		}
+
 		WSGestalt myGestalt; 
 		WebSpa mySpa = new WebSpa(myWsConsole);
 		int mode = mySpa.processParameters(args);
@@ -107,7 +113,6 @@ public class WebSpa {
 		}
 		
 		myGestalt.exitConsole();
-		
 	}
 	
 }
