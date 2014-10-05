@@ -1,16 +1,11 @@
 package net.seleucus.wsp.crypto;
 
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
-import com.lambdaworks.crypto.SCryptUtil;
 
 public class SCryptPassPhraseCryptoTest {
 
 	// A static password value specified as a char sequence
 	private static final CharSequence PASS_PHRASE = "IfY0u0nlyKn3w!";
-	
+	/*
 	@Test
 	public final void shouldImplementThisAfterWeDecideOnTheWorkFactors() {
 		
@@ -18,7 +13,7 @@ public class SCryptPassPhraseCryptoTest {
 		assertTrue(SCryptUtil.check(PASS_PHRASE.toString(), hashedPassPhraseWithSalt));
 		
 	}
-	/*
+	
 	@Test
 	public final void shouldTestRandomValueGeneration() {
 		

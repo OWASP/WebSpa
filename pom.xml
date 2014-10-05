@@ -52,12 +52,6 @@
 			<version>1.8.0.10</version>
 		</dependency>
 		
-		<dependency>
-    		<groupId>com.lambdaworks</groupId>
-    		<artifactId>scrypt</artifactId>
-    		<version>1.4.0</version>
-  		</dependency>
-
 		<!-- Compile Scope End -->
 
 		<!-- Test Scope Start -->

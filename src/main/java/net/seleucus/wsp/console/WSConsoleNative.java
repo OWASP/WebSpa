@@ -14,7 +14,7 @@ public class WSConsoleNative extends WSConsole {
 
 	@Override
 	public void println(String string) {
-		System.console().printf(string);
+		System.console().printf(string + "\n");
 	}
 
 }

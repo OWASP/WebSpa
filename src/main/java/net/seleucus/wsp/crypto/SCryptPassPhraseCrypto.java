@@ -1,11 +1,8 @@
 package net.seleucus.wsp.crypto;
 
-import java.security.SecureRandom;
-
-import com.lambdaworks.crypto.SCryptUtil;
 
 public final class SCryptPassPhraseCrypto extends WebSpaUtils {
-
+	/*
 	protected static String getHashedPassPhraseWithSalt(final CharSequence passPhrase) {
 		
 		SecureRandom sRandom = new SecureRandom();
@@ -16,5 +13,5 @@ public final class SCryptPassPhraseCrypto extends WebSpaUtils {
 		return SCryptUtil.scrypt(passPhrase.toString(), nFactor, rFactor, pFactor);
 	    
 	}
-	
+	*/
 }
