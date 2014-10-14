@@ -1,6 +1,7 @@
 package net.seleucus.wsp.server.commands;
 
 import net.seleucus.wsp.server.WSServer;
+import net.seleucus.wsp.util.WSUtil;
 
 public class WSPassPhraseShow extends WSCommandOption {
 
@@ -27,8 +28,7 @@ public class WSPassPhraseShow extends WSCommandOption {
 			
 			final String choice = myServer.readLineOptional("Show pass-phrase [y/N]");
 			
-			if("yes".equalsIgnoreCase(choice) ||
-				"y".equalsIgnoreCase(choice) ) {
+			if (WSUtil.isAnswerPositive(choice)) {
 				
 				final CharSequence passSeq = myServer.getWSDatabase().passPhrases.getPassPhrase(ppID);
 				final String lastModifiedDate = myServer.getWSDatabase().passPhrases.getLastModifiedDate(ppID);

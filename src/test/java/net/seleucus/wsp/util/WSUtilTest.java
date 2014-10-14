@@ -23,4 +23,20 @@ public class WSUtilTest {
 				Integer.valueOf(javaSpecVersion[1]) + 1));
 	}
 
+	@Test
+	public void testIsAnswerPositive() {
+		assertTrue(WSUtil.isAnswerPositive("yes"));
+		assertTrue(WSUtil.isAnswerPositive("Yes"));
+		assertTrue(WSUtil.isAnswerPositive("YES"));
+		assertTrue(WSUtil.isAnswerPositive("y"));
+		assertTrue(WSUtil.isAnswerPositive("Y"));
+
+		assertFalse(WSUtil.isAnswerPositive("no"));
+		assertFalse(WSUtil.isAnswerPositive("No"));
+		assertFalse(WSUtil.isAnswerPositive("NO"));
+		assertFalse(WSUtil.isAnswerPositive("n"));
+		assertFalse(WSUtil.isAnswerPositive("N"));
+		assertFalse(WSUtil.isAnswerPositive("not an expected possible answer"));
+	}
+
 }

@@ -20,7 +20,6 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-
 public class WSConnection {
 	
 	protected static String[] ACTION_CAN_BE_TAKEN = {
@@ -185,38 +184,35 @@ public class WSConnection {
 
 	public String getCertSHA1Hash() {
 		
-		String hashCode = "SSL Check - ";
-		
+		StringBuffer hashCode = new StringBuffer("SSL Check - ");
+
 		if(action == 5) {
 			
 			try {
 				
 				Certificate[] certs = ((HttpsURLConnection) connection).getServerCertificates();
 				
-				hashCode = certs[0].getPublicKey().getAlgorithm() + " key fingerprint is (SHA1) ";
-				hashCode += formatWithColons(DigestUtils.sha1Hex(certs[0].getEncoded()).toUpperCase(Locale.ENGLISH));
-				hashCode += ".";
+				hashCode.append(certs[0].getPublicKey().getAlgorithm() + " key fingerprint is (SHA1) ");
+				hashCode.append(formatWithColons(DigestUtils.sha1Hex(certs[0].getEncoded()).toUpperCase(Locale.ENGLISH)));
+				hashCode.append(".");
 				
 			} catch (SSLPeerUnverifiedException e) {
 				
-				hashCode += "No Certificate Hash Values";
+				hashCode.append("No Certificate Hash Values");
 				
 			} catch (CertificateEncodingException e) {
 				
-				hashCode += "Certificate Encoding Exception";
+				hashCode.append("Certificate Encoding Exception");
 				
 			} catch (IllegalStateException e) {
 				
-				hashCode += "Illegal State Exception";
+				hashCode.append("Illegal State Exception");
 				
 			}
-					
 
-			
 		}
 		
-		return hashCode;
-		
+		return hashCode.toString();
 	}
 
 	private static String formatWithColons(String input) {

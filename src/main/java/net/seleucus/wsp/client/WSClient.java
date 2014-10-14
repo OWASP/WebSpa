@@ -39,9 +39,7 @@ public class WSClient extends WSGestalt {
 		final String sendChoice = readLineOptional("Send the above URL [Y/n]");
 		myConsole.println("");
 		
-		if("yes".equalsIgnoreCase(sendChoice) ||
-			"y".equalsIgnoreCase(sendChoice) ||
-			sendChoice.isEmpty() ) {
+		if (WSUtil.isAnswerPositive(sendChoice) || sendChoice.isEmpty()) {
 			
 			WSConnection myConnection = new WSConnection(knock);
 			
@@ -69,8 +67,7 @@ public class WSClient extends WSGestalt {
 
 				final String trustChoice = readLineRequired("Are you sure you want to continue connecting [y/n]");
 				
-				if("yes".equalsIgnoreCase(trustChoice) ||
-						"y".equalsIgnoreCase(trustChoice) ) {
+				if(WSUtil.isAnswerPositive(trustChoice)) {
 					
 					myConnection.sendRequest();
 					printlnWithTimeStamp(myConnection.responseMessage());

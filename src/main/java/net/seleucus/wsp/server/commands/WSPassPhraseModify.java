@@ -1,6 +1,7 @@
 package net.seleucus.wsp.server.commands;
 
 import net.seleucus.wsp.server.WSServer;
+import net.seleucus.wsp.util.WSUtil;
 
 public class WSPassPhraseModify extends WSCommandOption {
 
@@ -27,8 +28,7 @@ public class WSPassPhraseModify extends WSCommandOption {
 			
 			final String choice = myServer.readLineOptional("Change pass-phrase [y/N]");
 			
-			if("yes".equalsIgnoreCase(choice) ||
-				"y".equalsIgnoreCase(choice) ) {
+			if (WSUtil.isAnswerPositive(choice)) {
 				
 				boolean passPhraseInUse = true;
 				CharSequence passSeq;

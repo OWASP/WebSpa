@@ -1,6 +1,7 @@
 package net.seleucus.wsp.server.commands;
 
 import net.seleucus.wsp.server.WSServer;
+import net.seleucus.wsp.util.WSUtil;
 
 public class WSUserActivate extends WSCommandOption {
 
@@ -29,9 +30,7 @@ public class WSUserActivate extends WSCommandOption {
 			// Toggle user
 			final String choice = myServer.readLineOptional("Toggle user activation [Y/n]");
 			
-			if("yes".equalsIgnoreCase(choice) ||
-				"y".equalsIgnoreCase(choice) ||
-				choice.isEmpty() ) {
+			if (WSUtil.isAnswerPositive(choice) || choice.isEmpty()) {
 				
 				myServer.getWSDatabase().passPhrases.toggleUserActivation(ppID);
 				

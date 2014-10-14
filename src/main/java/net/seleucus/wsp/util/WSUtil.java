@@ -30,4 +30,9 @@ public class WSUtil {
 
 		return false;
 	}
+
+	public static boolean isAnswerPositive(final String answer) {
+		return "yes".equalsIgnoreCase(answer) || "y".equalsIgnoreCase(answer);
+	}
+
 }
