@@ -21,7 +21,7 @@
 			<artifactId>commons-daemon</artifactId>
 			<version>1.0.15</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -45,13 +45,25 @@
 			<artifactId>commons-math3</artifactId>
 			<version>3.2</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.10</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+
 		<!-- Compile Scope End -->
 
 		<!-- Test Scope Start -->

@@ -118,6 +118,7 @@ public abstract class WSGestalt {
 		
 	}
 	
+	/*
 	public void log(final String display) {
 		
 		final Date currentDate = new Date();
@@ -127,7 +128,7 @@ public abstract class WSGestalt {
 		System.out.print('\n' + formattedDate + StringUtils.abbreviateMiddle(display, "...", 50) );
 		
 	}
-	
+	*/
 	public CharSequence readPasswordRequired(final String displayString) {
 		
 		StringBuilder displayBuilder = new StringBuilder();

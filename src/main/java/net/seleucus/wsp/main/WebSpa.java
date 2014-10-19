@@ -8,10 +8,15 @@ import net.seleucus.wsp.daemon.WSDaemonStop;
 import net.seleucus.wsp.server.WSServer;
 import net.seleucus.wsp.util.WSUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class WebSpa {
 
 	protected static final String[] ALLOWED_FIRST_PARAM = {"-help", "-client", "-server", "-version", "-start", "-stop", "-status"};
 	
+	final static Logger LOGGER = LoggerFactory.getLogger(WebSpa.class);    
+
 	private WSConsole myConsole;
 	
 	public WebSpa(final WSConsole myConsole) {
@@ -30,18 +35,22 @@ public class WebSpa {
 		if(args.length > 0) {
 			// java -jar webspa.jar -help
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[0])) {
+			    LOGGER.info("Running WebSpa Help");
 				mode = 0;
 			}
 			// java -jar webspa.jar -client
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[1])) {
+				LOGGER.info("Running WebSpa Client");
 				mode = 1;
 			}
 			// java -jar webspa.jar -server
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[2])) {
+				LOGGER.info("Running WebSpa Server");
 				mode = 2;
 			}
 			// java -jar webspa.jar -version
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[3])) {
+				LOGGER.info("Running WebSpa Version");
 				mode = 3;
 			}
 			// java -jar webspa.jar -start
@@ -67,6 +76,7 @@ public class WebSpa {
 		
 		if(!WSUtil.hasMinJreRequirements(1, 6)) {
 			myWsConsole.println("!!! Minimum JRE requirements are 1.6 !!!");
+			LOGGER.error("!!! Minimum JRE requirements are 1.6 !!!");
 			System.exit(1);
 		}
 

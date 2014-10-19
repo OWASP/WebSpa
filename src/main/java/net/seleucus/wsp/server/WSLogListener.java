@@ -5,11 +5,16 @@ import java.util.regex.Pattern;
 
 import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
+import net.seleucus.wsp.main.WebSpa;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSLogListener extends TailerListenerAdapter {
+
+	final static Logger LOGGER = LoggerFactory.getLogger(WSLogListener.class);    
 
 	private WSServer myServer;
 	private WSDatabase myDatabase;
@@ -37,9 +42,9 @@ public class WSLogListener extends TailerListenerAdapter {
     	
         if (!wsMatcher.matches( ) || 
             2 != wsMatcher.groupCount( )) {
-        	myServer.log("Regex Problem?\n");
-        	myServer.log(requestLine);
-        	myServer.log(myConfiguration.getLoginRegexForEachRequest());
+        	LOGGER.info("Regex Problem?");
+        	LOGGER.info("Request line is {}.", requestLine);
+        	LOGGER.info("The regex is {}.", myConfiguration.getLoginRegexForEachRequest());
             return;
         }
 
@@ -53,26 +58,26 @@ public class WSLogListener extends TailerListenerAdapter {
         if(webSpaRequest.length() == 100) {
         	
         	// Nest the world away!
-        	myServer.log(webSpaRequest); 
+        	LOGGER.info("The 100 chars received are {}.", webSpaRequest); 
             // Get the unique user ID from the request
             final int ppID = myDatabase.passPhrases.getPPIDFromRequest(webSpaRequest);
             
             if(ppID < 0) {
                 
-            	myServer.log("No User Found");
+            	LOGGER.info("No User Found");
             	
             } else {
 
             	String username = myDatabase.users.getUsersFullName(ppID); 
-            	myServer.log("User Found: " + username);
+            	LOGGER.info("User Found {}.", username);
             	// Check the user's activation status
             	final boolean userActive = myDatabase.passPhrases.getActivationStatus(ppID);
-            	myServer.log(myDatabase.passPhrases.getActivationStatusString(ppID));
+            	LOGGER.info(myDatabase.passPhrases.getActivationStatusString(ppID));
             	
                 if(userActive) {
                 	
                 	final int action = myDatabase.actionsAvailable.getActionNumberFromRequest(ppID, webSpaRequest);
-                	myServer.log("Action Number: " + action);
+                	LOGGER.info("Action Number {}.", action);
                 	
                 	if( (action >= 0) && (action <= 9) ) {
                 	
@@ -82,7 +87,7 @@ public class WSLogListener extends TailerListenerAdapter {
                 		
                 		// Log this on the screen for the user
                 		final String osCommand = myServer.getWSDatabase().actionsAvailable.getOSCommand(ppID, action);
-                		myServer.log(ipAddress + " ->  '" + osCommand + "'");
+                		LOGGER.info(ipAddress + " ->  '" + osCommand + "'");
                 		
                 		// Fetch and execute the O/S command...        		
                 		myServer.runOSCommand(ppID, action, ipAddress);
