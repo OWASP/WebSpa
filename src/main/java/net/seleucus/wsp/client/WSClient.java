@@ -3,6 +3,7 @@ package net.seleucus.wsp.client;
 import net.seleucus.wsp.main.WSGestalt;
 import net.seleucus.wsp.main.WSVersion;
 import net.seleucus.wsp.main.WebSpa;
+import net.seleucus.wsp.util.WSKnownHosts;
 import net.seleucus.wsp.util.WSUtil;
 
 public class WSClient extends WSGestalt {
@@ -49,18 +50,26 @@ public class WSClient extends WSGestalt {
 
 			// is the connection HTTPS
 			if( myConnection.isHttps() ) {
+				// TODO add known hosts check and handling here
+				// get fingerprint and algorithm from certificate
+				// myConnection.getCertificateAlgorithm()
+				// myConnection.getCertificateFingerprint()
+
+				// get fingerprint from known hosts file
+				// WSKnownHosts.getFingerprint(host-ip, algorithm)
+
+				// if a fingerprint is found compare fingerprints, if not equal warn and exit
+				// else ask to store new fingerprint to known hosts
+				// WSKnownHosts.store...(host-ip, algorithm, fingerprint);
 
 				try {
 					myConsole.println(myConnection.getCertSHA1Hash());
 				} catch (NullPointerException npEx) {
-					myConsole
-							.println("Couldn't get the SHA1 hash of the server certificate - probably a self signed certificate.");
+					myConsole.println("Couldn't get the SHA1 hash of the server certificate - probably a self signed certificate.");
 					if (!WSUtil.hasMinJreRequirements(1, 7)) {
-						myConsole
-								.println("Be sure to run WebSpa with a JRE 1.7 or greater.");
+						myConsole.println("Be sure to run WebSpa with a JRE 1.7 or greater.");
 					} else {
-						myConsole
-								.println("An exception was raised when reading the server certificate.");
+						myConsole.println("An exception was raised when reading the server certificate.");
 						npEx.printStackTrace();
 					}
 				}

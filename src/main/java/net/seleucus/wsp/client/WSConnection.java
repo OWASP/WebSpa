@@ -182,36 +182,35 @@ public class WSConnection {
 		return (connection instanceof HttpsURLConnection);
 	}
 
+	public String getCertificateAlgorithm() throws SSLPeerUnverifiedException {
+		Certificate[] certs = ((HttpsURLConnection) connection).getServerCertificates();
+		return certs[0].getPublicKey().getAlgorithm();
+	}
+
+	public String getCertificateFingerprint()
+			throws SSLPeerUnverifiedException, CertificateEncodingException {
+		Certificate[] certs = ((HttpsURLConnection) connection).getServerCertificates();
+		return formatWithColons(DigestUtils.sha1Hex(certs[0].getEncoded()).toUpperCase(Locale.ENGLISH));
+	}
+
 	public String getCertSHA1Hash() {
-		
 		StringBuffer hashCode = new StringBuffer("SSL Check - ");
 
-		if(action == 5) {
-			
+		if (action == 5) {
 			try {
-				
-				Certificate[] certs = ((HttpsURLConnection) connection).getServerCertificates();
-				
-				hashCode.append(certs[0].getPublicKey().getAlgorithm() + " key fingerprint is (SHA1) ");
-				hashCode.append(formatWithColons(DigestUtils.sha1Hex(certs[0].getEncoded()).toUpperCase(Locale.ENGLISH)));
+				hashCode.append(getCertificateAlgorithm());
+				hashCode.append(" key fingerprint is (SHA1) ");
+				hashCode.append(getCertificateFingerprint());
 				hashCode.append(".");
-				
 			} catch (SSLPeerUnverifiedException e) {
-				
 				hashCode.append("No Certificate Hash Values");
-				
 			} catch (CertificateEncodingException e) {
-				
 				hashCode.append("Certificate Encoding Exception");
-				
 			} catch (IllegalStateException e) {
-				
 				hashCode.append("Illegal State Exception");
-				
 			}
-
 		}
-		
+
 		return hashCode.toString();
 	}
 
