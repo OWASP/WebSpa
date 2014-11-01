@@ -4,8 +4,6 @@
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 	<id>bin</id>
 	<formats>
-		<format>tar.gz</format>
-		<format>tar.bz2</format>
 		<format>zip</format>
 	</formats>
 	<fileSets>
@@ -34,8 +32,26 @@
 			<outputDirectory>src</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>${project.basedir}/docs</directory>
+			<directory>${project.basedir}/../documentation/01-specification-guide</directory>
 			<outputDirectory>docs</outputDirectory>
+			<includes>
+				<include>00-web-spa-*-guide.pdf</include>
+			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/../documentation/02-admin-guide</directory>
+			<outputDirectory>docs</outputDirectory>
+			<includes>
+				<include>00-web-spa-*-guide.pdf</include>
+			</includes>
+		</fileSet>
+				<fileSet>
+			<directory>${project.basedir}/../documentation/03-user-guide</directory>
+			<outputDirectory>docs</outputDirectory>
+			<includes>
+				<include>00-web-spa-*-guide.pdf</include>
+			</includes>
+		</fileSet>
+		
 	</fileSets>
 </assembly>

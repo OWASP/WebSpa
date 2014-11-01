@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
-import net.seleucus.wsp.main.WebSpa;
 
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
