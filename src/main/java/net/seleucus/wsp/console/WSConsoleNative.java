@@ -1,5 +1,8 @@
 package net.seleucus.wsp.console;
 
+import org.apache.commons.lang3.StringUtils;
+
+
 public class WSConsoleNative extends WSConsole {
 
 	@Override
@@ -13,8 +16,11 @@ public class WSConsoleNative extends WSConsole {
 	}
 
 	@Override
-	public void println(String string) {
-		System.console().printf(string + "\n");
+	public void println(final String input) {
+		
+		String output = StringUtils.replace(input, "%", "%%") + "\n"; 
+		System.console().printf(output);
+		
 	}
 
 }
