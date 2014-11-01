@@ -24,6 +24,7 @@
 				<include>webspa-${project.version}.jar</include>
 			</includes>
 		</fileSet>
+		<!-- 
 		<fileSet>
 			<directory>${project.basedir}/src</directory>
 			<excludes>
@@ -31,6 +32,7 @@
 			</excludes>
 			<outputDirectory>src</outputDirectory>
 		</fileSet>
+		 -->
 		<fileSet>
 			<directory>${project.basedir}/../documentation/01-specification-guide</directory>
 			<outputDirectory>docs</outputDirectory>
