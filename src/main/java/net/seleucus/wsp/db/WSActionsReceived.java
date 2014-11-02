@@ -4,9 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 public class WSActionsReceived {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSActionsReceived.class);    
 
 	private Connection wsConnection; 
 	
@@ -31,7 +36,7 @@ public class WSActionsReceived {
 			
 		} catch (SQLException ex) {
 			
-			throw new RuntimeException(ex);
+			 LOGGER.error("Action Add - A Database exception has occured: {}.", ex.getMessage());	
 			
 		}
 	}

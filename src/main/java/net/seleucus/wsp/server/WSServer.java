@@ -12,8 +12,12 @@ import net.seleucus.wsp.main.WSVersion;
 import net.seleucus.wsp.main.WebSpa;
 
 import org.apache.commons.io.input.Tailer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSServer extends WSGestalt {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSServer.class);    
 
 	private Tailer myLogTailer;
 	private ExecutorService myExecService;
@@ -46,21 +50,21 @@ public class WSServer extends WSGestalt {
 		
 		if(serviceStarted == true) {
 			
-			printlnWithTimeStamp("Service is already running");
+			LOGGER.info("Service is already running");
 			
 		} else {
 			
-			printlnWithTimeStamp("Attempting to start WebSpa...");
+			LOGGER.info("Attempting to start WebSpa...");
 			File accessLog = new File(myConfiguration.getAccesLogFileLocation());
 
 			if(accessLog.exists()) {
 
-				printlnWithTimeStamp("Found access log file: " + accessLog.getPath());			
+				LOGGER.info("Found access log file: " + accessLog.getPath());			
 				serviceStarted = true; 
 
 				if(myLogTailer == null) {
 					
-					printlnWithTimeStamp("Creating tail listener...");
+					LOGGER.info("Creating tail listener...");
 					myLogTailer = Tailer.create(accessLog, myLogListener, 10000, true);
 
 				} /* else {
@@ -70,13 +74,13 @@ public class WSServer extends WSGestalt {
 					
 				} */ 
 
-				printlnWithTimeStamp("WebSpa server started!");
-				printlnWithTimeStamp("Please make sure your web server is also up");
+				LOGGER.info("WebSpa server started!");
+				LOGGER.info("Please make sure your web server is also up");
 
 			} else {
 
-				printlnWithTimeStamp("Access log file NOT found at: " + accessLog.getPath());
-				printlnWithTimeStamp("WebSpa Server Not Started\n");
+				LOGGER.error("Access log file NOT found at: " + accessLog.getPath());
+				LOGGER.error("WebSpa Server Not Started");
 
 			}
 		}
@@ -87,11 +91,11 @@ public class WSServer extends WSGestalt {
 		
 		if(serviceStarted) {
 			
-			printlnWithTimeStamp("WebSpa is Running!");
+			LOGGER.info("WebSpa is Running!");
 			
 		} else {
 			
-			printlnWithTimeStamp("WebSpa is Stopped.");
+			LOGGER.info("WebSpa is Stopped.");
 			
 		}
 	}
@@ -100,11 +104,11 @@ public class WSServer extends WSGestalt {
 		
 		if (myLogTailer == null) {
 			
-			printlnWithTimeStamp("WebSpa Server Had Not Started");
+			LOGGER.info("WebSpa Server Had Not Started");
 			
 		} else {
 			
-			printlnWithTimeStamp("WebSpa Server Stopped");
+			LOGGER.info("WebSpa Server Stopped");
 			myLogTailer.stop();
 
 			myLogTailer = null; 
@@ -116,7 +120,9 @@ public class WSServer extends WSGestalt {
 
 	@Override
 	public void exitConsole() {
-		printlnWithTimeStamp("Goodbye!\n");
+		
+		LOGGER.info("Goodbye!");
+		
 	}
 	
 	public void runOSCommand(final int ppID, final int actionNumber, final String ipAddress) {
@@ -130,15 +136,15 @@ public class WSServer extends WSGestalt {
 	@Override
 	public void runConsole() throws SQLException {
 		
-		myConsole.println("");
-		myConsole.println("WebSpa - Single HTTP/S Request Authorisation");
-		myConsole.println("version " + WSVersion.getValue() + " (WebSpa@seleucus.net)"); 		
-		myConsole.println("");
-		myConsole.println("This is a holding prompt, type \"exit\" or \"x\" to quit");
-		myConsole.println("");
-		myConsole.println("- type \"service start\" to start the WebSpa server");
-		myConsole.println("- type \"help\" or \"?\" for more options");
-		myConsole.println("");
+		LOGGER.info("");
+		LOGGER.info("WebSpa - Single HTTP/S Request Authorisation");
+		LOGGER.info("version " + WSVersion.getValue() + " (WebSpa@seleucus.net)"); 		
+		LOGGER.info("");
+		LOGGER.info("This is a holding prompt, type \"exit\" or \"x\" to quit");
+		LOGGER.info("");
+		LOGGER.info("Type \"service start\" to start the WebSpa server");
+		LOGGER.info("Type \"help\" or \"?\" for more options");
+		LOGGER.info("");
 		
 		do {
 

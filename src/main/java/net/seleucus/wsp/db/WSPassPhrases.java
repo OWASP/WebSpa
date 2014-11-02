@@ -7,9 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.seleucus.wsp.crypto.WebSpaEncoder;
 
 public class WSPassPhrases {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSPassPhrases.class);    
 
 	private Connection wsConnection;
 	
@@ -46,8 +51,8 @@ public class WSPassPhrases {
 				
 			} catch (SQLException ex) {
 				
-				throw new RuntimeException(ex);
-	
+				 LOGGER.error("Is PPID in Use - A Database exception has occured: {}.", ex.getMessage());
+				 
 			}
 	
 		} // ppID > 0 
@@ -83,7 +88,7 @@ public class WSPassPhrases {
 	
 		} catch (SQLException ex) {
 			
-			throw new RuntimeException(ex);
+			 LOGGER.error("Is Pass-Phrase in Use - A Database exception has occured: {}.", ex.getMessage());	
 			
 		}
 		
@@ -112,7 +117,7 @@ public class WSPassPhrases {
 				
 			} catch (SQLException ex) {
 	
-				throw new RuntimeException(ex);
+				 LOGGER.error("Get Activation Status - A Database exception has occured: {}.", ex.getMessage());	
 	
 			}
 			
@@ -159,9 +164,9 @@ public class WSPassPhrases {
 			rs.close();
 			psPassPhrase.close();
 			
-		} catch (SQLException e) {
+		} catch (SQLException ex) {
 			
-			throw new RuntimeException(e);
+			 LOGGER.error("Get Activation Status String - A Database exception has occured: {}.", ex.getMessage());	
 			
 		}
 	
@@ -188,7 +193,7 @@ public class WSPassPhrases {
 				
 			} catch (SQLException ex) {
 				
-				throw new RuntimeException(ex);
+				 LOGGER.error("Toggle User Activation - A Database exception has occured: {}.", ex.getMessage());	
 				
 			}
 			
@@ -227,7 +232,7 @@ public class WSPassPhrases {
 	
 		} catch (SQLException ex) {
 			
-			throw new RuntimeException(ex);
+			 LOGGER.error("Get PPID From Request - A Database exception has occured: {}.", ex.getMessage());	
 			
 		}
 		
@@ -259,7 +264,7 @@ public class WSPassPhrases {
 				
 			} catch (SQLException ex) {
 				
-				throw new RuntimeException(ex);
+				 LOGGER.error("Get Pass-Phrase - A Database exception has occured: {}.", ex.getMessage());	
 				
 			}
 			
@@ -292,7 +297,7 @@ public class WSPassPhrases {
 				
 			} catch (SQLException ex) {
 				
-				throw new RuntimeException(ex);
+				 LOGGER.error("Get Last Modified Date - A Database exception has occured: {}.", ex.getMessage());	
 				
 			}
 			
@@ -322,7 +327,7 @@ public class WSPassPhrases {
 				
 			} catch (SQLException ex) {
 
-				throw new RuntimeException(ex);
+				 LOGGER.error("Update Pass-Phrase - A Database exception has occured: {}.", ex.getMessage());	
 				
 			}
 			

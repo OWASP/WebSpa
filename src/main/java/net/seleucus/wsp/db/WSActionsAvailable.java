@@ -8,10 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.seleucus.wsp.crypto.WebSpaEncoder;
 
 public class WSActionsAvailable {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSActionsAvailable.class);    
 
 	private Connection wsConnection;
 	
@@ -38,7 +42,7 @@ public class WSActionsAvailable {
 			
 		} catch (SQLException ex) {
 			
-			throw new RuntimeException(ex);
+			 LOGGER.error("Add Add Action - A Database exception has occured: {}.", ex.getMessage());
 			
 		}
 		
@@ -69,7 +73,7 @@ public class WSActionsAvailable {
 				
 			} catch (SQLException ex) {
 	
-				throw new RuntimeException(ex);
+				 LOGGER.error("Get Action Number from Request - A Database exception has occured: {}.", ex.getMessage());
 	
 			}
 		}
@@ -99,9 +103,9 @@ public class WSActionsAvailable {
 			rs.close();
 			psPassPhrase.close();
 			
-		} catch (SQLException e) {
+		} catch (SQLException ex) {
 			
-			throw new RuntimeException(e);
+			 LOGGER.error("Get O/S Command - A Database exception has occured: {}.", ex.getMessage());
 			
 		}
 		
@@ -132,7 +136,7 @@ public class WSActionsAvailable {
 			
 		} catch (SQLException ex) {
 			
-			throw new RuntimeException(ex);
+			 LOGGER.error("Get AAID - A Database exception has occured: {}.", ex.getMessage());
 			
 		}
 		
@@ -167,7 +171,7 @@ public class WSActionsAvailable {
 				
 			} catch(SQLException ex) {
 				
-				throw new RuntimeException(ex);
+				 LOGGER.error("Is Action Number in Use - A Database exception has occured: {}.", ex.getMessage());
 	
 			}
 		}
@@ -203,7 +207,7 @@ public class WSActionsAvailable {
 				
 			} catch (SQLException ex) {
 				
-				throw new RuntimeException(ex);
+				 LOGGER.error("Is PPID Number in Use - A Database exception has occured: {}.", ex.getMessage());
 	
 			}
 	
@@ -291,7 +295,7 @@ public class WSActionsAvailable {
 	
 		} catch (SQLException ex) {
 			
-			 throw new RuntimeException(ex);
+			 LOGGER.error("Show Action Details - A Database exception has occured: {}.", ex.getMessage());
 	
 		}
 	
@@ -341,7 +345,7 @@ public class WSActionsAvailable {
 	
 		} catch (SQLException ex) {
 			
-			 throw new RuntimeException(ex);
+			 LOGGER.error("Show Actions - A Database exception has occured: {}.", ex.getMessage());
 	
 		}
 		
@@ -367,7 +371,7 @@ public class WSActionsAvailable {
 		    	
 		} catch (SQLException ex) {
 			
-			throw new RuntimeException(ex);
+			 LOGGER.error("Update Action - A Database exception has occured: {}.", ex.getMessage());
 				 
 		}
 		

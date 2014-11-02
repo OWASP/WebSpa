@@ -1,9 +1,15 @@
 package net.seleucus.wsp.console;
 
+import net.seleucus.wsp.db.WSUsers;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class WSConsoleNative extends WSConsole {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSConsoleNative.class);    
 
 	@Override
 	public String readLine(String string) {

@@ -7,8 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSUsers {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSUsers.class);    
 
 	private Connection wsConnection;
 
@@ -25,6 +29,8 @@ public class WSUsers {
 		
 		String sqlUsers = "INSERT INTO PUBLIC.USERS (PPID, FULLNAME, EMAIL, PHONE, CREATED, MODIFIED) VALUES " +
 				"(SELECT PPID FROM PUBLIC.PASSPHRASES WHERE PASSPHRASE = ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);";
+
+		LOGGER.info("Adding user {} to the database...", fullName); 
 		
 	    try {
 			
@@ -43,9 +49,11 @@ public class WSUsers {
 	    	
 	    	psUsers.close();
 	    	
+	    	LOGGER.info("User {} added.", fullName);
+	    	
 		} catch (SQLException ex) {
 			
-			 throw new RuntimeException(ex);
+			 LOGGER.error("User Add - A Database error occured: {}", ex.getMessage());
 			 
 		}
 	
@@ -72,7 +80,7 @@ public class WSUsers {
 				
 			} catch (SQLException ex) {
 	
-				throw new RuntimeException(ex);
+				 LOGGER.error("User Full Name - A Database error occured: {}", ex.getMessage());
 	
 			}
 		}
@@ -118,7 +126,7 @@ public class WSUsers {
 	
 		} catch (SQLException ex) {
 			
-			 throw new RuntimeException(ex);
+			 LOGGER.error("User Show - A Database error occured: {}", ex.getMessage());
 	
 		}
 		

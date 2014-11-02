@@ -9,13 +9,21 @@ import org.junit.Test;
 public class WebSpaTest {
 	
 	@Test
-	public void testProcessParametersReturnsMinusOneIfNoArguments() {
+	public void testProcessParametersReturnsMinusTwoIfNoArguments() {
 		
 		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
 		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 0, 0);
 		assertEquals(argArray.length, 0);
-		assertEquals(myWebSpa.processParameters(argArray), -1);
+		assertEquals(myWebSpa.processParameters(argArray), -2);
 
+	}
+	
+	@Test
+	public void testProcessParametersReturnsMinusOneIfAnInvalidArgument() {
+		
+		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		final String[] invalidParameter = {"asdfasdf"};
+		assertEquals(myWebSpa.processParameters(invalidParameter), -1);
 	}
 
 	@Test

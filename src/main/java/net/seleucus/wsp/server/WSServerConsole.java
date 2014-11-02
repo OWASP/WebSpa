@@ -3,6 +3,9 @@ package net.seleucus.wsp.server;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.seleucus.wsp.server.commands.WSActionAdd;
 import net.seleucus.wsp.server.commands.WSActionShow;
 import net.seleucus.wsp.server.commands.WSCommandOption;
@@ -20,8 +23,10 @@ import net.seleucus.wsp.server.commands.WSUserShow;
 
 public class WSServerConsole {
 
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSServerConsole.class);    
+
 	protected static final String UNKNOWN_CMD_MESSAGE = 
-			"\nUnknown command - type \"help\" for more options\n";
+			"Unknown Command - Type \"help\" for more options";
 	
 	private WSServer myServer;
 	private ArrayList<WSCommandOption> commands;
@@ -60,7 +65,7 @@ public class WSServerConsole {
 
 		if( (commandFound == false) && (command.isEmpty() == false) ) {
 			
-			myServer.println(UNKNOWN_CMD_MESSAGE);
+			LOGGER.info(UNKNOWN_CMD_MESSAGE);
 
 		}
 

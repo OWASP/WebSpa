@@ -3,10 +3,14 @@ package net.seleucus.wsp.client;
 import net.seleucus.wsp.main.WSGestalt;
 import net.seleucus.wsp.main.WSVersion;
 import net.seleucus.wsp.main.WebSpa;
-import net.seleucus.wsp.util.WSKnownHosts;
 import net.seleucus.wsp.util.WSUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class WSClient extends WSGestalt {
+
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSClient.class);    
 
 	public WSClient(final WebSpa myWebSpa) {
 		super(myWebSpa);		
@@ -14,16 +18,16 @@ public class WSClient extends WSGestalt {
 	
 	@Override
 	public void exitConsole() {
-		printlnWithTimeStamp("Goodbye!\n");
+		LOGGER.info("Goodbye!");
 	}
 	
 	@Override
 	public void runConsole() {
 		
-		myConsole.println("");
-		myConsole.println("WebSpa - Single HTTP/S Request Authorisation");
-		myConsole.println("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
-		myConsole.println("");
+		LOGGER.info("");
+		LOGGER.info("WebSpa - Single HTTP/S Request Authorisation");
+		LOGGER.info("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
+		LOGGER.info("");
 
 		String host = readLineRequired("Host [e.g. https://localhost/]");
 		CharSequence password = readPasswordRequired("Your pass-phrase for that host");
@@ -32,19 +36,16 @@ public class WSClient extends WSGestalt {
 		WSRequestBuilder myClient = new WSRequestBuilder(host, password, action);
 		String knock = myClient.getKnock();
 		
-		myConsole.println("");
-		printlnWithTimeStamp("Your WebSpa Knock is:");
-		myConsole.println("\n" + knock + "\n");
+		LOGGER.info("Your WebSpa Knock is: {}", knock);
 		
 		// URL nonsense 
 		final String sendChoice = readLineOptional("Send the above URL [Y/n]");
-		myConsole.println("");
 		
-		if (WSUtil.isAnswerPositive(sendChoice) || sendChoice.isEmpty()) {
+		if ( WSUtil.isAnswerPositive(sendChoice) || sendChoice.isEmpty() ) {
 			
 			WSConnection myConnection = new WSConnection(knock);
 			
-			printlnWithTimeStamp(myConnection.getActionToBeTaken());
+			LOGGER.info(myConnection.getActionToBeTaken());
 		
 			myConnection.sendRequest();
 
@@ -63,36 +64,40 @@ public class WSClient extends WSGestalt {
 				// WSKnownHosts.store...(host-ip, algorithm, fingerprint);
 
 				try {
-					myConsole.println(myConnection.getCertSHA1Hash());
+					
+					LOGGER.info(myConnection.getCertSHA1Hash());
+					
 				} catch (NullPointerException npEx) {
-					myConsole.println("Couldn't get the SHA1 hash of the server certificate - probably a self signed certificate.");
+					
+					LOGGER.info("Couldn't get the SHA1 hash of the server certificate - probably a self signed certificate.");
+					
 					if (!WSUtil.hasMinJreRequirements(1, 7)) {
-						myConsole.println("Be sure to run WebSpa with a JRE 1.7 or greater.");
+						LOGGER.error("Be sure to run WebSpa with a JRE 1.7 or greater.");
 					} else {
-						myConsole.println("An exception was raised when reading the server certificate.");
+						LOGGER.error("An exception was raised when reading the server certificate.");
 						npEx.printStackTrace();
 					}
 				}
 
-				final String trustChoice = readLineRequired("Are you sure you want to continue connecting [y/n]");
+				final String trustChoice = readLineOptional("Continue connecting [Y/n]");
 				
-				if(WSUtil.isAnswerPositive(trustChoice)) {
+				if( WSUtil.isAnswerPositive(trustChoice) || sendChoice.isEmpty() ) {
 					
 					myConnection.sendRequest();
-					printlnWithTimeStamp(myConnection.responseMessage());
-					printlnWithTimeStamp("Response Code : " + myConnection.responseCode());
+					LOGGER.info(myConnection.responseMessage());
+					LOGGER.info("HTTPS Response Code: {}", myConnection.responseCode());
 					
 				} else {
 					
-					printlnWithTimeStamp("Nothing was sent.");
+					LOGGER.info("Nothing was sent.");
 					
 				}
 				
 			} else {
 				
 				myConnection.sendRequest();
-				printlnWithTimeStamp(myConnection.responseMessage());
-				printlnWithTimeStamp("Response Code : " + myConnection.responseCode());
+				LOGGER.info(myConnection.responseMessage());
+				LOGGER.info("HTTP Response Code: {}", myConnection.responseCode());
 	
 			}
 						

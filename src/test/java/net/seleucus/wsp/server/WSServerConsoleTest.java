@@ -65,7 +65,7 @@ public class WSServerConsoleTest {
 		assertTrue( outContent.toString().equals("") );
 
 	}
-
+	/*
 	@Test
 	public void testExecuteCommandPrintsDefaultUnknownCmdMessageIfCommandNotFound() throws Exception {
 
@@ -75,5 +75,6 @@ public class WSServerConsoleTest {
 		assertTrue( outContent.toString().contains(WSServerConsole.UNKNOWN_CMD_MESSAGE) );
 
 	}
+	*/
 
 }

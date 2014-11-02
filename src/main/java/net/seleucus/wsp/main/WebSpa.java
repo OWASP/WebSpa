@@ -15,7 +15,7 @@ public class WebSpa {
 
 	protected static final String[] ALLOWED_FIRST_PARAM = {"-help", "-client", "-server", "-version", "-start", "-stop", "-status"};
 	
-	final static Logger LOGGER = LoggerFactory.getLogger(WebSpa.class);    
+	private final static Logger LOGGER = LoggerFactory.getLogger(WebSpa.class);    
 
 	private WSConsole myConsole;
 	
@@ -30,40 +30,35 @@ public class WebSpa {
 	}
 	
 	public int processParameters(final String[] args) {
-		int mode = -1;
+		int mode = -2;
 		
 		if(args.length > 0) {
-			// java -jar webspa.jar -help
+
 			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[0])) {
-			    LOGGER.info("Running WebSpa Help");
+				// java -jar webspa.jar -help
 				mode = 0;
-			}
-			// java -jar webspa.jar -client
-			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[1])) {
-				LOGGER.info("Running WebSpa Client");
+			} else if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[1])) {
+				// java -jar webspa.jar -client
 				mode = 1;
-			}
-			// java -jar webspa.jar -server
-			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[2])) {
+			} else if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[2])) {
+				// java -jar webspa.jar -server
 				LOGGER.info("Running WebSpa Server");
 				mode = 2;
-			}
-			// java -jar webspa.jar -version
-			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[3])) {
-				LOGGER.info("Running WebSpa Version");
+			} else if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[3])) {
+				// java -jar webspa.jar -version
 				mode = 3;
-			}
-			// java -jar webspa.jar -start
-			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[4])) {
+			} else if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[4])) {
+				// java -jar webspa.jar -start
 				mode = 4;
-			}
-			// java -jar webspa.jar -stop
-			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[5])) {
+			} else if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[5])) {
+				// java -jar webspa.jar -stop
 				mode = 5;
-			}
-			// java -jar webspa.jar -status
-			if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[6])) {
+			} else if(args[0].equalsIgnoreCase(ALLOWED_FIRST_PARAM[6])) {
+				// java -jar webspa.jar -status
 				mode = 6;
+			} else {
+				// java -jar webspa.jar -invalidParam
+				mode = -1;
 			}
 		}
 		
@@ -75,7 +70,6 @@ public class WebSpa {
 		final WSConsole myWsConsole = WSConsole.getWsConsole();
 		
 		if(!WSUtil.hasMinJreRequirements(1, 6)) {
-			myWsConsole.println("!!! Minimum JRE requirements are 1.6 !!!");
 			LOGGER.error("!!! Minimum JRE requirements are 1.6 !!!");
 			System.exit(1);
 		}
@@ -85,13 +79,17 @@ public class WebSpa {
 		int mode = mySpa.processParameters(args);
 
 		switch (mode) {
+		case -1:
+		    LOGGER.info("Invalid Parameter Specified - Use \"java -jar webspa-{}{}.jar -help\" for More Options", WSVersion.getMajor(), WSVersion.getMinor() );
+		 	myGestalt = new WSHelper(mySpa);
+		 	break; 
 		case 1:
-			// System.out.println("client");
+			LOGGER.info("Welcome - Running the WebSpa Client");
 			myGestalt = new WSClient(mySpa);
 			myGestalt.runConsole();
 			break;
 		case 2:
-		    // System.out.println("server");
+			LOGGER.info("Welcome - Running the WebSpa Server");
 			myGestalt = new WSServer(mySpa);
 			myGestalt.runConsole();
 		 	break;
@@ -101,17 +99,17 @@ public class WebSpa {
 			myGestalt.runConsole();
 			break;
 		case 4:
-			System.out.println("start");
+			LOGGER.info("No Action - A Future Way to Start the WebSpa Server");
 			myGestalt = new WSDaemonStart(mySpa);
 			myGestalt.runConsole();
 			break;
 		case 5:
-			System.out.println("stop");
+			LOGGER.info("No Action - A Future Way to Stop the WebSpa Server");
 			myGestalt = new WSDaemonStop(mySpa);
 			myGestalt.runConsole();
 			break;
 		case 6:
-			System.out.println("status");
+			LOGGER.info("No Action - A Future Way to Query the Status of the WebSpa Server");
 			myGestalt = new WSDaemonStatus(mySpa);
 			myGestalt.runConsole();
 			break;

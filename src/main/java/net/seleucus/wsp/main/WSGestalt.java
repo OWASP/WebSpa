@@ -2,18 +2,21 @@ package net.seleucus.wsp.main;
 
 import java.nio.CharBuffer;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 
 import net.seleucus.wsp.console.WSConsole;
 
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class WSGestalt {
 
-	public static final String ANSI_RED = "\u001B[31m";
-	public static final String ANSI_RESET = "\u001B[0m";
+	private final static Logger LOGGER = LoggerFactory.getLogger(WSGestalt.class);    
+
+	private static final String ANSI_RED = "\u001B[31m";
+	private static final String ANSI_BLUE = "\u001B[34m";
+	private static final String ANSI_PURPLE = "\u001B[35m";
+	private static final String ANSI_RESET = "\u001B[0m";
 
 	protected WSConsole myConsole;
 
@@ -27,12 +30,12 @@ public abstract class WSGestalt {
 		
 		StringBuilder displayBuilder = new StringBuilder();
 		
-		displayBuilder.append("-[Optional] ");
+		displayBuilder.append("[Input Option] ");
 		displayBuilder.append(displayString);
 		displayBuilder.append(':');
 		displayBuilder.append(' ');
 		
-		return myConsole.readLine(displayBuilder.toString());
+		return myConsole.readLine(ANSI_BLUE + " USER [xx.xxx] " + displayBuilder.toString() + ANSI_RESET);
 		
 	}
 	
@@ -47,7 +50,7 @@ public abstract class WSGestalt {
 			
 		} catch(NumberFormatException ex) {
 			
-			printlnWithTimeStamp("Invalid Number");
+			LOGGER.error("Invalid Number");
 			
 		}
 		
@@ -59,7 +62,7 @@ public abstract class WSGestalt {
 		
 		StringBuilder displayBuilder = new StringBuilder();
 		
-		displayBuilder.append("=[Required] ");
+		displayBuilder.append("[Input Required] ");
 		displayBuilder.append(displayString);
 		displayBuilder.append(':');
 		displayBuilder.append(' ');
@@ -68,11 +71,11 @@ public abstract class WSGestalt {
 		
 		do {
 		
-			outputString = myConsole.readLine(displayBuilder.toString()).trim();
+			outputString = myConsole.readLine(ANSI_BLUE + " USER [xx.xxx] " + displayBuilder.toString() + ANSI_RESET).trim();
 			
 			if(outputString.isEmpty()) {
 			
-				printlnWithTimeStamp("Your Input Cannot Be Blank");
+				LOGGER.error("Your Input Cannot Be Blank");
 				
 			}
 			
@@ -102,7 +105,7 @@ public abstract class WSGestalt {
 			
 			} catch(NumberFormatException ex) {
 			
-				printlnWithTimeStamp("Invalid Number");
+				LOGGER.error("Invalid Number Format");
 			
 			}
 		
@@ -114,26 +117,15 @@ public abstract class WSGestalt {
 	
 	public String readLineServerPrompt() {
 		
-		return myConsole.readLine(ANSI_RED + "webspa-server" + ANSI_RESET + "> ");
+		return myConsole.readLine( ANSI_PURPLE + "webspa-server> " + ANSI_RESET );
 		
 	}
 	
-	/*
-	public void log(final String display) {
-		
-		final Date currentDate = new Date();
-		final SimpleDateFormat sdf = new SimpleDateFormat("[yyyy-MM-dd HH-mm-ss] ");
-		final String formattedDate = sdf.format(currentDate);
-		
-		System.out.print('\n' + formattedDate + StringUtils.abbreviateMiddle(display, "...", 50) );
-		
-	}
-	*/
 	public CharSequence readPasswordRequired(final String displayString) {
 		
 		StringBuilder displayBuilder = new StringBuilder();
 		
-		displayBuilder.append("=[Required] ");
+		displayBuilder.append("[Input Required] ");
 		displayBuilder.append(displayString);
 		displayBuilder.append(':');
 		displayBuilder.append(' ');
@@ -143,19 +135,19 @@ public abstract class WSGestalt {
 		
 		do {
 		
-			passCharArrayOne = myConsole.readPassword(displayBuilder.toString());
-			passCharArrayTwo = myConsole.readPassword("=[Required] Re-enter the above value: ");
+			passCharArrayOne = myConsole.readPassword(ANSI_PURPLE + " PASS [xx.xxx] " + displayBuilder.toString() + ANSI_RESET);
+			passCharArrayTwo = myConsole.readPassword(ANSI_PURPLE + " PASS [xx.xxx] [Input Required] Re-enter the above value: " + ANSI_RESET);
 			
 			passPhrasesMatch = Arrays.equals(passCharArrayOne, passCharArrayTwo);
 			
 			if(!passPhrasesMatch) {
 				
-				myConsole.println("The Pass-Phrases Entered do not Match");
-				myConsole.println("Please try again");
+				LOGGER.info("The Pass-Phrases Entered do not Match");
+				LOGGER.info("Please try again");
 				
 			} else if(passCharArrayOne.length <= 0) {
 
-				myConsole.println("The Pass-Phrase Cannot Be Blank");
+				LOGGER.error(ANSI_RED + "The Pass-Phrase Cannot Be Blank" + ANSI_RESET);
 
 			}
 						
@@ -164,7 +156,7 @@ public abstract class WSGestalt {
 		return CharBuffer.wrap(passCharArrayOne);
 		
 	}
-	
+	/*
 	public void printlnWithTimeStamp(final String line) {
 		
 		final Date currentDate = new Date();
@@ -174,7 +166,7 @@ public abstract class WSGestalt {
 		myConsole.println( formattedDate + StringUtils.abbreviateMiddle(line, "...", 50) );
 		
 	}
-	
+	*/
 	public abstract void exitConsole();
 
 	public abstract void runConsole() throws SQLException;

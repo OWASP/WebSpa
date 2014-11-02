@@ -10,6 +10,8 @@ public class WSHelper extends WSGestalt {
 	@Override
 	public void runConsole() {
 		
+		final String versionNoDots = WSVersion.getMajor() + "" + WSVersion.getMinor();
+		
 		myConsole.println("");
 		myConsole.println("WebSpa - Single HTTP/S Request Authorisation");
 		myConsole.println("version " + WSVersion.getValue() + " (webspa@seleucus.net)"); 		
@@ -27,9 +29,9 @@ public class WSHelper extends WSGestalt {
 		myConsole.println("");
 		myConsole.println("Examples:");
 		myConsole.println("");
-		myConsole.println("java -jar webspa.jar -client");
-		myConsole.println("java -jar webspa.jar -server");
-		myConsole.println("java -jar webspa.jar -status");
+		myConsole.println("java -jar webspa-" + versionNoDots + ".jar -client");
+		myConsole.println("java -jar webspa-" + versionNoDots + ".jar -server");
+		myConsole.println("java -jar webspa-" + versionNoDots + ".jar -status");
 		myConsole.println("");
 		
 	}
