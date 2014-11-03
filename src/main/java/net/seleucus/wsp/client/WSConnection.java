@@ -34,7 +34,7 @@ public class WSConnection {
 	protected static String[] RESPONSE_MESSAGES = {
 		"...",
 		"I/O Exception: While attempting to connect",
-		"Reponse received"
+		"Response received"
 	};
 
 	private int action, response;
