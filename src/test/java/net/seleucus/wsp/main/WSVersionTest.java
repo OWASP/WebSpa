@@ -82,7 +82,7 @@ public class WSVersionTest {
 		
 		WSVersion myVersion = new WSVersion(new WebSpa(WSConsole.getWsConsole()));
 		myVersion.runConsole();
-		assertEquals(WSVersion.getValue() + '\n', outContent.toString());
+		assertEquals(WSVersion.getValue(), outContent.toString().trim());
 		
 	}
 	
