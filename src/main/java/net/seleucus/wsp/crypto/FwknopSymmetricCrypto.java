@@ -5,11 +5,21 @@
  */
 package net.seleucus.wsp.crypto;
 
-import java.security.InvalidKeyException;
 import org.apache.commons.codec.binary.Base64;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
+import java.security.MessageDigest;
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
+import java.security.SecureRandom;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 
 /**
  *
@@ -24,8 +34,11 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
     protected final static byte HASH_TYPE_SHA512 = 4;
     
     private final static String FWKNOP_ENCRYPTION_HEADER = "U2FsdGVkX1";
+    private final static byte SALT_LEN = 8;
+    private final static byte IV_LEN = 16;
+    private final static byte KEY_LEN = 32;
     
-    private final static byte[] DIGEST_BASE64_LENGTH = {22, 27, 43, 64, 86};
+    protected final static byte[] DIGEST_BASE64_LENGTH = {22, 27, 43, 64, 86};
     private final static String[] HMAC_ALGORITHMS = {"HmacMD5", "HmacSHA1", "HmacSHA256", "HmacSHA384", "HmacSHA512"};
     
     private FwknopSymmetricCrypto() {
@@ -33,39 +46,29 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         throw new UnsupportedOperationException();
     }
     
-    public static byte[] getHMACForMessage(byte[] auth_key, String message, byte hmac_type) {
+    public static String sign(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
         // Check if hmac_type is valid
         if (hmac_type > 4 || hmac_type < 0) 
             throw new IllegalArgumentException("Invalid digest type was specified");        
 
         // Create Mac instance 
         Mac hmac;
-        try {
-            hmac = Mac.getInstance(HMAC_ALGORITHMS[hmac_type]);
-        }
-        catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("Selected HMAC type is not supported");
-        }
+        hmac = Mac.getInstance(HMAC_ALGORITHMS[hmac_type]);
         
         // Create key
         SecretKeySpec hmac_key = new SecretKeySpec(auth_key, HMAC_ALGORITHMS[hmac_type]);
         
         // Init hmac object
-        try {
-            hmac.init(hmac_key);
-        }
-        catch (InvalidKeyException e) {
-            throw new IllegalArgumentException("Invalid key for specified HMAC type");
-        }
+        hmac.init(hmac_key);
         
         // Prepare enc_part to calculate HMAC
         byte[] msg_to_hmac = FWKNOP_ENCRYPTION_HEADER.concat(message).getBytes();
         
         // Calculate HMAC and return
-        return hmac.doFinal(msg_to_hmac);                
-    }
+        return Base64.encodeBase64String(hmac.doFinal(msg_to_hmac)).replace("=", "");
+    }        
     
-    public static boolean getIsHMACValid(byte[] auth_key, String message, byte hmac_type) {
+    public static boolean verify(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
         // Check if hmac_type is valid, get hmac length in base64 encoding
         if (hmac_type > 4 || hmac_type < 0) 
             throw new IllegalArgumentException("Invalid digest type was specified");        
@@ -80,7 +83,89 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         String auth_part = message.substring(message.length() - digest_len, message.length());        
        
         // Calculate HMAC, compare, return results
-        return WebSpaUtils.equals(getHMACForMessage(auth_key, enc_part, hmac_type), Base64.decodeBase64(auth_part));
+        return WebSpaUtils.equals(Base64.decodeBase64(sign(auth_key, enc_part, hmac_type)), Base64.decodeBase64(auth_part));
+    }
+    
+    
+    protected static byte[][] deriveKeyAndIV(byte[] salt, byte[] master_key) throws NoSuchAlgorithmException, IOException {
+        
+        byte[] key = new byte[KEY_LEN];
+        byte[] IV = new byte[IV_LEN];
+        
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
+        ByteArrayOutputStream toHash = new ByteArrayOutputStream();
+        byte[] d = null;
+        
+        while (data.size() < IV_LEN + KEY_LEN) {
+            md5.reset();
+            toHash.reset();
+            if (d != null) 
+                toHash.write(d);
+            toHash.write(master_key);
+            toHash.write(salt);
+            d = md5.digest(toHash.toByteArray());
+            data.write(d);
+        }
+        
+        byte[] output = data.toByteArray();
+        
+        System.arraycopy(output, 0, key, 0, KEY_LEN);
+        System.arraycopy(output, KEY_LEN, IV, 0, IV_LEN);
+
+        return new byte[][]{key, IV};
+    }
+    
+    protected static String encrypt(byte[] key, String message) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        SecureRandom sr = new SecureRandom();
+        byte[] salt = new byte[8];
+        sr.nextBytes(salt);
+                
+        byte[][] key_and_iv = deriveKeyAndIV(salt, key);
+        
+        SecretKeySpec enc_key;
+        enc_key = new SecretKeySpec(key_and_iv[0], "AES");
+        Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec iv = new IvParameterSpec(key_and_iv[1]);
+        aes.init(Cipher.ENCRYPT_MODE, enc_key, iv);
+        
+        byte[] salted = "Salted__".getBytes("UTF-8");
+        byte[] cipher = aes.doFinal(message.getBytes("UTF-8"));
+        
+        byte[] result = new byte[salted.length + salt.length + cipher.length];
+
+        // now we need to glue: "Salted__" + salt + cipher
+        System.arraycopy(salted, 0, result, 0, salted.length);
+        System.arraycopy(salt, 0, result, salted.length, salt.length);
+        System.arraycopy(cipher, 0, result, salted.length + salt.length, cipher.length);
+        
+        // remove = and FWKNOP_ENCRYPTION_HEADER
+        return Base64.encodeBase64String(result).replace("=", "").replace(FWKNOP_ENCRYPTION_HEADER, "");
+    }
+    
+    protected static String decrypt(byte[] key, String ciphertext) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        if (!ciphertext.startsWith(FWKNOP_ENCRYPTION_HEADER)) {
+            ciphertext = FWKNOP_ENCRYPTION_HEADER.concat(ciphertext);
+        }
+        // we need to remove Salted__ from the salt_and_ciphertext therefore -> SALT_LEN +/- 8
+        
+        byte[] salt_and_ciphertext = Base64.decodeBase64(ciphertext);              
+        byte[] salt = new byte[SALT_LEN];        
+        byte[] cipher = new byte[salt_and_ciphertext.length - SALT_LEN - 8];
+        System.arraycopy(salt_and_ciphertext, 8, salt, 0, SALT_LEN);
+        System.arraycopy(salt_and_ciphertext, 8 + SALT_LEN, cipher, 0, cipher.length);
+        byte[][] key_and_iv = deriveKeyAndIV(salt, key);
+        
+        
+        SecretKeySpec enc_key;
+        enc_key = new SecretKeySpec(key_and_iv[0], "AES");
+        Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        IvParameterSpec iv = new IvParameterSpec(key_and_iv[1]);
+        aes.init(Cipher.DECRYPT_MODE, enc_key, iv);
+        byte[] plain = aes.doFinal(cipher);
+        
+        return new String(plain, "UTF-8");
     }
     
 }
