@@ -65,7 +65,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         byte[] msg_to_hmac = FWKNOP_ENCRYPTION_HEADER.concat(message).getBytes();
         
         // Calculate HMAC and return
-        return Base64.encodeBase64String(hmac.doFinal(msg_to_hmac)).replace("=", "");
+        return message.concat(Base64.encodeBase64String(hmac.doFinal(msg_to_hmac)).replace("=", ""));
     }        
     
     public static boolean verify(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -83,9 +83,19 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         String auth_part = message.substring(message.length() - digest_len, message.length());        
        
         // Calculate HMAC, compare, return results
-        return WebSpaUtils.equals(Base64.decodeBase64(sign(auth_key, enc_part, hmac_type)), Base64.decodeBase64(auth_part));
+        return equals(sign(auth_key, enc_part, hmac_type), message);
     }
     
+    protected static boolean equals(CharSequence a, CharSequence b) {
+        if (a.length() != b.length())
+            return false;
+        boolean result = true;
+        for (int i=0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i))
+                result = false;
+        }
+        return result;
+    }
     
     protected static byte[][] deriveKeyAndIV(byte[] salt, byte[] master_key) throws NoSuchAlgorithmException, IOException {
         
@@ -117,7 +127,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return new byte[][]{key, IV};
     }
     
-    protected static String encrypt(byte[] key, String message) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    public static String encrypt(byte[] key, String message) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         SecureRandom sr = new SecureRandom();
         byte[] salt = new byte[8];
         sr.nextBytes(salt);
@@ -144,7 +154,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return Base64.encodeBase64String(result).replace("=", "").replace(FWKNOP_ENCRYPTION_HEADER, "");
     }
     
-    protected static String decrypt(byte[] key, String ciphertext) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    public static String decrypt(byte[] key, String ciphertext) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         if (!ciphertext.startsWith(FWKNOP_ENCRYPTION_HEADER)) {
             ciphertext = FWKNOP_ENCRYPTION_HEADER.concat(ciphertext);
         }
