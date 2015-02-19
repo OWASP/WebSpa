@@ -3,11 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.seleucus</groupId>
 	<artifactId>webspa</artifactId>
-	<version>0.8-SNAPSHOT</version>
+	<version>0.9-SNAPSHOT</version>
 	<name>WebSpa</name>
 	<description>Web Single Request Authorisation</description>
+    <url>https://www.owasp.org/index.php/OWASP_WebSpa_Project</url>
 
-	<properties>
+    <scm>
+        <connection>scm:git:git@github.com:OWASP/WebSpa.git</connection>
+        <developerConnection>scm:git:git@github.com:OWASP/WebSpa.git</developerConnection>
+        <url>https://github.com/OWASP/WebSpa</url>
+    </scm>
+
+    <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -141,6 +148,4 @@
 
 		</plugins>
 	</build>
-
-	<url>https://www.owasp.org/index.php/OWASP_WebSpa_Project</url>
 </project>
