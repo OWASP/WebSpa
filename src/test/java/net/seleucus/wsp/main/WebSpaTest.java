@@ -1,108 +1,65 @@
 package net.seleucus.wsp.main;
 
-import static org.junit.Assert.assertEquals;
 import net.seleucus.wsp.console.WSConsole;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
+
+import static net.seleucus.wsp.main.CommandLineArgument.*;
+import static org.junit.Assert.assertEquals;
 
 public class WebSpaTest {
 	
 	@Test
 	public void testProcessParametersReturnsMinusTwoIfNoArguments() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 0, 0);
-		assertEquals(argArray.length, 0);
-		assertEquals(myWebSpa.processParameters(argArray), -2);
-
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{}), SHOW_HELP);
 	}
 	
 	@Test
 	public void testProcessParametersReturnsMinusOneIfAnInvalidArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
 		final String[] invalidParameter = {"asdfasdf"};
-		assertEquals(myWebSpa.processParameters(invalidParameter), -1);
+		assertEquals(myWebSpa.processParameters(invalidParameter), SHOW_HELP);
 	}
 
 	@Test
 	public void testProcessParametersReturnsZeroIfHelpIsTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 0, 1);
-		assertEquals(argArray[0], "-help");
-		assertEquals(myWebSpa.processParameters(argArray), 0);
-		
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{SHOW_HELP.getName()}), SHOW_HELP);
 	}
 	
 	@Test
 	public void testProcessParameterReturnsOneIfClientIsTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 1, 2);
-		assertEquals(argArray[0], "-client");
-		assertEquals(myWebSpa.processParameters(argArray), 1);
-		
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{CLIENT_MODE.getName()}), CLIENT_MODE);
 	}
 	
 	@Test
 	public void testProcessParameterReturnsTwoIfServerIsTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 2, 3);
-		assertEquals(argArray[0], "-server");
-		assertEquals(myWebSpa.processParameters(argArray), 2);
-		
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{SERVER_MODE.getName()}), SERVER_MODE);
 	}
 	
 	@Test
 	public void testProcessParameterReturnsThreeIfVersionIsTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 3, 4);
-		assertEquals(argArray[0], "-version");
-		assertEquals(myWebSpa.processParameters(argArray), 3);
-		
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{SHOW_VERSION.getName()}), SHOW_VERSION);
 	}
 	
 	@Test
 	public void testProcessParameterReturnsFourIfStartIsTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 4, 5);
-		assertEquals(argArray[0], "-start");
-		assertEquals(myWebSpa.processParameters(argArray), 4);
-		
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{START.getName()}), START);
 	}
 
 	@Test
 	public void testProcessParameterReturnsFiveIfStopIsTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 5, 6);
-		assertEquals(argArray[0], "-stop");
-		assertEquals(myWebSpa.processParameters(argArray), 5);
-		
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{STOP.getName()}), STOP);
 	}
 
 	@Test
 	public void testProcessParameterReturnsSixIfStatusIsTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		final String[] argArray = ArrayUtils.subarray(WebSpa.ALLOWED_FIRST_PARAM, 6, 7);
-		assertEquals(argArray[0], "-status");
-		assertEquals(myWebSpa.processParameters(argArray), 6);
-		
+		final WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
+		assertEquals(myWebSpa.processParameters(new String[]{SHOW_STATUS.getName()}), SHOW_STATUS);
 	}
-
-	@Test
-	public void testProcessParameterProcessesOnlyTheFirstArgument() {
-		
-		WebSpa myWebSpa = new WebSpa(WSConsole.getWsConsole());
-		assertEquals(WebSpa.ALLOWED_FIRST_PARAM[0], "-help");
-		assertEquals(myWebSpa.processParameters(WebSpa.ALLOWED_FIRST_PARAM), 0);
-		
-	}
-	
 }

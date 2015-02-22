@@ -6,7 +6,6 @@ public class WSHelper extends WSGestalt {
 		super(myWebSpa);
 	}
 
-
 	@Override
 	public void runConsole() {
 		
@@ -19,13 +18,11 @@ public class WSHelper extends WSGestalt {
 		
 		myConsole.println("Usage: java -jar webspa.jar [-option]");
 		myConsole.println("");
-		myConsole.println("\t-client         : Run the client, generate valid requests");
-		myConsole.println("\t-help           : Print this usage message");
-		myConsole.println("\t-server         : Run the server");
-		myConsole.println("\t-start          : Start the daemon service");
-		myConsole.println("\t-status         : Display the status of the daemon service");
-		myConsole.println("\t-stop           : Stop the daemon service");
-		myConsole.println("\t-version        : " + WSVersion.getValue());
+
+        for(final CommandLineArgument arg : CommandLineArgument.values()){
+            myConsole.println(String.format("\t%1$-16s : %2$s", arg.getName(), arg.getDescription()));
+        }
+
 		myConsole.println("");
 		myConsole.println("Examples:");
 		myConsole.println("");
@@ -33,7 +30,6 @@ public class WSHelper extends WSGestalt {
 		myConsole.println("java -jar webspa-" + versionNoDots + ".jar -server");
 		myConsole.println("java -jar webspa-" + versionNoDots + ".jar -status");
 		myConsole.println("");
-		
 	}
 
 	@Override
