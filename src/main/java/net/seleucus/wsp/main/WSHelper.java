@@ -31,10 +31,4 @@ public class WSHelper extends WSGestalt {
 		myConsole.println("java -jar webspa-" + versionNoDots + ".jar -status");
 		myConsole.println("");
 	}
-
-	@Override
-	public void exitConsole() {
-		
-	}
-
 }

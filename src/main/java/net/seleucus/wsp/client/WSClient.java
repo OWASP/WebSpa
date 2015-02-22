@@ -17,11 +17,6 @@ public class WSClient extends WSGestalt {
 	}
 	
 	@Override
-	public void exitConsole() {
-		LOGGER.info("Goodbye!");
-	}
-	
-	@Override
 	public void runConsole() {
 		
 		LOGGER.info("");
