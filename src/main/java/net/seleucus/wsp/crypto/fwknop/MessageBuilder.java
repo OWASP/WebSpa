@@ -1,10 +1,8 @@
 package net.seleucus.wsp.crypto.fwknop;
 
-import net.seleucus.wsp.crypto.fwknop.fields.EncryptionMode;
-import net.seleucus.wsp.crypto.fwknop.fields.EncryptionType;
-import net.seleucus.wsp.crypto.fwknop.fields.MessageType;
-import net.seleucus.wsp.crypto.fwknop.fields.Version;
+import net.seleucus.wsp.crypto.fwknop.fields.*;
 
+import static net.seleucus.wsp.crypto.fwknop.fields.DigestType.SHA256;
 import static net.seleucus.wsp.crypto.fwknop.fields.EncryptionMode.CBC;
 import static net.seleucus.wsp.crypto.fwknop.fields.EncryptionType.AES;
 import static net.seleucus.wsp.crypto.fwknop.fields.MessageType.AccessMessage;
@@ -19,7 +17,8 @@ public class MessageBuilder {
     private MessageType messageType = AccessMessage;
     private EncryptionType encryptionType = AES;
     private EncryptionMode encryptionMode = CBC;
-    private String message;
+    private DigestType digestType = SHA256;
+    private String payload;
 
     public static MessageBuilder createMessage(){
         return new MessageBuilder();
@@ -60,12 +59,17 @@ public class MessageBuilder {
         return this;
     }
 
-    public MessageBuilder setMessage(String message) {
-        this.message = message;
+    public MessageBuilder withDigestType(DigestType digestType) {
+        this.digestType = digestType;
+        return this;
+    }
+
+    public MessageBuilder withPayload(String payload) {
+        this.payload = payload;
         return this;
     }
 
     public Message build(){
-        return new Message(randomValue, username, timestamp, version, messageType, encryptionType, encryptionMode, message);
+        return new Message(randomValue, username, timestamp, version, messageType, encryptionType, encryptionMode, digestType, payload);
     }
 }

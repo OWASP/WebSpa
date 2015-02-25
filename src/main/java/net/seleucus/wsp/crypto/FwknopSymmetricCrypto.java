@@ -5,21 +5,24 @@
  */
 package net.seleucus.wsp.crypto;
 
+import net.seleucus.wsp.crypto.fwknop.FwknopBase64;
+import net.seleucus.wsp.crypto.fwknop.Message;
+import net.seleucus.wsp.crypto.fwknop.fields.DigestType;
+import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
-import javax.crypto.Mac;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
-import java.security.MessageDigest;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
+import java.nio.ByteBuffer;
+import java.security.*;
+
+import static javax.crypto.Cipher.DECRYPT_MODE;
+import static javax.crypto.Cipher.ENCRYPT_MODE;
+import static net.seleucus.wsp.crypto.fwknop.Message.FIELD_DELIMITER;
 
 /**
  *
@@ -32,7 +35,8 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
     protected final static byte HASH_TYPE_SHA256 = 2;
     protected final static byte HASH_TYPE_SHA384 = 3;
     protected final static byte HASH_TYPE_SHA512 = 4;
-    
+
+    private static final String PADDING_STRATEGY = "NoPadding";
     private final static String FWKNOP_ENCRYPTION_HEADER = "U2FsdGVkX1";
     private final static byte SALT_LEN = 8;
     private final static byte IV_LEN = 16;
@@ -40,7 +44,26 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
     
     protected final static byte[] DIGEST_BASE64_LENGTH = {22, 27, 43, 64, 86};
     private final static String[] HMAC_ALGORITHMS = {"HmacMD5", "HmacSHA1", "HmacSHA256", "HmacSHA384", "HmacSHA512"};
-    
+
+    private static final SecureRandom secureRandom = new SecureRandom();
+
+    static class MessageKey {
+        private final byte[] key;
+        private final byte[] initialisationVector;
+
+        private MessageKey(byte[] key, byte[] initalisationVector) {
+            this.key = key;
+            this.initialisationVector = initalisationVector;
+        }
+
+        public byte[] getKey() {
+            return key;
+        }
+
+        public byte[] getInitialisationVector() {
+            return initialisationVector;
+        }
+    }
     private FwknopSymmetricCrypto() {
         // Standard to avoid instantiation 'accidents'
         throw new UnsupportedOperationException();
@@ -97,7 +120,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return result;
     }
     
-    protected static byte[][] deriveKeyAndIV(byte[] salt, byte[] master_key) throws NoSuchAlgorithmException, IOException {
+    protected static MessageKey deriveKeyAndIV(byte[] salt, byte[] master_key) throws NoSuchAlgorithmException, IOException {
         
         byte[] key = new byte[KEY_LEN];
         byte[] IV = new byte[IV_LEN];
@@ -124,58 +147,95 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         System.arraycopy(output, 0, key, 0, KEY_LEN);
         System.arraycopy(output, KEY_LEN, IV, 0, IV_LEN);
 
-        return new byte[][]{key, IV};
+        return new MessageKey(key, IV);
     }
-    
-    public static String encrypt(byte[] key, String message) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-        SecureRandom sr = new SecureRandom();
-        byte[] salt = new byte[8];
-        sr.nextBytes(salt);
-                
-        byte[][] key_and_iv = deriveKeyAndIV(salt, key);
-        
-        SecretKeySpec enc_key;
-        enc_key = new SecretKeySpec(key_and_iv[0], "AES");
-        Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        IvParameterSpec iv = new IvParameterSpec(key_and_iv[1]);
-        aes.init(Cipher.ENCRYPT_MODE, enc_key, iv);
-        
-        byte[] salted = "Salted__".getBytes("UTF-8");
-        byte[] cipher = aes.doFinal(message.getBytes("UTF-8"));
-        
-        byte[] result = new byte[salted.length + salt.length + cipher.length];
 
-        // now we need to glue: "Salted__" + salt + cipher
-        System.arraycopy(salted, 0, result, 0, salted.length);
-        System.arraycopy(salt, 0, result, salted.length, salt.length);
-        System.arraycopy(cipher, 0, result, salted.length + salt.length, cipher.length);
-        
-        // remove = and FWKNOP_ENCRYPTION_HEADER
-        return Base64.encodeBase64String(result).replace("=", "").replace(FWKNOP_ENCRYPTION_HEADER, "");
+    public static String encrypt(final byte[] masterKey, Message message) throws Exception {
+        final byte[] salt = new byte[SALT_LEN];
+        secureRandom.nextBytes(salt);
+        return encrypt(masterKey, salt, message);
+    }
+
+    public static String encrypt(final byte[] masterKey, final byte[] salt, Message message) throws Exception {
+
+        final MessageKey messageKey = deriveKeyAndIV(salt, masterKey);
+
+        final SecretKeySpec secretKey = new SecretKeySpec(messageKey.key, message.encryptionType().algorithmName());
+        final Cipher cipher = getCipher(message);
+        final IvParameterSpec initialisationVector = new IvParameterSpec(messageKey.initialisationVector);
+        cipher.init(ENCRYPT_MODE, secretKey, initialisationVector);
+
+        final String plaintextMessage = getPaddedMessage(message);
+
+        final byte[] prefix = "Salted__".getBytes("UTF-8");
+        final byte[] cipherText = cipher.doFinal(plaintextMessage.toString().getBytes(Charsets.UTF_8));
+
+        final byte[] encryptedMessage = ByteBuffer.allocate(prefix.length + salt.length + cipherText.length)
+                .put(prefix)
+                .put(salt)
+                .put(cipherText)
+                .array();
+
+        return Base64.encodeBase64String(encryptedMessage).replace("=", "").replace(FWKNOP_ENCRYPTION_HEADER, "");
+    }
+
+    private static String getPaddedMessage(final Message message) throws NoSuchAlgorithmException {
+        final String encodedMessage = message.encoded();
+
+        if(encodedMessage.length() % message.encryptionType().getBlockSize() == 0){
+            return encodedMessage;
+        }
+
+        final String digest = getBase64Digest(message.digestType(), message.encoded());
+        final int wholeBlocks = encodedMessage.length() / message.encryptionType().getBlockSize();
+        final int paddingChars = ((wholeBlocks + 1) * message.encryptionType().getBlockSize()) - encodedMessage.length() - 1;
+
+        return encodedMessage +  FIELD_DELIMITER + StringUtils.substring(digest, 0, paddingChars);
+
+    }
+
+    private static String getBase64Digest(final DigestType digestType, final String input) throws NoSuchAlgorithmException {
+        return Base64.encodeBase64String(getDigest(digestType, input));
+    }
+
+    private static byte[] getDigest(final DigestType digestType, final String input) throws NoSuchAlgorithmException {
+        final MessageDigest digest = MessageDigest.getInstance(digestType.algorithmName());
+        return digest.digest(input.getBytes(Charsets.UTF_8));
+    }
+
+    public static Cipher getCipher(Message message) throws NoSuchPaddingException, NoSuchAlgorithmException {
+        final String algorithmName = new StringBuilder()
+                .append(message.encryptionType().algorithmName())
+                .append("/")
+                .append(message.encryptionMode().modeName())
+                .append("/")
+                .append(PADDING_STRATEGY)
+                .toString();
+
+        return Cipher.getInstance(algorithmName);
     }
     
-    public static String decrypt(byte[] key, String ciphertext) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    public static String decrypt(byte[] masterKey, String ciphertext) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         if (!ciphertext.startsWith(FWKNOP_ENCRYPTION_HEADER)) {
             ciphertext = FWKNOP_ENCRYPTION_HEADER.concat(ciphertext);
         }
+
         // we need to remove Salted__ from the salt_and_ciphertext therefore -> SALT_LEN +/- 8
+        final byte[] cipherTextBytes = FwknopBase64.decode(ciphertext);
+        final byte[] salt = new byte[SALT_LEN];
+        final byte[] cipherText = new byte[cipherTextBytes.length - SALT_LEN - 8];
+        System.arraycopy(cipherTextBytes, 8, salt, 0, SALT_LEN);
+        System.arraycopy(cipherTextBytes, 8 + SALT_LEN, cipherText, 0, cipherText.length);
+
+        final MessageKey messageKey = deriveKeyAndIV(salt, masterKey);
+
+        final SecretKeySpec secretKey = new SecretKeySpec(messageKey.key, "AES");
+        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        final IvParameterSpec initialisationVector = new IvParameterSpec(messageKey.initialisationVector);
+        cipher.init(DECRYPT_MODE, secretKey, initialisationVector);
+
+        final byte[] plainText = cipher.doFinal(cipherText);
         
-        byte[] salt_and_ciphertext = Base64.decodeBase64(ciphertext);              
-        byte[] salt = new byte[SALT_LEN];        
-        byte[] cipher = new byte[salt_and_ciphertext.length - SALT_LEN - 8];
-        System.arraycopy(salt_and_ciphertext, 8, salt, 0, SALT_LEN);
-        System.arraycopy(salt_and_ciphertext, 8 + SALT_LEN, cipher, 0, cipher.length);
-        byte[][] key_and_iv = deriveKeyAndIV(salt, key);
-        
-        
-        SecretKeySpec enc_key;
-        enc_key = new SecretKeySpec(key_and_iv[0], "AES");
-        Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        IvParameterSpec iv = new IvParameterSpec(key_and_iv[1]);
-        aes.init(Cipher.DECRYPT_MODE, enc_key, iv);
-        byte[] plain = aes.doFinal(cipher);
-        
-        return new String(plain, "UTF-8");
+        return new String(plainText, "UTF-8");
     }
-    
 }

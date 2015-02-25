@@ -6,18 +6,22 @@
 package net.seleucus.wsp.crypto;
 
 
+import net.seleucus.wsp.crypto.fwknop.Message;
 import org.apache.commons.codec.DecoderException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.apache.commons.codec.binary.Hex;
-import static java.lang.Math.abs;
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.junit.*;
+
+import java.security.SecureRandom;
+
+import static java.lang.Math.abs;
+import static net.seleucus.wsp.crypto.FwknopSymmetricCrypto.MessageKey;
+import static net.seleucus.wsp.crypto.fwknop.MessageBuilder.createMessage;
+import static net.seleucus.wsp.crypto.fwknop.fields.EncryptionMode.CBC;
+import static net.seleucus.wsp.crypto.fwknop.fields.EncryptionType.AES;
+import static net.seleucus.wsp.crypto.fwknop.fields.MessageType.AccessMessage;
+import static net.seleucus.wsp.crypto.fwknop.fields.Version.CURRENT;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -315,64 +319,15 @@ public class FwknopSymmetricCryptoTest {
         byte[] expected_iv = decodeFromHexString("36319896f6cdc575a6e31e4dd691e4f3");
 
         try {
-            byte[][] result = FwknopSymmetricCrypto.deriveKeyAndIV(salt, master_key);
+            MessageKey messageKey = FwknopSymmetricCrypto.deriveKeyAndIV(salt, master_key);
             // should return 2 elements;
-            assert(result.length == 2);
-            assertArrayEquals(expected_key, result[0]);
-            assertArrayEquals(expected_iv, result[1]);
+            assertArrayEquals(expected_key, messageKey.getKey());
+            assertArrayEquals(expected_iv, messageKey.getInitialisationVector());
         }
         catch (Exception e) {
             fail ("Unexpected exception: " + e.getMessage());
         }
     }
-
-    /**
-     * Test of encrypt method, of class FwknopSymmetricCrypto.
-     */
-    @Test
-    public void testEncrypt() {
-        byte[] key = new byte[32];
-        sr.nextBytes(key);
-        int msgLen = 1 + (abs(sr.nextInt()) % 512);
-        byte[] msg = new byte[msgLen];
-        String message = new String(msg);
-        try {
-            String encrypted = FwknopSymmetricCrypto.encrypt(key, message);
-            System.out.println(encrypted);
-            String decrypted = FwknopSymmetricCrypto.decrypt(key, encrypted);
-            assertEquals(message, decrypted);
-        }
-        catch (InvalidKeyException e) {
-            System.out.println("Check: Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files");
-            fail ("Unexpected exception: " + e.getMessage());
-        }
-        catch (Exception e) {
-            fail ("Unexpected exception: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Test of decrypt method, of class FwknopSymmetricCrypto.
-     */
-    @Test
-    public void testDecrypt() {
-        byte[] key = decodeFromHexString("fd38fb08781e77ca7d85c9f3ec4e35203f4cae3f0d5fd78658638e2d32dd0bc5");
-        // ciphertext contains SHA256 HMAC, must be removed before calling decrypt function
-        String ciphertext = "88/CLhVNlIRAaqrmMnh0VBwMpoAKZP0r3SwTJ5Rr3PCAVI2xQcDEtnrNnEx6J5udAjWlwtmlCFVGykvLb2X/pXr3G8hf+ZLmQLQV6mU5YHuEqlAlMmXtWZfd65mi5S876hJvdlyhfMpLDrnc5RB/bBPjKpDS98X5fJsDVxnQ7z8LbUYWSsDNt7N2uj4kB6+Ia8usPq5UZIvSoNpNnsPGeyofSC2o6EhfMC9IaiLcfnr54x9cKYw6uApNno5TpNg/3B1dZ9f/DFp48H4fdlxmYehW4h5fPnRPE";
-        ciphertext = removeMAC(ciphertext, FwknopSymmetricCrypto.HASH_TYPE_SHA256);
-        String expResult = "1183491131188171:dW9wYXJ5b2N1:1421953628:2.0.1:1:MjMyLjIwMC4xMC45NCx0Y3AvNDg4NjY:67Fi6nvavJQAvpaH6OEhqoknCPDd/vf1L0tif8vy1RDE2S67WfTuQ0Fy705ToGN/r9zOwjK8HvqvF6+BY6q7jA";
-        try {
-            String result = FwknopSymmetricCrypto.decrypt(key, ciphertext);
-            assertEquals(expResult, result);
-        }
-        catch (InvalidKeyException e) {
-            System.out.println("Check: Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files");
-            fail ("Unexpected exception: " + e.getMessage());
-        }
-        catch (Exception e) {
-            fail ("Unexpected exception: " + e.getMessage());
-        }
-    }   
 
     /**
      * Test of equals method, of class FwknopSymmetricCrypto.
@@ -395,5 +350,39 @@ public class FwknopSymmetricCryptoTest {
         CharSequence a = "aaaa";
         CharSequence b = "abcd";
         assertFalse(FwknopSymmetricCrypto.equals(a, b));
+    }
+
+    @Test
+    public void shouldEncryptAndDecrypt() throws Exception {
+
+        final byte[] encryptKey = "ENCRYPTION_KEY".getBytes();
+
+        final Message message = createMessage()
+                .withMessageType(AccessMessage)
+                .withEncryptionMode(CBC)
+                .withRandomValue(1662754693713426L)
+                .withUsername("imberda")
+                .withVersion(CURRENT)
+                .withTimestamp(1424728557)
+                .withPayload("1.1.1.1,tcp/80")
+                .withEncryptionType(AES)
+                .withEncryptionMode(CBC)
+                .build();
+
+        final String expectedEncodedMessage = "1662754693713426:aW1iZXJkYQ:1424728557:2.0.2:1:MS4xLjEuMSx0Y3AvODA";
+        assertEquals(expectedEncodedMessage, message.encoded());
+
+        final byte[] fixedSalt = new byte[]{108, 62, -63, -64, -50, -104, -108, 8};
+
+        final String encryptedMessage = FwknopSymmetricCrypto.encrypt(encryptKey, fixedSalt, message);
+
+        final String expectedEncryptedMessage = "9sPsHAzpiUCLultUmkjizcRSb0eIkvlXLq9noQ4WbXAT3HlZhWLHoKGAM+TOOtIMxRJ6sOSAlzhx6wNgCQiZ3msYcNslJC0F9xxVYVhw8kNon4uuzXoZyC";
+        assertEquals(expectedEncryptedMessage, encryptedMessage);
+
+        final String decryptedMessage = FwknopSymmetricCrypto.decrypt(encryptKey, encryptedMessage);
+        final String expectedDecryptedMessage = "1662754693713426:aW1iZXJkYQ:1424728557:2.0.2:1:MS4xLjEuMSx0Y3AvODA:jEscqvxrSt7+L";
+        assertEquals(expectedDecryptedMessage, decryptedMessage);
+
+        System.out.println(FwknopSymmetricCrypto.decrypt(encryptKey, "9F3npqPeTPYlNk6EpCRNdYqR8r26+v5KbRlJHL7X1o/12Vvk3mFVeJm/LmRO0YwBFJOlsdl6B9sbtAVuny6aoBgKuy2CX6wp7fBdnZ/txxfZEU/FlSkoOIKguOyJaLhvMeGo5TGpNln6YM+FAmiR5fK0GBiSBDZlU"));
     }
 }

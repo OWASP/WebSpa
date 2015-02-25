@@ -1,58 +1,85 @@
 package net.seleucus.wsp.crypto.fwknop;
 
 import net.seleucus.wsp.crypto.fwknop.fields.*;
+import org.apache.commons.codec.binary.Base64;
+
+import static java.util.Objects.requireNonNull;
+import static net.seleucus.wsp.crypto.fwknop.FwknopBase64.encode;
 
 public class Message {
 
-    private final long randomValue; // 16 byte number
-    private final String username; // base64 encoded
-    private final long timestamp; // Unix timestamp
+    public static final char FIELD_DELIMITER = ':';
+
+    private final long randomValue;
+    private final String username;
+    private final long timestamp;
     private final Version version;
-    private final MessageType messageType; //
+    private final MessageType messageType;
     private final EncryptionType encryptionType;
     private final EncryptionMode encryptionMode;
-    private final String message;
+    private final DigestType digestType;
+    private final String payload;
 
-    Message(long randomValue, String username, long timestamp, Version version, MessageType messageType, EncryptionType encryptionType, EncryptionMode encryptionMode, String message) {
-        this.randomValue = randomValue;
-        this.username = username;
-        this.timestamp = timestamp;
-        this.version = version;
-        this.messageType = messageType;
-        this.encryptionType = encryptionType;
-        this.encryptionMode = encryptionMode;
-        this.message = message;
+    Message(long randomValue, String username, long timestamp, Version version, MessageType messageType, EncryptionType encryptionType, EncryptionMode encryptionMode, DigestType digestType, String payload) {
+        this.randomValue = requireNonNull(randomValue);
+        this.username = requireNonNull(username);
+        this.timestamp = requireNonNull(timestamp);
+        this.version = requireNonNull(version);
+        this.messageType = requireNonNull(messageType);
+        this.encryptionType = requireNonNull(encryptionType);
+        this.encryptionMode = requireNonNull(encryptionMode);
+        this.digestType = requireNonNull(digestType);
+        this.payload = requireNonNull(payload);
     }
 
-    public long getRandomValue() {
+    public String encoded(){
+        return new StringBuilder()
+            .append(randomValue).append(FIELD_DELIMITER)
+            .append(encode(username)).append(FIELD_DELIMITER)
+            .append(timestamp).append(FIELD_DELIMITER)
+            .append(version.getId()).append(FIELD_DELIMITER)
+            .append(messageType.getId()).append(FIELD_DELIMITER)
+            .append(encode(payload))
+            .toString();
+    }
+
+    public long randomValue() {
         return randomValue;
     }
 
-    public String getUsername() {
+    public String username() {
         return username;
     }
 
-    public long getTimestamp() {
+    public String encodedUserName(){
+        return Base64.encodeBase64String(username.getBytes());
+    }
+
+    public long timestamp() {
         return timestamp;
     }
 
-    public MessageType getMessageType() {
+    public MessageType messageType() {
         return messageType;
     }
 
-    public Version getVersion() {
+    public Version version() {
         return version;
     }
 
-    public EncryptionType getEncryptionType() {
+    public EncryptionType encryptionType() {
         return encryptionType;
     }
 
-    public EncryptionMode getEncryptionMode() {
+    public EncryptionMode encryptionMode() {
         return encryptionMode;
     }
 
-    public String getMessage() {
-        return message;
+    public DigestType digestType() {
+        return digestType;
+    }
+
+    public String payload() {
+        return payload;
     }
 }

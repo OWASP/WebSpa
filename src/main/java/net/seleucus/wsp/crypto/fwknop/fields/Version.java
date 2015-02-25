@@ -2,7 +2,7 @@ package net.seleucus.wsp.crypto.fwknop.fields;
 
 public enum Version {
 
-    CURRENT("2.0.1");
+    CURRENT("2.0.2");
 
     private final String id;
 
