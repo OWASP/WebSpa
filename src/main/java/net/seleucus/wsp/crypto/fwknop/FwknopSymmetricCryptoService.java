@@ -9,6 +9,7 @@ import net.seleucus.wsp.crypto.WebSpaUtils;
 import net.seleucus.wsp.crypto.fwknop.fields.DigestType;
 import net.seleucus.wsp.crypto.fwknop.fields.EncryptionMode;
 import net.seleucus.wsp.crypto.fwknop.fields.EncryptionType;
+import net.seleucus.wsp.crypto.fwknop.fields.HmacType;
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -46,9 +46,6 @@ public final class FwknopSymmetricCryptoService extends WebSpaUtils {
     private final static byte SALT_LEN = 8;
     private final static byte IV_LEN = 16;
     private final static byte KEY_LEN = 32;
-    
-    protected final static byte[] DIGEST_BASE64_LENGTH = {22, 27, 43, 64, 86};
-    private final static String[] HMAC_ALGORITHMS = {"HmacMD5", "HmacSHA1", "HmacSHA256", "HmacSHA384", "HmacSHA512"};
 
     private final SecureRandom secureRandom;
     private final EncryptionType encryptionType;
@@ -62,44 +59,26 @@ public final class FwknopSymmetricCryptoService extends WebSpaUtils {
         this.digestType = digestType;
     }
 
-    public String sign(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
-        // Check if hmac_type is valid
-        if (hmac_type > 4 || hmac_type < 0) 
-            throw new IllegalArgumentException("Invalid digest type was specified");        
+    public String sign(byte[] keyBytes, String message, HmacType hmacType) throws Exception {
 
-        // Create Mac instance 
-        Mac hmac;
-        hmac = Mac.getInstance(HMAC_ALGORITHMS[hmac_type]);
-        
-        // Create key
-        SecretKeySpec hmac_key = new SecretKeySpec(auth_key, HMAC_ALGORITHMS[hmac_type]);
-        
-        // Init hmac object
-        hmac.init(hmac_key);
+        final Mac hmac = Mac.getInstance(hmacType.algorithmName());
+        final SecretKeySpec hmacKey = new SecretKeySpec(keyBytes, hmacType.algorithmName());
+        hmac.init(hmacKey);
         
         // Prepare enc_part to calculate HMAC
-        byte[] msg_to_hmac = FWKNOP_ENCRYPTION_HEADER.concat(message).getBytes();
+        final byte[] msg_to_hmac = FWKNOP_ENCRYPTION_HEADER.concat(message).getBytes();
         
         // Calculate HMAC and return
         return message.concat(Base64.encodeBase64String(hmac.doFinal(msg_to_hmac)).replace("=", ""));
     }        
     
-    public boolean verify(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
-        // Check if hmac_type is valid, get hmac length in base64 encoding
-        if (hmac_type > 4 || hmac_type < 0) 
-            throw new IllegalArgumentException("Invalid digest type was specified");        
-        byte digest_len = DIGEST_BASE64_LENGTH[hmac_type];
-        
-        // Check if message makes sense (it must be longer than digest length
-        if (message.length() <= digest_len) 
-            throw new IllegalArgumentException("Message to short");
-        
+    public boolean verify(byte[] auth_key, String message, HmacType hmacType) throws Exception {
         // Split message into two parts, encrypted payload and HMAC
-        String enc_part = message.substring(0, message.length() - digest_len);
-        String auth_part = message.substring(message.length() - digest_len, message.length());        
+        String enc_part = message.substring(0, message.length() - hmacType.base64Length());
+        String auth_part = message.substring(message.length() - hmacType.base64Length(), message.length());
        
         // Calculate HMAC, compare, return results
-        return equals(sign(auth_key, enc_part, hmac_type), message);
+        return equals(sign(auth_key, enc_part, hmacType), message);
     }
     
     protected boolean equals(CharSequence a, CharSequence b) {
