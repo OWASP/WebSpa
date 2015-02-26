@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.seleucus.wsp.crypto.fwknop;
 
 import net.seleucus.wsp.crypto.WebSpaUtils;
@@ -34,15 +29,10 @@ import static net.seleucus.wsp.crypto.fwknop.Message.FIELD_DELIMITER;
  * @author pgolen
  */
 public final class FwknopSymmetricCryptoService extends WebSpaUtils {
-    
-    protected final static byte HASH_TYPE_MD5 = 0;
-    protected final static byte HASH_TYPE_SHA1 = 1;
-    protected final static byte HASH_TYPE_SHA256 = 2;
-    protected final static byte HASH_TYPE_SHA384 = 3;
-    protected final static byte HASH_TYPE_SHA512 = 4;
 
     private static final String PADDING_STRATEGY = "NoPadding";
     private final static String FWKNOP_ENCRYPTION_HEADER = "U2FsdGVkX1";
+
     private final static byte SALT_LEN = 8;
     private final static byte IV_LEN = 16;
     private final static byte KEY_LEN = 32;
@@ -135,7 +125,7 @@ public final class FwknopSymmetricCryptoService extends WebSpaUtils {
         final MessageKey messageKey = deriveKeyAndIV(salt, masterKey);
 
         final SecretKeySpec secretKey = new SecretKeySpec(messageKey.key(), encryptionType.algorithmName());
-        final Cipher cipher = getCipher(message);
+        final Cipher cipher = getCipher();
         final IvParameterSpec initialisationVector = new IvParameterSpec(messageKey.initialisationVector());
         cipher.init(ENCRYPT_MODE, secretKey, initialisationVector);
 
@@ -176,7 +166,7 @@ public final class FwknopSymmetricCryptoService extends WebSpaUtils {
         return digest.digest(input.getBytes(Charsets.UTF_8));
     }
 
-    public Cipher getCipher(Message message) throws NoSuchPaddingException, NoSuchAlgorithmException {
+    public Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
         final String algorithmName = new StringBuilder()
                 .append(encryptionType.algorithmName())
                 .append("/")
