@@ -352,6 +352,40 @@ public class FwknopSymmetricCryptoTest {
         assertFalse(FwknopSymmetricCrypto.equals(a, b));
     }
 
+    /**
+     * Test taken from the following command line execution of fwknop:
+     *
+     *   $ fwknop -A tcp/80 -a 1.1.1.1 -D 2.2.2.2 -T --hmac-digest-type sha256
+     *
+     * This produced the following output which has been used in this test to provide expected values:
+     *
+     *  Encryption key entered = "ENCRYPTION_KEY"
+     *  HMAC key entered = "SIGNING_KEY"
+     *
+     *
+     *  SPA Field Values:
+     *  =================
+     *
+     *     Random Value: 1662754693713426
+     *         Username: imberda
+     *        Timestamp: 1424728557
+     *      FKO Version: 2.0.2
+     *     Message Type: 1 (Access msg)
+     *   Message String: 1.1.1.1,tcp/80
+     *       Nat Access: <NULL>
+     *      Server Auth: <NULL>
+     *   Client Timeout: 0
+     *      Digest Type: 3 (SHA256)
+     *        HMAC Type: 3 (SHA256)
+     *  Encryption Type: 1 (Rijndael)
+     *  Encryption Mode: 2 (CBC)
+     *     Encoded Data: 1662754693713426:aW1iZXJkYQ:1424728557:2.0.2:1:MS4xLjEuMSx0Y3AvODA
+     *  SPA Data Digest: jEscqvxrSt7+Lb2cQ+ICwgX4mhuSp86P8XikxSbga1s
+     *             HMAC: Kn75C+V+O0xu3nzVvvdteuHk0zBptmFep8LQD/JgfWo
+     *  Final SPA Data: 9sPsHAzpiUCLultUmkjizcRSb0eIkvlXLq9noQ4WbXAT3HlZhWLHoKGAM+TOOtIMxRJ6sOSAlzhx6wNgCQiZ3msYcNslJC0F9xxVYVhw8kNon4uuzXoZyCBb3g9m+nZVVyRyy3f0UO+eljC9WRHTsRs5m6Qlryzec
+     *
+     * @throws Exception
+     */
     @Test
     public void shouldEncryptAndDecrypt() throws Exception {
 
@@ -380,9 +414,7 @@ public class FwknopSymmetricCryptoTest {
         assertEquals(expectedEncryptedMessage, encryptedMessage);
 
         final String decryptedMessage = FwknopSymmetricCrypto.decrypt(encryptKey, encryptedMessage);
-        final String expectedDecryptedMessage = "1662754693713426:aW1iZXJkYQ:1424728557:2.0.2:1:MS4xLjEuMSx0Y3AvODA:jEscqvxrSt7+L";
-        assertEquals(expectedDecryptedMessage, decryptedMessage);
-
-        System.out.println(FwknopSymmetricCrypto.decrypt(encryptKey, "9F3npqPeTPYlNk6EpCRNdYqR8r26+v5KbRlJHL7X1o/12Vvk3mFVeJm/LmRO0YwBFJOlsdl6B9sbtAVuny6aoBgKuy2CX6wp7fBdnZ/txxfZEU/FlSkoOIKguOyJaLhvMeGo5TGpNln6YM+FAmiR5fK0GBiSBDZlU"));
+        final String expectedDigestPadding = ":jEscqvxrSt7+L";
+        assertEquals(expectedEncodedMessage + expectedDigestPadding, decryptedMessage);
     }
 }
