@@ -7,17 +7,23 @@ package net.seleucus.wsp.crypto.fwknop;
 
 import net.seleucus.wsp.crypto.WebSpaUtils;
 import net.seleucus.wsp.crypto.fwknop.fields.DigestType;
+import net.seleucus.wsp.crypto.fwknop.fields.EncryptionMode;
+import net.seleucus.wsp.crypto.fwknop.fields.EncryptionType;
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
@@ -27,7 +33,7 @@ import static net.seleucus.wsp.crypto.fwknop.Message.FIELD_DELIMITER;
  *
  * @author pgolen
  */
-public final class FwknopSymmetricCrypto extends WebSpaUtils {
+public final class FwknopSymmetricCryptoService extends WebSpaUtils {
     
     protected final static byte HASH_TYPE_MD5 = 0;
     protected final static byte HASH_TYPE_SHA1 = 1;
@@ -44,14 +50,19 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
     protected final static byte[] DIGEST_BASE64_LENGTH = {22, 27, 43, 64, 86};
     private final static String[] HMAC_ALGORITHMS = {"HmacMD5", "HmacSHA1", "HmacSHA256", "HmacSHA384", "HmacSHA512"};
 
-    private static final SecureRandom secureRandom = new SecureRandom();
+    private final SecureRandom secureRandom;
+    private final EncryptionType encryptionType;
+    private final EncryptionMode encryptionMode;
+    private final DigestType digestType;
 
-    private FwknopSymmetricCrypto() {
-        // Standard to avoid instantiation 'accidents'
-        throw new UnsupportedOperationException();
+    public FwknopSymmetricCryptoService(SecureRandom secureRandom, EncryptionType encryptionType, EncryptionMode encryptionMode, DigestType digestType) {
+        this.secureRandom = secureRandom;
+        this.encryptionType = encryptionType;
+        this.encryptionMode = encryptionMode;
+        this.digestType = digestType;
     }
-    
-    public static String sign(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
+
+    public String sign(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
         // Check if hmac_type is valid
         if (hmac_type > 4 || hmac_type < 0) 
             throw new IllegalArgumentException("Invalid digest type was specified");        
@@ -73,7 +84,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return message.concat(Base64.encodeBase64String(hmac.doFinal(msg_to_hmac)).replace("=", ""));
     }        
     
-    public static boolean verify(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
+    public boolean verify(byte[] auth_key, String message, byte hmac_type) throws NoSuchAlgorithmException, InvalidKeyException {
         // Check if hmac_type is valid, get hmac length in base64 encoding
         if (hmac_type > 4 || hmac_type < 0) 
             throw new IllegalArgumentException("Invalid digest type was specified");        
@@ -91,7 +102,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return equals(sign(auth_key, enc_part, hmac_type), message);
     }
     
-    protected static boolean equals(CharSequence a, CharSequence b) {
+    protected boolean equals(CharSequence a, CharSequence b) {
         if (a.length() != b.length())
             return false;
         boolean result = true;
@@ -102,29 +113,31 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return result;
     }
     
-    protected static MessageKey deriveKeyAndIV(byte[] salt, byte[] master_key) throws NoSuchAlgorithmException, IOException {
+    protected MessageKey deriveKeyAndIV(byte[] salt, byte[] master_key) throws Exception {
         
-        byte[] key = new byte[KEY_LEN];
-        byte[] IV = new byte[IV_LEN];
+        final byte[] key = new byte[KEY_LEN];
+        final byte[] IV = new byte[IV_LEN];
         
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        final MessageDigest md5 = MessageDigest.getInstance("MD5");
 
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        ByteArrayOutputStream toHash = new ByteArrayOutputStream();
+        final ByteArrayOutputStream data = new ByteArrayOutputStream();
+        final ByteArrayOutputStream toHash = new ByteArrayOutputStream();
+
         byte[] d = null;
         
         while (data.size() < IV_LEN + KEY_LEN) {
             md5.reset();
             toHash.reset();
-            if (d != null) 
+            if (d != null){
                 toHash.write(d);
+            }
             toHash.write(master_key);
             toHash.write(salt);
             d = md5.digest(toHash.toByteArray());
             data.write(d);
         }
         
-        byte[] output = data.toByteArray();
+        final byte[] output = data.toByteArray();
         
         System.arraycopy(output, 0, key, 0, KEY_LEN);
         System.arraycopy(output, KEY_LEN, IV, 0, IV_LEN);
@@ -132,17 +145,17 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return new MessageKey(key, IV);
     }
 
-    public static String encrypt(final byte[] masterKey, Message message) throws Exception {
+    public String encrypt(final byte[] masterKey, Message message) throws Exception {
         final byte[] salt = new byte[SALT_LEN];
         secureRandom.nextBytes(salt);
         return encrypt(masterKey, salt, message);
     }
 
-    public static String encrypt(final byte[] masterKey, final byte[] salt, Message message) throws Exception {
+    public String encrypt(final byte[] masterKey, final byte[] salt, Message message) throws Exception {
 
         final MessageKey messageKey = deriveKeyAndIV(salt, masterKey);
 
-        final SecretKeySpec secretKey = new SecretKeySpec(messageKey.key(), message.encryptionType().algorithmName());
+        final SecretKeySpec secretKey = new SecretKeySpec(messageKey.key(), encryptionType.algorithmName());
         final Cipher cipher = getCipher(message);
         final IvParameterSpec initialisationVector = new IvParameterSpec(messageKey.initialisationVector());
         cipher.init(ENCRYPT_MODE, secretKey, initialisationVector);
@@ -150,7 +163,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         final String plaintextMessage = getPaddedMessage(message);
 
         final byte[] prefix = "Salted__".getBytes("UTF-8");
-        final byte[] cipherText = cipher.doFinal(plaintextMessage.toString().getBytes(Charsets.UTF_8));
+        final byte[] cipherText = cipher.doFinal(plaintextMessage.getBytes(Charsets.UTF_8));
 
         final byte[] encryptedMessage = ByteBuffer.allocate(prefix.length + salt.length + cipherText.length)
                 .put(prefix)
@@ -161,35 +174,34 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return Base64.encodeBase64String(encryptedMessage).replace("=", "").replace(FWKNOP_ENCRYPTION_HEADER, "");
     }
 
-    private static String getPaddedMessage(final Message message) throws NoSuchAlgorithmException {
+    private String getPaddedMessage(final Message message) throws NoSuchAlgorithmException {
         final String encodedMessage = message.encoded();
 
-        if(encodedMessage.length() % message.encryptionType().getBlockSize() == 0){
+        if(encodedMessage.length() % encryptionType.getBlockSize() == 0){
             return encodedMessage;
         }
 
-        final String digest = getBase64Digest(message.digestType(), message.encoded());
-        final int wholeBlocks = encodedMessage.length() / message.encryptionType().getBlockSize();
-        final int paddingChars = ((wholeBlocks + 1) * message.encryptionType().getBlockSize()) - encodedMessage.length() - 1;
+        final String digest = getBase64Digest(message.encoded());
+        final int wholeBlocks = encodedMessage.length() / encryptionType.getBlockSize();
+        final int paddingChars = ((wholeBlocks + 1) * encryptionType.getBlockSize()) - encodedMessage.length() - 1;
 
         return encodedMessage +  FIELD_DELIMITER + StringUtils.substring(digest, 0, paddingChars);
-
     }
 
-    private static String getBase64Digest(final DigestType digestType, final String input) throws NoSuchAlgorithmException {
+    private String getBase64Digest(final String input) throws NoSuchAlgorithmException {
         return Base64.encodeBase64String(getDigest(digestType, input));
     }
 
-    private static byte[] getDigest(final DigestType digestType, final String input) throws NoSuchAlgorithmException {
+    private byte[] getDigest(final DigestType digestType, final String input) throws NoSuchAlgorithmException {
         final MessageDigest digest = MessageDigest.getInstance(digestType.algorithmName());
         return digest.digest(input.getBytes(Charsets.UTF_8));
     }
 
-    public static Cipher getCipher(Message message) throws NoSuchPaddingException, NoSuchAlgorithmException {
+    public Cipher getCipher(Message message) throws NoSuchPaddingException, NoSuchAlgorithmException {
         final String algorithmName = new StringBuilder()
-                .append(message.encryptionType().algorithmName())
+                .append(encryptionType.algorithmName())
                 .append("/")
-                .append(message.encryptionMode().modeName())
+                .append(encryptionMode.modeName())
                 .append("/")
                 .append(PADDING_STRATEGY)
                 .toString();
@@ -197,7 +209,7 @@ public final class FwknopSymmetricCrypto extends WebSpaUtils {
         return Cipher.getInstance(algorithmName);
     }
     
-    public static String decrypt(byte[] masterKey, String ciphertext) throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    public String decrypt(byte[] masterKey, String ciphertext) throws Exception {
         if (!ciphertext.startsWith(FWKNOP_ENCRYPTION_HEADER)) {
             ciphertext = FWKNOP_ENCRYPTION_HEADER.concat(ciphertext);
         }

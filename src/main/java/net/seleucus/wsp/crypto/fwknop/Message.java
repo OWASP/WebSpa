@@ -1,6 +1,7 @@
 package net.seleucus.wsp.crypto.fwknop;
 
-import net.seleucus.wsp.crypto.fwknop.fields.*;
+import net.seleucus.wsp.crypto.fwknop.fields.MessageType;
+import net.seleucus.wsp.crypto.fwknop.fields.Version;
 import org.apache.commons.codec.binary.Base64;
 
 import static java.util.Objects.requireNonNull;
@@ -15,20 +16,14 @@ public class Message {
     private final long timestamp;
     private final Version version;
     private final MessageType messageType;
-    private final EncryptionType encryptionType;
-    private final EncryptionMode encryptionMode;
-    private final DigestType digestType;
     private final String payload;
 
-    Message(long randomValue, String username, long timestamp, Version version, MessageType messageType, EncryptionType encryptionType, EncryptionMode encryptionMode, DigestType digestType, String payload) {
+    Message(long randomValue, String username, long timestamp, Version version, MessageType messageType, String payload) {
         this.randomValue = requireNonNull(randomValue);
         this.username = requireNonNull(username);
         this.timestamp = requireNonNull(timestamp);
         this.version = requireNonNull(version);
         this.messageType = requireNonNull(messageType);
-        this.encryptionType = requireNonNull(encryptionType);
-        this.encryptionMode = requireNonNull(encryptionMode);
-        this.digestType = requireNonNull(digestType);
         this.payload = requireNonNull(payload);
     }
 
@@ -65,18 +60,6 @@ public class Message {
 
     public Version version() {
         return version;
-    }
-
-    public EncryptionType encryptionType() {
-        return encryptionType;
-    }
-
-    public EncryptionMode encryptionMode() {
-        return encryptionMode;
-    }
-
-    public DigestType digestType() {
-        return digestType;
     }
 
     public String payload() {
