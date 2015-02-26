@@ -1,6 +1,7 @@
 package net.seleucus.wsp.crypto.fwknop;
 
 
+import net.seleucus.wsp.crypto.fwknop.fields.HmacType;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -125,105 +126,28 @@ public class FwknopSymmetricCryptoServiceTest {
             fail ("Unexpected exception: " + e.getMessage());
         }
     }
-    
+
     @Test
-    public void shouldSignAndVerifyWithMD5ReturnTrue() {
-        byte[] auth_key = new byte[64];
-        int msgLen = 1 + (abs(sr.nextInt()) % 512);
-        byte[] msg = new byte[msgLen];
+    public void shouldSignAndVerifyWithHmacTypes() {
+
+        final byte[] keyBytes = new byte[64];
+        final int msgLen = 1 + (abs(sr.nextInt()) % 512);
+        final byte[] msg = new byte[msgLen];
         
-        sr.nextBytes(auth_key);
+        sr.nextBytes(keyBytes);
         sr.nextBytes(msg);
         
-        String message = Base64.encodeBase64String(msg);
-        
-        try {
-            String message_with_mac = service.sign(auth_key, message, HmacMD5);
-            assertTrue(service.verify(auth_key, message_with_mac, HmacMD5));
+        final String message = Base64.encodeBase64String(msg);
+
+        for(final HmacType hmacType : HmacType.values()){
+            try {
+                final String signedMessage = service.sign(keyBytes, message, hmacType);
+                assertTrue(service.verify(keyBytes, signedMessage, hmacType));
+            }
+            catch (Exception e) {
+                fail ("Unexpected exception: " + e.getMessage());
+            }
         }
-        catch (Exception e) {
-            fail ("Unexpected exception: " + e.getMessage());
-        }       
-    }
-    
-    @Test
-    public void shouldSignAndVerifyWithSHA1ReturnTrue() {
-        byte[] auth_key = new byte[64];
-        int msgLen = 1 + (abs(sr.nextInt()) % 512);
-        byte[] msg = new byte[msgLen];
-        
-        sr.nextBytes(auth_key);
-        sr.nextBytes(msg);
-        
-        String message = Base64.encodeBase64String(msg);
-        
-        try {
-            String message_with_mac = service.sign(auth_key, message, HmacSHA1);
-            assertTrue(service.verify(auth_key, message_with_mac, HmacSHA1));
-        }
-        catch (Exception e) {
-            fail ("Unexpected exception: " + e.getMessage());
-        }       
-    }
-    
-    @Test
-    public void shouldSignAndVerifyWithSHA256ReturnTrue() {
-        byte[] auth_key = new byte[64];
-        int msgLen = 1 + (abs(sr.nextInt()) % 512);
-        byte[] msg = new byte[msgLen];
-        
-        sr.nextBytes(auth_key);
-        sr.nextBytes(msg);
-        
-        String message = Base64.encodeBase64String(msg);
-        
-        try {
-            String message_with_mac = service.sign(auth_key, message, HmacSHA256);
-            assertTrue(service.verify(auth_key, message_with_mac, HmacSHA256));
-        }
-        catch (Exception e) {
-            fail ("Unexpected exception: " + e.getMessage());
-        }       
-    }
-    
-    @Test
-    public void shouldSignAndVerifyWithSHA384ReturnTrue() {
-        byte[] auth_key = new byte[64];
-        int msgLen = 1 + (abs(sr.nextInt()) % 512);
-        byte[] msg = new byte[msgLen];
-        
-        sr.nextBytes(auth_key);
-        sr.nextBytes(msg);
-        
-        String message = Base64.encodeBase64String(msg);
-        
-        try {
-            String message_with_mac = service.sign(auth_key, message, HmacSHA384);
-            assertTrue(service.verify(auth_key, message_with_mac, HmacSHA384));
-        }
-        catch (Exception e) {
-            fail ("Unexpected exception: " + e.getMessage());
-        }       
-    }
-    
-    @Test
-    public void shouldSignAndVerifyWithSHA512ReturnTrue() {
-        byte[] auth_key = new byte[64];
-        int msgLen = 1 + (abs(sr.nextInt()) % 512);
-        byte[] msg = new byte[msgLen];
-        
-        sr.nextBytes(auth_key);
-        sr.nextBytes(msg);
-        
-        String message = Base64.encodeBase64String(msg);
-        
-        try {
-            String message_with_mac = service.sign(auth_key, message, HmacSHA512);
-            assertTrue(service.verify(auth_key, message_with_mac, HmacSHA512));
-        }
-        catch (Exception e) {
-            fail ("Unexpected exception: " + e.getMessage());
-        }       
     }
 
     /**
