@@ -5,7 +5,6 @@ import net.seleucus.wsp.crypto.fwknop.fields.DigestType;
 import net.seleucus.wsp.crypto.fwknop.fields.EncryptionMode;
 import net.seleucus.wsp.crypto.fwknop.fields.EncryptionType;
 import net.seleucus.wsp.crypto.fwknop.fields.HmacType;
-import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,6 +22,7 @@ import java.security.SecureRandom;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 import static net.seleucus.wsp.crypto.fwknop.Message.FIELD_DELIMITER;
+import static org.apache.commons.codec.Charsets.UTF_8;
 
 /**
  *
@@ -30,7 +30,8 @@ import static net.seleucus.wsp.crypto.fwknop.Message.FIELD_DELIMITER;
  */
 public final class FwknopSymmetricCryptoService extends WebSpaUtils {
 
-    private static final String PADDING_STRATEGY = "NoPadding";
+    private static final String PADDING_STRATEGY = "PKCS5Padding";
+
     private final static String FWKNOP_ENCRYPTION_HEADER = "U2FsdGVkX1";
 
     private final static byte SALT_LEN = 8;
@@ -129,10 +130,10 @@ public final class FwknopSymmetricCryptoService extends WebSpaUtils {
         final IvParameterSpec initialisationVector = new IvParameterSpec(messageKey.initialisationVector());
         cipher.init(ENCRYPT_MODE, secretKey, initialisationVector);
 
-        final String plaintextMessage = getPaddedMessage(message);
+        final String plaintextMessage = message.encoded() + FIELD_DELIMITER + getBase64Digest(message.encoded());
 
         final byte[] prefix = "Salted__".getBytes("UTF-8");
-        final byte[] cipherText = cipher.doFinal(plaintextMessage.getBytes(Charsets.UTF_8));
+        final byte[] cipherText = cipher.doFinal(plaintextMessage.getBytes(UTF_8));
 
         final byte[] encryptedMessage = ByteBuffer.allocate(prefix.length + salt.length + cipherText.length)
                 .put(prefix)
@@ -158,12 +159,12 @@ public final class FwknopSymmetricCryptoService extends WebSpaUtils {
     }
 
     private String getBase64Digest(final String input) throws NoSuchAlgorithmException {
-        return Base64.encodeBase64String(getDigest(digestType, input));
+        return FwknopBase64.encode(getDigest(digestType, input));
     }
 
     private byte[] getDigest(final DigestType digestType, final String input) throws NoSuchAlgorithmException {
         final MessageDigest digest = MessageDigest.getInstance(digestType.algorithmName());
-        return digest.digest(input.getBytes(Charsets.UTF_8));
+        return digest.digest(input.getBytes(UTF_8));
     }
 
     public Cipher getCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
@@ -193,7 +194,7 @@ public final class FwknopSymmetricCryptoService extends WebSpaUtils {
         final MessageKey messageKey = deriveKeyAndIV(salt, masterKey);
 
         final SecretKeySpec secretKey = new SecretKeySpec(messageKey.key(), "AES");
-        final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        final Cipher cipher = Cipher.getInstance("AES/CBC/" + PADDING_STRATEGY);
         final IvParameterSpec initialisationVector = new IvParameterSpec(messageKey.initialisationVector());
         cipher.init(DECRYPT_MODE, secretKey, initialisationVector);
 

@@ -8,6 +8,10 @@ public class FwknopBase64 {
 
     private static final char CHAR_TO_REMOVE = '=';
 
+    public static String encode(byte[] input){
+        return StringUtils.remove(Base64.encodeBase64String(input), CHAR_TO_REMOVE);
+    }
+
     public static String encode(final String input) {
         return StringUtils.remove(Base64.encodeBase64String(input.getBytes(Charsets.UTF_8)), CHAR_TO_REMOVE);
     }

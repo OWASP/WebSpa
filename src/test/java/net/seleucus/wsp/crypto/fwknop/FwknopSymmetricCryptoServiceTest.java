@@ -230,6 +230,30 @@ public class FwknopSymmetricCryptoServiceTest {
         assertFalse(service.equals(a, b));
     }
 
+    @Test
+    public void shouldAppendExpectedHmac() throws Exception {
+        final byte[] signingKey = "SIGNING_KEY".getBytes();
+        final String finalSpaData = "9sPsHAzpiUCLultUmkjizcRSb0eIkvlXLq9noQ4WbXAT3HlZhWLHoKGAM+TOOtIMxRJ6sOSAlzhx6wNgCQiZ3msYcNslJC0F9xxVYVhw8kNon4uuzXoZyCBb3g9m+nZVVyRyy3f0UO+eljC9WRHTsRs5m6Qlryzec";
+
+        final String expectedSignature = "Kn75C+V+O0xu3nzVvvdteuHk0zBptmFep8LQD/JgfWo";
+
+        final String signedMessage = service.sign(signingKey, finalSpaData, HmacSHA256);
+
+        assertEquals(expectedSignature, signedMessage.substring(finalSpaData.length(), signedMessage.length()));
+    }
+
+    @Test
+    public void shouldDecryptToExpectedFinalSpaDa() throws Exception {
+        final byte[] encryptKey = "ENCRYPTION_KEY".getBytes();
+        final String finalSpaData = "9sPsHAzpiUCLultUmkjizcRSb0eIkvlXLq9noQ4WbXAT3HlZhWLHoKGAM+TOOtIMxRJ6sOSAlzhx6wNgCQiZ3msYcNslJC0F9xxVYVhw8kNon4uuzXoZyCBb3g9m+nZVVyRyy3f0UO+eljC9WRHTsRs5m6Qlryzec";
+
+        final String expectedPlainText = "1662754693713426:aW1iZXJkYQ:1424728557:2.0.2:1:MS4xLjEuMSx0Y3AvODA:jEscqvxrSt7+Lb2cQ+ICwgX4mhuSp86P8XikxSbga1s";
+
+        final String plainText = service.decrypt(encryptKey, finalSpaData);
+
+        assertEquals(expectedPlainText, plainText);
+    }
+
     /**
      * Test taken from the following command line execution of fwknop:
      *
@@ -262,6 +286,7 @@ public class FwknopSymmetricCryptoServiceTest {
      *             HMAC: Kn75C+V+O0xu3nzVvvdteuHk0zBptmFep8LQD/JgfWo
      *  Final SPA Data: 9sPsHAzpiUCLultUmkjizcRSb0eIkvlXLq9noQ4WbXAT3HlZhWLHoKGAM+TOOtIMxRJ6sOSAlzhx6wNgCQiZ3msYcNslJC0F9xxVYVhw8kNon4uuzXoZyCBb3g9m+nZVVyRyy3f0UO+eljC9WRHTsRs5m6Qlryzec
      *
+     *
      * @throws Exception
      */
     @Test
@@ -285,11 +310,12 @@ public class FwknopSymmetricCryptoServiceTest {
 
         final String encryptedMessage = service.encrypt(encryptKey, fixedSalt, message);
 
-        final String expectedEncryptedMessage = "9sPsHAzpiUCLultUmkjizcRSb0eIkvlXLq9noQ4WbXAT3HlZhWLHoKGAM+TOOtIMxRJ6sOSAlzhx6wNgCQiZ3msYcNslJC0F9xxVYVhw8kNon4uuzXoZyC";
+        final String expectedEncryptedMessage = "9sPsHAzpiUCLultUmkjizcRSb0eIkvlXLq9noQ4WbXAT3HlZhWLHoKGAM+TOOtIMxRJ6sOSAlzhx6wNgCQiZ3msYcNslJC0F9xxVYVhw8kNon4uuzXoZyCBb3g9m+nZVVyRyy3f0UO+eljC9WRHTsRs5m6Qlryzec";
         assertEquals(expectedEncryptedMessage, encryptedMessage);
 
+        final String expectedDecryptedMessage = "1662754693713426:aW1iZXJkYQ:1424728557:2.0.2:1:MS4xLjEuMSx0Y3AvODA:jEscqvxrSt7+Lb2cQ+ICwgX4mhuSp86P8XikxSbga1s";
         final String decryptedMessage = service.decrypt(encryptKey, encryptedMessage);
-        final String expectedDigestPadding = ":jEscqvxrSt7+L";
-        assertEquals(expectedEncodedMessage + expectedDigestPadding, decryptedMessage);
+        assertEquals(expectedDecryptedMessage, decryptedMessage);
+
     }
 }
