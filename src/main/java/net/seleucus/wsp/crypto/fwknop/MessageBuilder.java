@@ -2,18 +2,16 @@ package net.seleucus.wsp.crypto.fwknop;
 
 import net.seleucus.wsp.crypto.fwknop.fields.DigestType;
 import net.seleucus.wsp.crypto.fwknop.fields.MessageType;
-import net.seleucus.wsp.crypto.fwknop.fields.Version;
 
 import static net.seleucus.wsp.crypto.fwknop.fields.DigestType.SHA256;
 import static net.seleucus.wsp.crypto.fwknop.fields.MessageType.AccessMessage;
-import static net.seleucus.wsp.crypto.fwknop.fields.Version.CURRENT;
 
 public class MessageBuilder {
 
     private long randomValue;
     private String username;
     private long timestamp;
-    private Version version = CURRENT;
+    private String version = "2.0.2";
     private MessageType messageType = AccessMessage;
     private String payload;
     private DigestType digestType = SHA256;
@@ -37,7 +35,7 @@ public class MessageBuilder {
         return this;
     }
 
-    public MessageBuilder withVersion(Version version) {
+    public MessageBuilder withVersion(String version) {
         this.version = version;
         return this;
     }

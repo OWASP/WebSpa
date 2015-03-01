@@ -16,7 +16,6 @@ import static net.seleucus.wsp.crypto.fwknop.fields.EncryptionMode.CBC;
 import static net.seleucus.wsp.crypto.fwknop.fields.EncryptionType.AES;
 import static net.seleucus.wsp.crypto.fwknop.fields.HmacType.*;
 import static net.seleucus.wsp.crypto.fwknop.fields.MessageType.AccessMessage;
-import static net.seleucus.wsp.crypto.fwknop.fields.Version.CURRENT;
 import static org.junit.Assert.*;
 
 /**
@@ -298,7 +297,7 @@ public class FwknopSymmetricCryptoServiceTest {
                 .withMessageType(AccessMessage)
                 .withRandomValue(1662754693713426L)
                 .withUsername("imberda")
-                .withVersion(CURRENT)
+                .withVersion("2.0.2")
                 .withTimestamp(1424728557)
                 .withPayload("1.1.1.1,tcp/80")
                 .build();
@@ -316,6 +315,32 @@ public class FwknopSymmetricCryptoServiceTest {
         final String expectedDecryptedMessage = "1662754693713426:aW1iZXJkYQ:1424728557:2.0.2:1:MS4xLjEuMSx0Y3AvODA:jEscqvxrSt7+Lb2cQ+ICwgX4mhuSp86P8XikxSbga1s";
         final String decryptedMessage = service.decrypt(encryptKey, encryptedMessage);
         assertEquals(expectedDecryptedMessage, decryptedMessage);
+    }
 
+    @Test
+    public void shouldVerifyDataTestPack() throws Exception {
+        for(final TestDataRow row : TestDataService.getTestData()){
+            final Message message = createMessage()
+                    .withMessageType(row.messageType())
+                    .withRandomValue(row.randomValue())
+                    .withUsername(row.userName())
+                    .withVersion(row.version())
+                    .withTimestamp(row.timestamp())
+                    .withPayload(row.message())
+                    .withDigestType(row.digestType())
+                    .build();
+
+            /* Test that the spa data can be decrypted as expected */
+            final String decrypted = service.decrypt(row.encryptionKey(), row.getSpaData());
+            assertEquals(message.encodedWithDigest(), decrypted);
+
+            /* Test that the signature is re-creatable and expected */
+            final String signedMessage = service.sign(row.signatureKey(), row.getSpaData(), row.hmacType());
+            assertEquals(row.getSpaData() + row.hHmac(), signedMessage);
+
+            /* Verify that the signature (HMAC) is verifiable */
+            assertTrue(service.verify(row.signatureKey(), signedMessage, row.hmacType()));
+
+        }
     }
 }

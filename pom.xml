@@ -54,7 +54,7 @@
 			<version>3.2</version>
 		</dependency>
 
-		<dependency>
+        <dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.10</version>
@@ -90,7 +90,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Test Scope End -->
+        <!-- Test Scope End -->
 
 	</dependencies>
 
