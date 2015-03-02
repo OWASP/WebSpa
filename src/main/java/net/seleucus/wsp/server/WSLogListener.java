@@ -1,49 +1,48 @@
 package net.seleucus.wsp.server;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.seleucus.wsp.config.WSConfiguration;
 import net.seleucus.wsp.db.WSDatabase;
-
-import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Class responsible for processing log file lines. This class is a callback listener
+ * called by {@link org.apache.commons.io.input.Tailer}.
+ */
 public class WSLogListener extends TailerListenerAdapter {
 
-	final static Logger LOGGER = LoggerFactory.getLogger(WSLogListener.class);    
+    private final Logger logger = LoggerFactory.getLogger(WSLogListener.class);
 
-	private WSServer myServer;
-	private WSDatabase myDatabase;
-	private WSConfiguration myConfiguration;
+    public static final int EXPECTED_REQUEST_LENGTH = 100;
 
- 	public WSLogListener(WSServer myServer) {
- 		
+    private final WSServer myServer;
+	private final WSDatabase myDatabase;
+	private final Pattern wsPattern;
+
+ 	public WSLogListener(final WSServer myServer) {
  		this.myServer = myServer;
  		this.myDatabase = myServer.getWSDatabase();
- 		this.myConfiguration = myServer.getWSConfiguration();
- 		
+ 		this.wsPattern = Pattern.compile(myServer.getWSConfiguration().getLoginRegexForEachRequest());
  	}
 
     @Override
     public void handle(final String requestLine) {
     	
         // Check if the line length is more than 65535 chars
-        if (requestLine.length() > Character.MAX_VALUE) {
+        if (requestLine == null || requestLine.length() > Character.MAX_VALUE) {
         	return;
         }
                       
         // Check if the regex pattern has been found
-    	Pattern wsPattern = Pattern.compile(myConfiguration.getLoginRegexForEachRequest());
-    	Matcher wsMatcher = wsPattern.matcher(requestLine);        
+    	final Matcher wsMatcher = wsPattern.matcher(requestLine);
     	
-        if (!wsMatcher.matches( ) || 
-            2 != wsMatcher.groupCount( )) {
-        	LOGGER.info("Regex Problem?");
-        	LOGGER.info("Request line is {}.", requestLine);
-        	LOGGER.info("The regex is {}.", myConfiguration.getLoginRegexForEachRequest());
+        if (! wsMatcher.matches() || 2 != wsMatcher.groupCount( )) {
+        	logger.info("Regex Problem?");
+        	logger.info("Request line is {}.", requestLine);
+        	logger.info("The regex is {}.", wsPattern.pattern());
             return;
         }
 
@@ -52,65 +51,43 @@ public class WSLogListener extends TailerListenerAdapter {
         if(webSpaRequest.endsWith("/")) {
         	webSpaRequest = webSpaRequest.substring(0, webSpaRequest.length() - 1);
         }
-        
 
-        if(webSpaRequest.length() == 100) {
-        	
-        	// Nest the world away!
-        	LOGGER.info("The 100 chars received are {}.", webSpaRequest); 
-            // Get the unique user ID from the request
-            final int ppID = myDatabase.passPhrases.getPPIDFromRequest(webSpaRequest);
-            
-            if(ppID < 0) {
-                
-            	LOGGER.info("No User Found");
-            	
-            } else {
-
-            	String username = myDatabase.users.getUsersFullName(ppID); 
-            	LOGGER.info("User Found {}.", username);
-            	// Check the user's activation status
-            	final boolean userActive = myDatabase.passPhrases.getActivationStatus(ppID);
-            	LOGGER.info(myDatabase.passPhrases.getActivationStatusString(ppID));
-            	
-                if(userActive) {
-                	
-                	final int action = myDatabase.actionsAvailable.getActionNumberFromRequest(ppID, webSpaRequest);
-                	LOGGER.info("Action Number {}.", action);
-                	
-                	if( (action >= 0) && (action <= 9) ) {
-                	
-                		// Log this in the actions received table...
-                		final int aaID = myServer.getWSDatabase().actionsAvailable.getAAID(ppID, action);
-                		myServer.getWSDatabase().actionsReceived.addAction(ipAddress, webSpaRequest, aaID);
-                		
-                		// Log this on the screen for the user
-                		final String osCommand = myServer.getWSDatabase().actionsAvailable.getOSCommand(ppID, action);
-                		LOGGER.info(ipAddress + " ->  '" + osCommand + "'");
-                		
-                		// Fetch and execute the O/S command...        		
-                		myServer.runOSCommand(ppID, action, ipAddress);
-
-                	}
-                }
-
-            }
-            
-            
+        if(EXPECTED_REQUEST_LENGTH != webSpaRequest.length()){
+            logger.warn("Request length expected to be {} but was {}", EXPECTED_REQUEST_LENGTH, webSpaRequest.length());
+            return;
         }
- 
 
+        logger.info("The 100 chars received are {}.", webSpaRequest);
+        // Get the unique user ID from the request
+        final int ppId = myDatabase.passPhrases.getPPIDFromRequest(webSpaRequest);
+        if(ppId < 0) {
+            logger.warn("No User Found");
+            return;
+        }
 
+        final String username = myDatabase.users.getUsersFullName(ppId);
+        logger.info("User Found {}.", username);
+
+        final boolean userActive = myDatabase.passPhrases.getActivationStatus(ppId);
+        logger.info(myDatabase.passPhrases.getActivationStatusString(ppId));
+        if(userActive) {
+
+            final int action = myDatabase.actionsAvailable.getActionNumberFromRequest(ppId, webSpaRequest);
+            logger.info("Action Number {}.", action);
+
+            if(action >= 0 && action <= 9) {
+
+                // Log this in the actions received table...
+                final int aaID = myServer.getWSDatabase().actionsAvailable.getAAID(ppId, action);
+                myServer.getWSDatabase().actionsReceived.addAction(ipAddress, webSpaRequest, aaID);
+
+                // Log this on the screen for the user
+                final String osCommand = myServer.getWSDatabase().actionsAvailable.getOSCommand(ppId, action);
+                logger.info(ipAddress + " ->  '" + osCommand + "'");
+
+                // Fetch and execute the O/S command...
+                myServer.runOSCommand(ppId, action, ipAddress);
+            }
+        }
     }
-
-    @Override
-    public void handle(Exception arg0) {
-
-    }
-
-    @Override
-    public void init(Tailer arg0) {
-        // TODO Auto-generated method stub
-    }
-
 }
