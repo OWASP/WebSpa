@@ -5,9 +5,12 @@ import net.seleucus.wsp.crypto.fwknop.fields.HmacType;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.security.SecureRandom;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.BadPaddingException;
 
 import static java.lang.Math.abs;
 import static net.seleucus.wsp.crypto.fwknop.MessageBuilder.createMessage;
@@ -342,5 +345,120 @@ public class FwknopSymmetricCryptoServiceTest {
             assertTrue(service.verify(row.signatureKey(), signedMessage, row.hmacType()));
 
         }
+    }
+    
+    @Test
+    public void shouldThrowExceptionOnInvalidMessageSizeTestPack() throws Exception {
+        /*
+        #define MAX_SPA_ENCRYPTED_SIZE     1500
+        #define MIN_SPA_ENCODED_MSG_SIZE     36 
+        #define MAX_SPA_ENCODED_MSG_SIZE     MAX_SPA_ENCRYPTED_SIZE
+        */
+        
+        byte[] auth_key = decodeFromHexString("4c7660e21cf971c70ec8beb622fa966d3ab03ab03a301a2162afa930377737582aae061d0c61590ba2b0453e914d9385cc42250ae6e2cbeca73c8979676da82b");
+        
+        HmacType ht[] = {HmacMD5, HmacSHA1, HmacSHA256, HmacSHA384, HmacSHA512};
+        
+                
+        String msg = StringUtils.leftPad("A", 1600);
+        int len = sr.nextInt(36);
+        
+        // to short
+        for (int i=0; i < ht.length; i ++) {
+            try {
+                service.verify(auth_key, msg.substring(len), ht[i]);
+            }
+            catch (Exception e) {
+                if (!e.getMessage().equalsIgnoreCase("FKO_ERROR_INVALID_DATA_HMAC_MSGLEN_VALIDFAIL"))
+                    fail("Invalid exception thrown on too short message");
+            }
+            fail("Exception should be thrown on too short message");
+        }
+        
+        // to long
+        for (int i=0; i < ht.length; i++) {
+            try {
+                service.verify(auth_key, msg.substring(1501 + len), ht[i]);
+            }
+            catch (Exception e) {
+                if (!e.getMessage().equalsIgnoreCase("FKO_ERROR_INVALID_DATA_HMAC_MSGLEN_VALIDFAIL"))
+                    fail("Invalid exception thrown on too short message");                
+            }
+            fail("Exception should be thrown on too long message");
+        }        
+    }
+    
+    @Test
+    public void shouldThrowExceptionOnMessageShorterThanExpectedHMACLenTestPack() throws Exception {
+        /* If message is shorer than expected HMAC type we should not process it at all */
+                
+        byte[] auth_key = decodeFromHexString("4c7660e21cf971c70ec8beb622fa966d3ab03ab03a301a2162afa930377737582aae061d0c61590ba2b0453e914d9385cc42250ae6e2cbeca73c8979676da82b");
+        
+        HmacType ht[] = {HmacMD5, HmacSHA1, HmacSHA256, HmacSHA384, HmacSHA512};
+        
+                
+        String msg = StringUtils.leftPad("A", 200);
+        
+        for (int i=0; i < ht.length; i++) {
+            try {
+                int len = sr.nextInt(ht[i].base64Length() - 1);
+                service.verify(auth_key, msg.substring(len), ht[i]);
+            }
+            catch (Exception e) {
+                if (!e.getMessage().equalsIgnoreCase("FKO_ERROR_INVALID_DATA_HMAC_MSGLEN_VALIDFAIL"))
+                    fail("Invalid exception thrown on message shorter than excpected HMAC len");       
+            }
+            fail("Exception should be thrown on message shorter than expected HMAC len");
+        }
+    }
+    
+    @Test
+    public void shouldThrowExceptionOnNonBase64() throws Exception {
+        String nonBase64 = ">This~is~not~a~valid~base64~string!";
+        byte[] master_key = decodeFromHexString("4c1dd9b93d5e2ebb5bd10d7f37d0e57db75b283a9f6b19ad74eba776e87689c8");
+        
+        try {
+            service.decrypt(master_key, nonBase64);
+        }
+        catch (Exception e) {
+            if (!e.getMessage().equalsIgnoreCase("FKO_ERROR_INVALID_DATA_ENCODE_NOTBASE64"))
+                    fail("Invalid exception thrown on non base64 data");       
+        }
+        fail("Exception should be thrown on non base64 data");
+    }
+    
+    @Test
+    public void shouldThrowExceptionOnTooShortCiphertext() throws Exception {
+        /* The message should contain SALT (16 bytes including Salted__ header) and at least one cipher block (16 bytes) */
+        String message = "Salted__SALTSALT0123456789ABCDE"; // and this ciphertext is too short
+        String base64message = Base64.encodeBase64String(message.getBytes()).replace("U2FsdGVkX1", "");
+        byte[] master_key = decodeFromHexString("4c1dd9b93d5e2ebb5bd10d7f37d0e57db75b283a9f6b19ad74eba776e87689c8");
+        
+        try {
+            service.decrypt(master_key, base64message);
+        }
+        catch (Exception e) {
+            if (!e.getMessage().equalsIgnoreCase("FFKO_ERROR_INVALID_DATA_ENCRYPT_CIPHERLEN_DECODEFAIL"))
+                fail("Invalid exception thrown on too short ciphertext");       
+            }
+            fail("Exception should be thrown on too short ciphertext");
+    }
+    
+    @Test(expected=IllegalBlockSizeException.class)
+    public void shouldThrowExceptionOnInvalidEncryptedMessageSize() throws Exception {
+        String message = "Salted__SALTSALT1234567801234567890ABCDEFXXX";
+        String base64message = Base64.encodeBase64String(message.getBytes()).replace("U2FsdGVkX1", "");
+        byte[] master_key = decodeFromHexString("4c1dd9b93d5e2ebb5bd10d7f37d0e57db75b283a9f6b19ad74eba776e87689c8");
+        
+        service.decrypt(master_key, base64message);
+    }
+    
+    @Test(expected=BadPaddingException.class)
+    public void shouldThrowExceptionOnIncorrectPadding() throws Exception {
+        String message = "Salted__SALTSALT0123456789ABCDEF";
+        String base64message = Base64.encodeBase64String(message.getBytes()).replace("U2FsdGVkX1", "");
+        byte[] master_key = decodeFromHexString("4c1dd9b93d5e2ebb5bd10d7f37d0e57db75b283a9f6b19ad74eba776e87689c8");
+        
+        service.decrypt(master_key, base64message);
     }
 }
