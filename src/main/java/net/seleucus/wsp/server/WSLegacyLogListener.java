@@ -9,12 +9,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class responsible for processing log file lines. This class is a callback listener
+ * Legacy class responsible for processing log file lines. This class is a callback listener
  * called by {@link org.apache.commons.io.input.Tailer}.
+ *
+ * @deprecated Deprecated since version 0.9. Replaced by {@link WebServerLogTailCallbackListener}
+ *
+ * @see net.seleucus.wsp.server.WebServerLogTailCallbackListener
  */
-public class WSLogListener extends TailerListenerAdapter {
+@Deprecated
+public class WSLegacyLogListener extends TailerListenerAdapter {
 
-    private final Logger logger = LoggerFactory.getLogger(WSLogListener.class);
+    private final Logger logger = LoggerFactory.getLogger(WSLegacyLogListener.class);
 
     public static final int EXPECTED_REQUEST_LENGTH = 100;
 
@@ -22,7 +27,7 @@ public class WSLogListener extends TailerListenerAdapter {
 	private final WSDatabase myDatabase;
 	private final Pattern wsPattern;
 
- 	public WSLogListener(final WSServer myServer) {
+ 	public WSLegacyLogListener(final WSServer myServer) {
  		this.myServer = myServer;
  		this.myDatabase = myServer.getWSDatabase();
  		this.wsPattern = Pattern.compile(myServer.getWSConfiguration().getLoginRegexForEachRequest());

@@ -25,7 +25,7 @@ public class WSServer extends WSGestalt {
 	private boolean serviceStarted;
 	
 	private WSDatabase myDatabase;
-	private WSLogListener myLogListener;
+	private WSLegacyLogListener myLogListener;
 	private WSConfiguration myConfiguration;
 	private WSServerConsole myServerCommand;
 	
@@ -41,7 +41,7 @@ public class WSServer extends WSGestalt {
 		myDatabase = new WSDatabase();
 		myConfiguration = new WSConfiguration();
 		
-		myLogListener = new WSLogListener(this);
+		myLogListener = new WSLegacyLogListener(this);
 		myServerCommand = new WSServerConsole(this);
 
 	}
