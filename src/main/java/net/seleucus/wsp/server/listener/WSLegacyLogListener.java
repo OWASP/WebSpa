@@ -1,6 +1,7 @@
-package net.seleucus.wsp.server;
+package net.seleucus.wsp.server.listener;
 
 import net.seleucus.wsp.db.WSDatabase;
+import net.seleucus.wsp.server.WSServer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
  *
  * @deprecated Deprecated since version 0.9. Replaced by {@link WebServerLogTailCallbackListener}
  *
- * @see net.seleucus.wsp.server.WebServerLogTailCallbackListener
+ * @see WebServerLogTailCallbackListener
  */
 @Deprecated
 public class WSLegacyLogListener extends TailerListenerAdapter {
