@@ -8,6 +8,6 @@ public enum FilterResult {
     }
 
     public static FilterResult evaluateCondition(boolean condition){
-        return condition == true ? ACCEPT : DROP;
+        return condition ? ACCEPT : DROP;
     }
 }
